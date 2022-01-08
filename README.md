@@ -6,6 +6,5 @@ Bukkit, CraftBukkit, Spigot, Paper, Tuinity, Airplane, Purpur, Pufferfish에서 
 - [x] ~~빌드 오류 해결~~
 - [x] ~~Discord Webhook 추가~~
 - [x] ~~[Purpur - Don't send useless entity packets](https://github.com/PurpurMC/Purpur/blob/ver/1.17.1/patches/server/0033-Dont-send-useless-entity-packets.patch) 복구~~
-- [ ] [Purpur - Lobotomize stuck villagers](https://github.com/PurpurMC/Purpur/blob/ver/1.17.1/patches/server/0128-Lobotomize-stuck-villagers.patch) 복구
-- [ ] [Purpur - Add no random tick block list](https://github.com/PurpurMC/Purpur/blob/ver/1.17.1/patches/server/0093-Add-no-random-tick-block-list.patch) 복구
+- [x] ~~[Purpur - Lobotomize stuck villagers](https://github.com/PurpurMC/Purpur/blob/ver/1.17.1/patches/server/0128-Lobotomize-stuck-villagers.patch) 복구~~
 - [ ] 한글 패치 추가
