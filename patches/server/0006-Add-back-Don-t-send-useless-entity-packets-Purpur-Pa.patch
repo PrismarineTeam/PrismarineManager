@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alpha <alphakr93@outlook.com>
 Date: Sat, 8 Jan 2022 22:35:13 +0900
-Subject: [PATCH] Do not send useless entity packets
+Subject: [PATCH] Add back "Don't send useless entity packets" Purpur Patch
 
 
 diff --git a/src/main/java/net/alphakr93/prismarine/PrismarineConfig.java b/src/main/java/net/alphakr93/prismarine/PrismarineConfig.java
