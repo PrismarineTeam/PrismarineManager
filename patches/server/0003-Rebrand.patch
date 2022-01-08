@@ -5,7 +5,7 @@ Subject: [PATCH] Rebrand
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 1bdcca4d1a25f4292ab9421d44fa3018af263341..b4176a161dc75757b18016f3960d6e9e6000d59a 100644
+index 1bdcca4d1a25f4292ab9421d44fa3018af263341..f24e0c1b3d70b3ed6eda2238108c176d49ec4816 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -18,7 +18,7 @@ repositories {
@@ -73,7 +73,7 @@ index 8c3c68465197fafc14849dc38a572e309931e2a2..aa1ec20b5fc1500ab28a3e702f231560
                  .completer(new ConsoleCommandCompleter(this.server))
                  .option(LineReader.Option.COMPLETE_IN_WORD, true);
 diff --git a/src/main/java/net/minecraft/CrashReport.java b/src/main/java/net/minecraft/CrashReport.java
-index cc0576e8e5e1dc77c22856f0f9c4376b6bf36677..daea2f78ac0d5bf4529c44c77fc07d6b108bb2e1 100644
+index cc0576e8e5e1dc77c22856f0f9c4376b6bf36677..8a31d3d72d604746d85a31f1f7cd971dd6a0e411 100644
 --- a/src/main/java/net/minecraft/CrashReport.java
 +++ b/src/main/java/net/minecraft/CrashReport.java
 @@ -121,6 +121,7 @@ public class CrashReport {
@@ -85,7 +85,7 @@ index cc0576e8e5e1dc77c22856f0f9c4376b6bf36677..daea2f78ac0d5bf4529c44c77fc07d6b
          stringbuilder.append(CrashReport.getErrorComment());
          stringbuilder.append("\n\n");
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 42c8fdf6ed4f6ab233964e4f64fb7ec4580e53fa..d9a63a5a5cc6a426d21b650350fab40122bfd441 100644
+index 7fa050d087aa151887151c3a4b6f291a67c82d16..011e012b49d5184b8f38e8eb31a5a339015ee351 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -1024,7 +1024,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -98,7 +98,7 @@ index 42c8fdf6ed4f6ab233964e4f64fb7ec4580e53fa..d9a63a5a5cc6a426d21b650350fab401
                  this.getRunningThread().stop();
                  try {
 diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
-index c7216cf3317cbd49b032c44feb370c50928dd21e..cc085366eea23009889995c4180a7550c2700d19 100644
+index bffb2915d84be3a1b642788e21c803b54b2db6ea..ea2b026eae0e6e3943a9d643dcbdaa32e4c6b482 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
 @@ -113,7 +113,7 @@ public class RegionFileStorage implements AutoCloseable {
@@ -110,8 +110,27 @@ index c7216cf3317cbd49b032c44feb370c50928dd21e..cc085366eea23009889995c4180a7550
      }
  
      private static final int DEFAULT_SIZE_THRESHOLD = 1024 * 8;
+diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
+index 6f14a1b26e92d0170538ed60c6a651a031e7209e..4babb8ab553858a1789f3d1ee132d2015d71b999 100644
+--- a/src/main/java/org/bukkit/craftbukkit/Main.java
++++ b/src/main/java/org/bukkit/craftbukkit/Main.java
+@@ -155,10 +155,10 @@ public class Main {
+ 
+                 // Purpur Start
+                 acceptsAll(asList("purpur", "purpur-settings"), "File for purpur settings")
+-                    .withRequiredArg()
+-                    .ofType(File.class)
+-                    .defaultsTo(new File("purpur.yml"))
+-                    .describedAs("Yml file");
++                        .withRequiredArg()
++                        .ofType(File.class)
++                        .defaultsTo(new File("purpur.yml"))
++                        .describedAs("Yml file");
+                 // Purpur end
+ 
+                 // Paper start
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
-index d2439ebab74c53e01f27fe9a9fe9366b99974dea..98644c6e47b12673663bb624026832e46cff233f 100644
+index d2439ebab74c53e01f27fe9a9fe9366b99974dea..c92daa4532596ed6acbd2ff0f3df2d5218cc6b7d 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
 @@ -808,7 +808,7 @@ public class CraftLivingEntity extends CraftEntity implements LivingEntity {
@@ -124,7 +143,7 @@ index d2439ebab74c53e01f27fe9a9fe9366b99974dea..98644c6e47b12673663bb624026832e4
  
      @Override
 diff --git a/src/main/java/org/bukkit/craftbukkit/scheduler/CraftScheduler.java b/src/main/java/org/bukkit/craftbukkit/scheduler/CraftScheduler.java
-index cdefb2025eedea7e204d70d568adaf1c1ec4c03c..5db5822bf635be0ae241e04c4ac52add63bff91a 100644
+index cdefb2025eedea7e204d70d568adaf1c1ec4c03c..dc5c9dfa293850cf471d6cfaf44f538dd13ce2b9 100644
 --- a/src/main/java/org/bukkit/craftbukkit/scheduler/CraftScheduler.java
 +++ b/src/main/java/org/bukkit/craftbukkit/scheduler/CraftScheduler.java
 @@ -504,7 +504,7 @@ public class CraftScheduler implements BukkitScheduler {
@@ -137,7 +156,7 @@ index cdefb2025eedea7e204d70d568adaf1c1ec4c03c..5db5822bf635be0ae241e04c4ac52add
                  // (async tasks must live with race-conditions if they attempt to cancel between these few lines of code)
              }
 diff --git a/src/main/java/org/spigotmc/WatchdogThread.java b/src/main/java/org/spigotmc/WatchdogThread.java
-index bee38307494188800886a1622fed229b88dbd8f1..735b88adcd346cdd7b33f0f38e642bc2a627708d 100644
+index bee38307494188800886a1622fed229b88dbd8f1..09326b7dca440dc521bd374e57d8c0c15ded7f06 100644
 --- a/src/main/java/org/spigotmc/WatchdogThread.java
 +++ b/src/main/java/org/spigotmc/WatchdogThread.java
 @@ -97,7 +97,7 @@ public class WatchdogThread extends Thread
