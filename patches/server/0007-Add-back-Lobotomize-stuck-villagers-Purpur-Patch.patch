@@ -18,18 +18,10 @@ index f2b9dcf358785d336f5577227f54f9c3308c1722..527571eb00f992adc4919829381ed7cc
  }
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/world/entity/npc/Villager.java b/src/main/java/net/minecraft/world/entity/npc/Villager.java
-index 0141d4d2dfaacfbce174e82e2d7c1a9419c64982..636c9ec1d2f09df32998dc475e18b91747e80eb3 100644
+index 0141d4d2dfaacfbce174e82e2d7c1a9419c64982..a05e23a444085f453cdba65fc9ed388853ec92b7 100644
 --- a/src/main/java/net/minecraft/world/entity/npc/Villager.java
 +++ b/src/main/java/net/minecraft/world/entity/npc/Villager.java
-@@ -85,6 +85,7 @@ import net.minecraft.world.item.trading.MerchantOffer;
- import net.minecraft.world.item.trading.MerchantOffers;
- import net.minecraft.world.level.Level;
- import net.minecraft.world.level.ServerLevelAccessor;
-+import net.minecraft.world.level.block.Block;
- import net.minecraft.world.level.block.state.BlockState;
- import net.minecraft.world.phys.AABB;
- import org.apache.logging.log4j.Logger;
-@@ -138,6 +139,7 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+@@ -138,6 +138,7 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
          return villageplacetype == PoiType.MEETING;
      });
      private final int brainTickOffset; // Purpur
@@ -37,7 +29,7 @@ index 0141d4d2dfaacfbce174e82e2d7c1a9419c64982..636c9ec1d2f09df32998dc475e18b917
  
      public long nextGolemPanic = -1; // Pufferfish
  
-@@ -182,6 +184,24 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+@@ -182,6 +183,24 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
          return level.purpurConfig.villagerCanBeLeashed && !this.isLeashed();
      }
  

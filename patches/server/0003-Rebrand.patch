@@ -73,7 +73,7 @@ index 8c3c68465197fafc14849dc38a572e309931e2a2..aa1ec20b5fc1500ab28a3e702f231560
                  .completer(new ConsoleCommandCompleter(this.server))
                  .option(LineReader.Option.COMPLETE_IN_WORD, true);
 diff --git a/src/main/java/gg/pufferfish/pufferfish/PufferfishCommand.java b/src/main/java/gg/pufferfish/pufferfish/PufferfishCommand.java
-index 020368da69b9a492155f6de6297f74732f4ab6ea..f5a197cf3d78b8641df562be5ddf9163a6e5531d 100644
+index 020368da69b9a492155f6de6297f74732f4ab6ea..1d1a3de90efc5aa33275c05b51a3d7253b694622 100644
 --- a/src/main/java/gg/pufferfish/pufferfish/PufferfishCommand.java
 +++ b/src/main/java/gg/pufferfish/pufferfish/PufferfishCommand.java
 @@ -40,14 +40,16 @@ public class PufferfishCommand extends Command {
@@ -84,29 +84,31 @@ index 020368da69b9a492155f6de6297f74732f4ab6ea..f5a197cf3d78b8641df562be5ddf9163
  
          if (args.length != 1) {
 -            sender.sendMessage(prefix + "Usage: " + usageMessage);
-+            sender.sendMessage(ChatColor.RED + "Usage: " + usageMessage);
++            sender.sendMessage(ChatColor.RED + "Usage: " + usageMessage); // Prismarine
              args = new String[]{"version"};
          }
  
          if (args[0].equalsIgnoreCase("reload")) {
-+            Command.broadcastCommandMessage(sender, org.bukkit.ChatColor.RED + "Please note that this command is not supported and may cause issues.");
-+            Command.broadcastCommandMessage(sender, org.bukkit.ChatColor.RED + "If you encounter any issues please use the /stop command to restart your server.");
++            Command.broadcastCommandMessage(sender, org.bukkit.ChatColor.RED + "Please note that this command is not supported and may cause issues."); // Prismarine
++            Command.broadcastCommandMessage(sender, org.bukkit.ChatColor.RED + "If you encounter any issues please use the /stop command to restart your server."); // Prismarine
 +
              MinecraftServer console = MinecraftServer.getServer();
              try {
                  PufferfishConfig.load();
-@@ -58,9 +60,12 @@ public class PufferfishCommand extends Command {
+@@ -58,9 +60,14 @@ public class PufferfishCommand extends Command {
              }
              console.server.reloadCount++;
  
 -            Command.broadcastCommandMessage(sender, prefix + "Pufferfish configuration has been reloaded.");
-+            Command.broadcastCommandMessage(sender, org.bukkit.ChatColor.GREEN + "Pufferfish config reload complete.");
++            Command.broadcastCommandMessage(sender, org.bukkit.ChatColor.GREEN + "Pufferfish config reload complete."); // Prismarine
          } else if (args[0].equalsIgnoreCase("version")) {
 -            Command.broadcastCommandMessage(sender, prefix + "This server is running " + Bukkit.getName() + " version " + Bukkit.getVersion() + " (Implementing API version " + Bukkit.getBukkitVersion() + ")");
++            // Prismarine start
 +            Command verCmd = org.bukkit.Bukkit.getServer().getCommandMap().getCommand("version");
 +            if (verCmd != null) {
 +                return verCmd.execute(sender, commandLabel, new String[0]);
 +            }
++            // Prismarine end
          }
  
          return true;
@@ -135,6 +137,24 @@ index 7fa050d087aa151887151c3a4b6f291a67c82d16..011e012b49d5184b8f38e8eb31a5a339
              while (this.getRunningThread().isAlive()) {
                  this.getRunningThread().stop();
                  try {
+diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
+index 799955b4439ba7739dc011183aad25b39b526566..ec3fe87d4e4c8d2aca16bcbaa2a438e708b99e23 100644
+--- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
++++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
+@@ -210,7 +210,12 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+         }
+         // Spigot start
+         this.setPlayerList(new DedicatedPlayerList(this, this.registryHolder, this.playerDataStorage));
+-        org.spigotmc.SpigotConfig.init((java.io.File) options.valueOf("spigot-settings"));
++        try {
++            org.spigotmc.SpigotConfig.init((java.io.File) options.valueOf("spigot-settings"));
++        } catch (Exception e) {
++            DedicatedServer.LOGGER.error("Unable to load server configuration", e);
++            return false;
++        }
+         org.spigotmc.SpigotConfig.registerCommands();
+         // Spigot end
+         // Paper start - moved up to right after PlayerList creation but before file load/save
 diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
 index bffb2915d84be3a1b642788e21c803b54b2db6ea..ea2b026eae0e6e3943a9d643dcbdaa32e4c6b482 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
