@@ -7,9 +7,9 @@ pluginManagement {
     }
 }
 
-rootProject.name = "purpur"
-for (name in listOf("Purpur-API", "Purpur-Server")) {
-    val projName = name.toLowerCase(Locale.ENGLISH)
+rootProject.name = "Prismarine"
+for (name in listOf("Prismarine-API", "Prismarine-Server")) {
+    val projName = name
     include(projName)
     findProject(":$projName")!!.projectDir = file(name)
 }

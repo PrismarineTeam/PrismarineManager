@@ -61,29 +61,18 @@ subprojects {
 }
 
 paperweight {
-    serverProject.set(project(":purpur-server"))
+    serverProject.set(project(":Prismarine-Server"))
 
     remapRepo.set("https://maven.fabricmc.net/")
     decompileRepo.set("https://files.minecraftforge.net/maven/")
 
     usePaperUpstream(providers.gradleProperty("paperCommit")) {
         withPaperPatcher {
-            apiPatchDir.set(layout.projectDirectory.dir("patches/api"))
-            apiOutputDir.set(layout.projectDirectory.dir("Purpur-API"))
+            apiPatchDir.set(layout.projectDirectory.dir("Patches/API"))
+            apiOutputDir.set(layout.projectDirectory.dir("Prismarine-API"))
 
-            serverPatchDir.set(layout.projectDirectory.dir("patches/server"))
-            serverOutputDir.set(layout.projectDirectory.dir("Purpur-Server"))
-        }
-    }
-}
-
-allprojects {
-    publishing {
-        repositories {
-            maven("https://repo.purpurmc.org/snapshots") {
-                name = "purpur"
-                credentials(PasswordCredentials::class)
-            }
+            serverPatchDir.set(layout.projectDirectory.dir("Patches/Server"))
+            serverOutputDir.set(layout.projectDirectory.dir("Prismarine-Server"))
         }
     }
 }

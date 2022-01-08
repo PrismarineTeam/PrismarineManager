@@ -52,7 +52,6 @@ manifest.mf
 run/
 
 build-data/
-Purpur-API
-Purpur-MojangAPI
-Purpur-Server
+Prismarine-API
+Prismarine-Server
 *.jar
