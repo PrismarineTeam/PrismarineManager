@@ -1,0 +1,64 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Alpha <alphakr93@outlook.com>
+Date: Sat, 8 Jan 2022 23:02:19 +0900
+Subject: [PATCH] Lobotomize villagers
+
+
+diff --git a/src/main/java/net/alphakr93/prismarine/PrismarineWorldConfig.java b/src/main/java/net/alphakr93/prismarine/PrismarineWorldConfig.java
+index f2b9dcf358785d336f5577227f54f9c3308c1722..527571eb00f992adc4919829381ed7cc90f8a860 100644
+--- a/src/main/java/net/alphakr93/prismarine/PrismarineWorldConfig.java
++++ b/src/main/java/net/alphakr93/prismarine/PrismarineWorldConfig.java
+@@ -75,4 +75,7 @@ public class PrismarineWorldConfig {
+         final Map<String, Object> value = PrismarineConfig.getMap("world-settings." + worldName + "." + path, null);
+         return value.isEmpty() ? fallback : value;
+     }
++
++    public boolean villagerLobotomizeEnabled = getBoolean("mobs.villager.lobotomize.enabled", false);
++    public int villagerLobotomizeCheck = getInt("mobs.villager.lobotomize.check-interval", 60);
+ }
+\ No newline at end of file
+diff --git a/src/main/java/net/minecraft/world/entity/npc/Villager.java b/src/main/java/net/minecraft/world/entity/npc/Villager.java
+index 0141d4d2dfaacfbce174e82e2d7c1a9419c64982..636c9ec1d2f09df32998dc475e18b91747e80eb3 100644
+--- a/src/main/java/net/minecraft/world/entity/npc/Villager.java
++++ b/src/main/java/net/minecraft/world/entity/npc/Villager.java
+@@ -85,6 +85,7 @@ import net.minecraft.world.item.trading.MerchantOffer;
+ import net.minecraft.world.item.trading.MerchantOffers;
+ import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.ServerLevelAccessor;
++import net.minecraft.world.level.block.Block;
+ import net.minecraft.world.level.block.state.BlockState;
+ import net.minecraft.world.phys.AABB;
+ import org.apache.logging.log4j.Logger;
+@@ -138,6 +139,7 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+         return villageplacetype == PoiType.MEETING;
+     });
+     private final int brainTickOffset; // Purpur
++    private boolean lobotomized = false; // Prismarine
+ 
+     public long nextGolemPanic = -1; // Pufferfish
+ 
+@@ -182,6 +184,24 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+         return level.purpurConfig.villagerCanBeLeashed && !this.isLeashed();
+     }
+ 
++    // Prismarine start
++    private boolean canTravelTo(BlockPos pos) {
++        net.minecraft.world.level.pathfinder.Path to = navigation.createPath(pos, 0);
++        return to != null && to.nodes.size() > 0;
++    }
++
++    private boolean canTravelFrom(BlockPos pos) {
++        return canTravelTo(pos.north()) || canTravelTo(pos.east()) || canTravelTo(pos.south()) || canTravelTo(pos.west());
++    }
++
++    private boolean isLobotomized() {
++        if ((level.getGameTime() + brainTickOffset) % level.prismarineConfig.villagerLobotomizeCheck == 0) {
++            this.lobotomized = !canTravelFrom(blockPosition().above());
++        }
++        return this.lobotomized;
++    }
++    // Prismarine end
++
+     @Override
+     public boolean isSensitiveToWater() {
+         return this.level.purpurConfig.villagerTakeDamageFromWater;
