@@ -68,10 +68,10 @@ paperweight {
 
     usePaperUpstream(providers.gradleProperty("paperCommit")) {
         withPaperPatcher {
-            apiPatchDir.set(layout.projectDirectory.dir("Patches/API"))
+            apiPatchDir.set(layout.projectDirectory.dir("patches/api"))
             apiOutputDir.set(layout.projectDirectory.dir("Prismarine-API"))
 
-            serverPatchDir.set(layout.projectDirectory.dir("Patches/Server"))
+            serverPatchDir.set(layout.projectDirectory.dir("patches/server"))
             serverOutputDir.set(layout.projectDirectory.dir("Prismarine-Server"))
         }
     }
