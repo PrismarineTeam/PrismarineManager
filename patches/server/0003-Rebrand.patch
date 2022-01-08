@@ -72,6 +72,44 @@ index 8c3c68465197fafc14849dc38a572e309931e2a2..aa1ec20b5fc1500ab28a3e702f231560
                  .variable(LineReader.HISTORY_FILE, java.nio.file.Paths.get(".console_history"))
                  .completer(new ConsoleCommandCompleter(this.server))
                  .option(LineReader.Option.COMPLETE_IN_WORD, true);
+diff --git a/src/main/java/gg/pufferfish/pufferfish/PufferfishCommand.java b/src/main/java/gg/pufferfish/pufferfish/PufferfishCommand.java
+index 020368da69b9a492155f6de6297f74732f4ab6ea..f5a197cf3d78b8641df562be5ddf9163a6e5531d 100644
+--- a/src/main/java/gg/pufferfish/pufferfish/PufferfishCommand.java
++++ b/src/main/java/gg/pufferfish/pufferfish/PufferfishCommand.java
+@@ -40,14 +40,16 @@ public class PufferfishCommand extends Command {
+     @Override
+     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
+         if (!testPermission(sender)) return true;
+-        String prefix = ChatColor.of("#12fff6") + "" + ChatColor.BOLD + "Pufferfish » " + ChatColor.of("#e8f9f9");
+ 
+         if (args.length != 1) {
+-            sender.sendMessage(prefix + "Usage: " + usageMessage);
++            sender.sendMessage(ChatColor.RED + "Usage: " + usageMessage);
+             args = new String[]{"version"};
+         }
+ 
+         if (args[0].equalsIgnoreCase("reload")) {
++            Command.broadcastCommandMessage(sender, org.bukkit.ChatColor.RED + "Please note that this command is not supported and may cause issues.");
++            Command.broadcastCommandMessage(sender, org.bukkit.ChatColor.RED + "If you encounter any issues please use the /stop command to restart your server.");
++
+             MinecraftServer console = MinecraftServer.getServer();
+             try {
+                 PufferfishConfig.load();
+@@ -58,9 +60,12 @@ public class PufferfishCommand extends Command {
+             }
+             console.server.reloadCount++;
+ 
+-            Command.broadcastCommandMessage(sender, prefix + "Pufferfish configuration has been reloaded.");
++            Command.broadcastCommandMessage(sender, org.bukkit.ChatColor.GREEN + "Pufferfish config reload complete.");
+         } else if (args[0].equalsIgnoreCase("version")) {
+-            Command.broadcastCommandMessage(sender, prefix + "This server is running " + Bukkit.getName() + " version " + Bukkit.getVersion() + " (Implementing API version " + Bukkit.getBukkitVersion() + ")");
++            Command verCmd = org.bukkit.Bukkit.getServer().getCommandMap().getCommand("version");
++            if (verCmd != null) {
++                return verCmd.execute(sender, commandLabel, new String[0]);
++            }
+         }
+ 
+         return true;
 diff --git a/src/main/java/net/minecraft/CrashReport.java b/src/main/java/net/minecraft/CrashReport.java
 index cc0576e8e5e1dc77c22856f0f9c4376b6bf36677..8a31d3d72d604746d85a31f1f7cd971dd6a0e411 100644
 --- a/src/main/java/net/minecraft/CrashReport.java
