@@ -1,0 +1,452 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Alpha <alphakr93@outlook.com>
+Date: Sat, 8 Jan 2022 22:33:38 +0900
+Subject: [PATCH] Prismarine config files
+
+
+diff --git a/src/main/java/net/alphakr93/prismarine/PrismarineConfig.java b/src/main/java/net/alphakr93/prismarine/PrismarineConfig.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..56c971572ddac9dac88854a7ca2a757d14813710
+--- /dev/null
++++ b/src/main/java/net/alphakr93/prismarine/PrismarineConfig.java
+@@ -0,0 +1,148 @@
++package net.alphakr93.prismarine;
++
++import com.google.common.base.Throwables;
++import com.google.common.collect.ImmutableMap;
++import net.minecraft.server.MinecraftServer;
++import org.bukkit.Bukkit;
++import org.bukkit.command.Command;
++import org.bukkit.configuration.ConfigurationSection;
++import org.bukkit.configuration.InvalidConfigurationException;
++import org.bukkit.configuration.file.YamlConfiguration;
++import net.alphakr93.prismarine.command.PrismarineCommand;
++
++import java.io.File;
++import java.io.IOException;
++import java.lang.reflect.InvocationTargetException;
++import java.lang.reflect.Method;
++import java.lang.reflect.Modifier;
++import java.util.HashMap;
++import java.util.List;
++import java.util.Map;
++import java.util.logging.Level;
++
++@SuppressWarnings("unused")
++public class PrismarineConfig {
++    private static final String HEADER = "This is the main configuration file for Prismarine.\n"
++            + "As you can see, there's tons to configure. Some options may impact gameplay, so use\n"
++            + "with caution, and make sure you know what each option does before configuring.\n";
++    private static File CONFIG_FILE;
++    public static YamlConfiguration config;
++
++    private static Map<String, Command> commands;
++
++    public static int version;
++    static boolean verbose;
++
++    public static void init(File configFile) {
++        CONFIG_FILE = configFile;
++        config = new YamlConfiguration();
++        try {
++            config.load(CONFIG_FILE);
++        } catch (IOException ignore) {
++        } catch (InvalidConfigurationException ex) {
++            Bukkit.getLogger().log(Level.SEVERE, "Could not load prismarine.yml, please correct your syntax errors", ex);
++            throw Throwables.propagate(ex);
++        }
++        config.options().header(HEADER);
++        config.options().copyDefaults(true);
++        verbose = getBoolean("verbose", false);
++
++        commands = new HashMap<>();
++        commands.put("prismarine", new PrismarineCommand("prismarine"));
++
++        version = getInt("config-version", 1);
++        set("config-version", 1);
++
++        readConfig(PrismarineConfig.class, null);
++    }
++
++    protected static void log(String s) {
++        if (verbose) {
++            log(Level.INFO, s);
++        }
++    }
++
++    protected static void log(Level level, String s) {
++        Bukkit.getLogger().log(level, s);
++    }
++
++    public static void registerCommands() {
++        for (Map.Entry<String, Command> entry : commands.entrySet()) {
++            MinecraftServer.getServer().server.getCommandMap().register(entry.getKey(), "Prismarine", entry.getValue());
++        }
++    }
++
++    static void readConfig(Class<?> clazz, Object instance) {
++        for (Method method : clazz.getDeclaredMethods()) {
++            if (Modifier.isPrivate(method.getModifiers())) {
++                if (method.getParameterTypes().length == 0 && method.getReturnType() == Void.TYPE) {
++                    try {
++                        method.setAccessible(true);
++                        method.invoke(instance);
++                    } catch (InvocationTargetException ex) {
++                        throw Throwables.propagate(ex.getCause());
++                    } catch (Exception ex) {
++                        Bukkit.getLogger().log(Level.SEVERE, "Error invoking " + method, ex);
++                    }
++                }
++            }
++        }
++
++        try {
++            config.save(CONFIG_FILE);
++        } catch (IOException ex) {
++            Bukkit.getLogger().log(Level.SEVERE, "Could not save " + CONFIG_FILE, ex);
++        }
++    }
++
++    private static void set(String path, Object val) {
++        config.addDefault(path, val);
++        config.set(path, val);
++    }
++
++    private static String getString(String path, String def) {
++        config.addDefault(path, def);
++        return config.getString(path, config.getString(path));
++    }
++
++    private static boolean getBoolean(String path, boolean def) {
++        config.addDefault(path, def);
++        return config.getBoolean(path, config.getBoolean(path));
++    }
++
++    private static double getDouble(String path, double def) {
++        config.addDefault(path, def);
++        return config.getDouble(path, config.getDouble(path));
++    }
++
++    private static int getInt(String path, int def) {
++        config.addDefault(path, def);
++        return config.getInt(path, config.getInt(path));
++    }
++
++    private static <T> List getList(String path, T def) {
++        config.addDefault(path, def);
++        return config.getList(path, config.getList(path));
++    }
++
++    static Map<String, Object> getMap(String path, Map<String, Object> def) {
++        if (def != null && config.getConfigurationSection(path) == null) {
++            config.addDefault(path, def);
++            return def;
++        }
++        return toMap(config.getConfigurationSection(path));
++    }
++
++    private static Map<String, Object> toMap(ConfigurationSection section) {
++        ImmutableMap.Builder<String, Object> builder = ImmutableMap.builder();
++        if (section != null) {
++            for (String key : section.getKeys(false)) {
++                Object obj = section.get(key);
++                if (obj != null) {
++                    builder.put(key, obj instanceof ConfigurationSection val ? toMap(val) : obj);
++                }
++            }
++        }
++        return builder.build();
++    }
++}
+\ No newline at end of file
+diff --git a/src/main/java/net/alphakr93/prismarine/PrismarineWorldConfig.java b/src/main/java/net/alphakr93/prismarine/PrismarineWorldConfig.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..f2b9dcf358785d336f5577227f54f9c3308c1722
+--- /dev/null
++++ b/src/main/java/net/alphakr93/prismarine/PrismarineWorldConfig.java
+@@ -0,0 +1,78 @@
++package net.alphakr93.prismarine;
++
++import net.minecraft.server.level.ServerLevel;
++import org.apache.commons.lang.BooleanUtils;
++import org.bukkit.configuration.ConfigurationSection;
++
++import java.util.List;
++import java.util.Map;
++import java.util.function.Predicate;
++
++import static net.alphakr93.prismarine.PrismarineConfig.log;
++
++@SuppressWarnings("unused")
++public class PrismarineWorldConfig {
++
++    private final String worldName;
++
++    public PrismarineWorldConfig(String worldName) {
++        this.worldName = worldName;
++        init();
++    }
++
++    public void init() {
++        log("-------- World Settings For [" + worldName + "] --------");
++        PrismarineConfig.readConfig(PrismarineWorldConfig.class, this);
++    }
++
++    private void set(String path, Object val) {
++        PrismarineConfig.config.addDefault("world-settings.default." + path, val);
++        PrismarineConfig.config.set("world-settings.default." + path, val);
++        if (PrismarineConfig.config.get("world-settings." + worldName + "." + path) != null) {
++            PrismarineConfig.config.addDefault("world-settings." + worldName + "." + path, val);
++            PrismarineConfig.config.set("world-settings." + worldName + "." + path, val);
++        }
++    }
++
++    private ConfigurationSection getConfigurationSection(String path) {
++        ConfigurationSection section = PrismarineConfig.config.getConfigurationSection("world-settings." + worldName + "." + path);
++        return section != null ? section : PrismarineConfig.config.getConfigurationSection("world-settings.default." + path);
++    }
++
++    private String getString(String path, String def) {
++        PrismarineConfig.config.addDefault("world-settings.default." + path, def);
++        return PrismarineConfig.config.getString("world-settings." + worldName + "." + path, PrismarineConfig.config.getString("world-settings.default." + path));
++    }
++
++    private boolean getBoolean(String path, boolean def) {
++        PrismarineConfig.config.addDefault("world-settings.default." + path, def);
++        return PrismarineConfig.config.getBoolean("world-settings." + worldName + "." + path, PrismarineConfig.config.getBoolean("world-settings.default." + path));
++    }
++
++    private boolean getBoolean(String path, Predicate<Boolean> predicate) {
++        String val = getString(path, "default").toLowerCase();
++        Boolean bool = BooleanUtils.toBooleanObject(val, "true", "false", "default");
++        return predicate.test(bool);
++    }
++
++    private double getDouble(String path, double def) {
++        PrismarineConfig.config.addDefault("world-settings.default." + path, def);
++        return PrismarineConfig.config.getDouble("world-settings." + worldName + "." + path, PrismarineConfig.config.getDouble("world-settings.default." + path));
++    }
++
++    private int getInt(String path, int def) {
++        PrismarineConfig.config.addDefault("world-settings.default." + path, def);
++        return PrismarineConfig.config.getInt("world-settings." + worldName + "." + path, PrismarineConfig.config.getInt("world-settings.default." + path));
++    }
++
++    private <T> List<?> getList(String path, T def) {
++        PrismarineConfig.config.addDefault("world-settings.default." + path, def);
++        return PrismarineConfig.config.getList("world-settings." + worldName + "." + path, PrismarineConfig.config.getList("world-settings.default." + path));
++    }
++
++    private Map<String, Object> getMap(String path, Map<String, Object> def) {
++        final Map<String, Object> fallback = PrismarineConfig.getMap("world-settings.default." + path, def);
++        final Map<String, Object> value = PrismarineConfig.getMap("world-settings." + worldName + "." + path, null);
++        return value.isEmpty() ? fallback : value;
++    }
++}
+\ No newline at end of file
+diff --git a/src/main/java/net/alphakr93/prismarine/command/PrismarineCommand.java b/src/main/java/net/alphakr93/prismarine/command/PrismarineCommand.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..8d5b0d93b4d27e8704945e642231777e595fcfdd
+--- /dev/null
++++ b/src/main/java/net/alphakr93/prismarine/command/PrismarineCommand.java
+@@ -0,0 +1,66 @@
++package net.alphakr93.prismarine.command;
++
++import net.minecraft.server.MinecraftServer;
++import net.minecraft.server.level.ServerLevel;
++import org.bukkit.ChatColor;
++import org.bukkit.Location;
++import org.bukkit.command.Command;
++import org.bukkit.command.CommandSender;
++import net.alphakr93.prismarine.PrismarineConfig;
++
++import java.io.File;
++import java.util.Collections;
++import java.util.List;
++import java.util.stream.Collectors;
++import java.util.stream.Stream;
++
++public class PrismarineCommand extends Command {
++    public PrismarineCommand(String name) {
++        super(name);
++        this.description = "Prismarine related commands";
++        this.usageMessage = "/prismarine [reload | version]";
++        this.setPermission("bukkit.command.prismarine");
++    }
++
++    @Override
++    public List<String> tabComplete(CommandSender sender, String alias, String[] args, Location location) throws IllegalArgumentException {
++        if (args.length == 1) {
++            return Stream.of("reload", "version")
++                    .filter(arg -> arg.startsWith(args[0].toLowerCase()))
++                    .collect(Collectors.toList());
++        }
++        return Collections.emptyList();
++    }
++
++    @Override
++    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
++        if (!testPermission(sender)) return true;
++
++        if (args.length != 1) {
++            sender.sendMessage(ChatColor.RED + "Usage: " + usageMessage);
++            return false;
++        }
++
++        if (args[0].equalsIgnoreCase("reload")) {
++            Command.broadcastCommandMessage(sender, ChatColor.RED + "Please note that this command is not supported and may cause issues.");
++            Command.broadcastCommandMessage(sender, ChatColor.RED + "If you encounter any issues please use the /stop command to restart your server.");
++
++            MinecraftServer console = MinecraftServer.getServer();
++            PrismarineConfig.init((File) console.options.valueOf("prismarine-settings"));
++            for (ServerLevel level : console.getAllLevels()) {
++                level.prismarineConfig.init();
++                level.resetBreedingCooldowns();
++            }
++            console.server.reloadCount++;
++
++            Command.broadcastCommandMessage(sender, ChatColor.GREEN + "Prismarine config reload complete.");
++        } else if (args[0].equalsIgnoreCase("version")) {
++            Command verCmd = org.bukkit.Bukkit.getServer().getCommandMap().getCommand("version");
++            if (verCmd != null) {
++                return verCmd.execute(sender, commandLabel, new String[0]);
++            }
++        }
++
++        return true;
++    }
++}
+\ No newline at end of file
+diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
+index 799955b4439ba7739dc011183aad25b39b526566..5632b27c3d62d32cd10e4c2fec15d4e77eacade9 100644
+--- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
++++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
+@@ -237,6 +237,15 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+         }
+         org.purpurmc.purpur.PurpurConfig.registerCommands();
+         // Purpur end
++        // Prismarine start
++        try {
++            net.alphakr93.prismarine.PrismarineConfig.init((java.io.File) options.valueOf("prismarine-settings"));
++        } catch (Exception e) {
++            DedicatedServer.LOGGER.error("Unable to load server configuration", e);
++            return false;
++        }
++        net.alphakr93.prismarine.PrismarineConfig.registerCommands();
++        // Prismarine end
+         com.destroystokyo.paper.VersionHistoryManager.INSTANCE.getClass(); // load version history now
+         io.papermc.paper.util.ObfHelper.INSTANCE.getClass(); // load mappings for stacktrace deobf and etc.
+         io.papermc.paper.brigadier.PaperBrigadierProviderImpl.INSTANCE.getClass(); // init PaperBrigadierProvider
+diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
+index dfcb5d9fe165852bffe2a676f134ba060ea1aa71..072c9dec80db8a1a120ada1c0c395e39b5775d66 100644
+--- a/src/main/java/net/minecraft/world/level/Level.java
++++ b/src/main/java/net/minecraft/world/level/Level.java
+@@ -171,6 +171,8 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+ 
+     public final org.purpurmc.purpur.PurpurWorldConfig purpurConfig; // Purpur
+ 
++    public final net.alphakr93.prismarine.PrismarineWorldConfig prismarineConfig; // Prismarine
++
+     public final co.aikar.timings.WorldTimingsHandler timings; // Paper
+     public static BlockPos lastPhysicsProblem; // Spigot
+     private org.spigotmc.TickLimiter entityLimiter;
+@@ -366,6 +368,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+         this.spigotConfig = new org.spigotmc.SpigotWorldConfig(((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName()); // Spigot
+         this.paperConfig = new com.destroystokyo.paper.PaperWorldConfig(((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName(), this.spigotConfig); // Paper
+         this.purpurConfig = new org.purpurmc.purpur.PurpurWorldConfig(((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName(), env); // Purpur
++        this.prismarineConfig = new net.alphakr93.prismarine.PrismarineWorldConfig(((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName()); // Prismarine
+         this.playerBreedingCooldowns = this.getNewBreedingCooldownCache(); // Purpur
+         this.generator = gen;
+         this.world = new CraftWorld((ServerLevel) this, gen, biomeProvider, env);
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index 307bedbd84c2740a30145647d6dbc69c3480930b..5accb86fe141ab5a3d2f1e71ef7981fe4fa95c5d 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -4,7 +4,6 @@ import com.google.common.base.Charsets;
+ import com.google.common.base.Function;
+ import com.google.common.base.Preconditions;
+ import com.google.common.collect.ImmutableList;
+-import com.google.common.collect.ImmutableSet;
+ import com.google.common.collect.Iterators;
+ import com.google.common.collect.Lists;
+ import com.google.common.collect.MapMaker;
+@@ -13,13 +12,12 @@ import com.mojang.brigadier.StringReader;
+ import com.mojang.brigadier.exceptions.CommandSyntaxException;
+ import com.mojang.brigadier.tree.CommandNode;
+ import com.mojang.brigadier.tree.LiteralCommandNode;
+-import com.mojang.serialization.DynamicOps;
+ import com.mojang.serialization.Lifecycle;
+ import io.netty.buffer.ByteBuf;
+ import io.netty.buffer.ByteBufOutputStream;
+ import io.netty.buffer.Unpooled;
+ import io.papermc.paper.logging.SysoutCatcher;
+-import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
++
+ import java.awt.image.BufferedImage;
+ import java.io.File;
+ import java.io.FileInputStream;
+@@ -29,7 +27,6 @@ import java.io.InputStreamReader;
+ import java.nio.ByteBuffer;
+ import java.nio.charset.StandardCharsets;
+ import java.util.ArrayList;
+-import java.util.Arrays;
+ import java.util.Base64;
+ import java.util.Collections;
+ import java.util.HashSet;
+@@ -57,7 +54,6 @@ import net.minecraft.commands.arguments.EntityArgument;
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.core.MappedRegistry;
+ import net.minecraft.core.Registry;
+-import net.minecraft.resources.RegistryReadOps;
+ import net.minecraft.resources.ResourceKey;
+ import net.minecraft.resources.ResourceLocation;
+ import net.minecraft.server.ConsoleInput;
+@@ -953,6 +949,7 @@ public final class CraftServer implements Server {
+         org.spigotmc.SpigotConfig.init((File) console.options.valueOf("spigot-settings")); // Spigot
+         com.destroystokyo.paper.PaperConfig.init((File) console.options.valueOf("paper-settings")); // Paper
+         org.purpurmc.purpur.PurpurConfig.init((File) console.options.valueOf("purpur-settings")); // Purpur
++        net.alphakr93.prismarine.PrismarineConfig.init((File) console.options.valueOf("prismarine-settings")); // Prismarine
+         for (ServerLevel world : this.console.getAllLevels()) {
+             // world.serverLevelData.setDifficulty(config.difficulty); // Paper - per level difficulty
+             world.setSpawnSettings(world.serverLevelData.getDifficulty() != Difficulty.PEACEFUL && config.spawnMonsters, config.spawnAnimals); // Paper - per level difficulty (from MinecraftServer#setDifficulty(ServerLevel, Difficulty, boolean))
+@@ -994,6 +991,7 @@ public final class CraftServer implements Server {
+             world.spigotConfig.init(); // Spigot
+             world.paperConfig.init(); // Paper
+             world.purpurConfig.init(); // Purpur
++            world.prismarineConfig.init(); // Prismarine
+         }
+ 
+         Plugin[] pluginClone = pluginManager.getPlugins().clone(); // Paper
+@@ -2696,6 +2694,13 @@ public final class CraftServer implements Server {
+         }
+         // Purpur end
+ 
++        // Prismarine start
++        @Override
++        public YamlConfiguration getPrismarineConfig() {
++            return net.alphakr93.prismarine.PrismarineConfig.config;
++        }
++        // Prismarine end
++
+         @Override
+         public void restart() {
+             org.spigotmc.RestartCommand.restart();
+diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
+index 4babb8ab553858a1789f3d1ee132d2015d71b999..5b18456e6217d8d990c3d70e8bc42cbe73c20f26 100644
+--- a/src/main/java/org/bukkit/craftbukkit/Main.java
++++ b/src/main/java/org/bukkit/craftbukkit/Main.java
+@@ -161,6 +161,14 @@ public class Main {
+                         .describedAs("Yml file");
+                 // Purpur end
+ 
++                // Prismarine start
++                acceptsAll(asList("prismarine", "prismarine-settings"), "File for prismarine settings")
++                        .withRequiredArg()
++                        .ofType(File.class)
++                        .defaultsTo(new File("prismarine.yml"))
++                        .describedAs("Yml File");
++                // Prismarine end
++
+                 // Paper start
+                 acceptsAll(asList("server-name"), "Name of the server")
+                         .withRequiredArg()
