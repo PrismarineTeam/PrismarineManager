@@ -332,10 +332,10 @@ index 0000000000000000000000000000000000000000..8d5b0d93b4d27e8704945e642231777e
 +}
 \ No newline at end of file
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index ec3fe87d4e4c8d2aca16bcbaa2a438e708b99e23..9502c92470e44c9f27931bca17ac236b595ad3be 100644
+index 799955b4439ba7739dc011183aad25b39b526566..5632b27c3d62d32cd10e4c2fec15d4e77eacade9 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -242,6 +242,15 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -237,6 +237,15 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
          }
          org.purpurmc.purpur.PurpurConfig.registerCommands();
          // Purpur end
@@ -407,11 +407,11 @@ index 307bedbd84c2740a30145647d6dbc69c3480930b..fc6c11386a22f4307a59aee7d88aad81
          public void restart() {
              org.spigotmc.RestartCommand.restart();
 diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
-index 4babb8ab553858a1789f3d1ee132d2015d71b999..5b18456e6217d8d990c3d70e8bc42cbe73c20f26 100644
+index 6f14a1b26e92d0170538ed60c6a651a031e7209e..290306bb4a71d3582cb0715a282c1f6f9636dc71 100644
 --- a/src/main/java/org/bukkit/craftbukkit/Main.java
 +++ b/src/main/java/org/bukkit/craftbukkit/Main.java
 @@ -161,6 +161,14 @@ public class Main {
-                         .describedAs("Yml file");
+                     .describedAs("Yml file");
                  // Purpur end
  
 +                // Prismarine start
