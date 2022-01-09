@@ -8,3 +8,6 @@ Bukkit, CraftBukkit, Spigot, Paper, Tuinity, Airplane, Purpur, Pufferfish에서 
 - [x] ~~[Purpur - Don't send useless entity packets](https://github.com/PurpurMC/Purpur/blob/ver/1.17.1/patches/server/0033-Dont-send-useless-entity-packets.patch) 복구~~
 - [x] ~~[Purpur - Lobotomize stuck villagers](https://github.com/PurpurMC/Purpur/blob/ver/1.17.1/patches/server/0128-Lobotomize-stuck-villagers.patch) 복구~~
 - [ ] 한글 패치 추가
+
+## Support
+[Discord](https://discord.gg/kkqMSEVVxN)
