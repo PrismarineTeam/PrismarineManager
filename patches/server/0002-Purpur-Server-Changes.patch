@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alpha <alphakr93@outlook.com>
-Date: Wed, 12 Jan 2022 12:18:22 +0900
+Date: Wed, 12 Jan 2022 16:08:45 +0900
 Subject: [PATCH] Purpur Server Changes
 
 
@@ -179,6 +179,27 @@ index ece77f5ea4b14bbed7c070131b3251ea86764538..e93441d06da8c7f05aa451b0ffbb9059
                  return latest - jenkinsBuild;
              } catch (JsonSyntaxException ex) {
                  ex.printStackTrace();
+diff --git a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
+index e7c129c74ab808eb3dd2b4a249564f7804a28d01..cd5a7bac92a1e733d69340f09bc35906138a6ce3 100644
+--- a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
++++ b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
+@@ -423,16 +423,6 @@ public class PaperWorldConfig {
+         allChunksAreSlimeChunks = getBoolean("all-chunks-are-slime-chunks", false);
+     }
+ 
+-    public double slimeMaxSpawnHeightInSwamp = 70;
+-    public double slimeMinSpawnHeightInSwamp = 50;
+-    public double slimeMaxSpawnHeightInSlimeChunks = 40;
+-    private void slimeSpawnHeight() {
+-        slimeMaxSpawnHeightInSwamp = getDouble("slime-spawn-height.swamp-biome.maximum", this.slimeMaxSpawnHeightInSwamp);
+-        slimeMinSpawnHeightInSwamp = getDouble("slime-spawn-height.swamp-biome.minimum", this.slimeMinSpawnHeightInSwamp);
+-        slimeMaxSpawnHeightInSlimeChunks = getDouble("slime-spawn-height.slime-chunk.maximum", this.slimeMaxSpawnHeightInSlimeChunks);
+-    }
+-
+-
+     public int portalSearchRadius;
+     public int portalCreateRadius;
+     public boolean portalSearchVanillaDimensionScaling;
 diff --git a/src/main/java/com/destroystokyo/paper/console/PaperConsole.java b/src/main/java/com/destroystokyo/paper/console/PaperConsole.java
 index e0b1f0671d16ddddcb6725acd25a1d1d69e42701..8c3c68465197fafc14849dc38a572e309931e2a2 100644
 --- a/src/main/java/com/destroystokyo/paper/console/PaperConsole.java
@@ -809,10 +830,25 @@ index f944e6beafc7876ed9c6923a22f58d82967b77cb..e1c7b7a659e56fa5b3a1f52cb2ccc99b
      public final boolean spawnNpcs = this.get("spawn-npcs", true);
      public final boolean pvp = this.get("pvp", true);
 diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
-index e8d9a4fc14e38d40b8a1d02752447fb98cfb4e72..35bb7a3502c90462eb2d67e23bddb18030f40ad1 100644
+index e8d9a4fc14e38d40b8a1d02752447fb98cfb4e72..8b04e7d83c1dfd9d3452aef069070af03a4b63a3 100644
 --- a/src/main/java/net/minecraft/server/level/ChunkMap.java
 +++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
-@@ -2230,7 +2230,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -621,11 +621,9 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+     public static boolean isChunkInRange(int x1, int z1, int x2, int z2, int distance) {
+         int j1 = Math.max(0, Math.abs(x1 - x2) - 1);
+         int k1 = Math.max(0, Math.abs(z1 - z2) - 1);
+-        // Paper start - fix integer overflow
+-        long l1 = Math.max(0, Math.max(j1, k1) - 1);
+-        long i2 = Math.min(j1, k1);
+-        long j2 = i2 * i2 + l1 * l1;
+-        // Paper end
++        int l1 = Math.max(0, Math.max(j1, k1) - 1);
++        int i2 = Math.min(j1, k1);
++        int j2 = i2 * i2 + l1 * l1;
+         int k2 = distance - 1;
+         int l2 = k2 * k2;
+ 
+@@ -2230,7 +2228,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
  
      public class TrackedEntity {
  
@@ -10042,7 +10078,7 @@ index 3a3f3358c4bbd16bdcadc56c6a865ecfb942ad54..6a2340dd54d4a8b688444eb4621c58e0
      protected void defineSynchedData() {
          super.defineSynchedData();
 diff --git a/src/main/java/net/minecraft/world/entity/monster/Slime.java b/src/main/java/net/minecraft/world/entity/monster/Slime.java
-index 9c440625ce89686b2c250e6aaa62ed83b7015412..e90d32cf1e6b4045c1afb1e3fc599f0eb9ee0a84 100644
+index 9c440625ce89686b2c250e6aaa62ed83b7015412..641d6e58a1b84c7abc4b9e6c76c35cbe51aeba4d 100644
 --- a/src/main/java/net/minecraft/world/entity/monster/Slime.java
 +++ b/src/main/java/net/minecraft/world/entity/monster/Slime.java
 @@ -67,18 +67,84 @@ public class Slime extends Mob implements Enemy {
@@ -10139,7 +10175,32 @@ index 9c440625ce89686b2c250e6aaa62ed83b7015412..e90d32cf1e6b4045c1afb1e3fc599f0e
          this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue((double) (0.2F + 0.1F * (float) j));
          this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue((double) j);
          if (heal) {
-@@ -368,11 +434,12 @@ public class Slime extends Mob implements Enemy {
+@@ -327,11 +393,7 @@ public class Slime extends Mob implements Enemy {
+ 
+     public static boolean checkSlimeSpawnRules(EntityType<Slime> type, LevelAccessor world, MobSpawnType spawnReason, BlockPos pos, Random random) {
+         if (world.getDifficulty() != Difficulty.PEACEFUL) {
+-            // Paper start - Replace rules for Height in Swamp Biome
+-            final double maxHeightSwamp = world.getMinecraftWorld().paperConfig.slimeMaxSpawnHeightInSwamp;
+-            final double minHeightSwamp = world.getMinecraftWorld().paperConfig.slimeMinSpawnHeightInSwamp;
+-            if (Objects.equals(world.getBiomeName(pos), Optional.of(Biomes.SWAMP)) && pos.getY() > minHeightSwamp && pos.getY() < maxHeightSwamp && random.nextFloat() < 0.5F && random.nextFloat() < world.getMoonBrightness() && world.getMaxLocalRawBrightness(pos) <= random.nextInt(8)) {
+-            // Paper end
++            if (Objects.equals(world.getBiomeName(pos), Optional.of(Biomes.SWAMP)) && pos.getY() > 50 && pos.getY() < 70 && random.nextFloat() < 0.5F && random.nextFloat() < world.getMoonBrightness() && world.getMaxLocalRawBrightness(pos) <= random.nextInt(8)) {
+                 return checkMobSpawnRules(type, world, spawnReason, pos, random);
+             }
+ 
+@@ -342,10 +404,7 @@ public class Slime extends Mob implements Enemy {
+             ChunkPos chunkcoordintpair = new ChunkPos(pos);
+             boolean flag = world.getMinecraftWorld().paperConfig.allChunksAreSlimeChunks || WorldgenRandom.seedSlimeChunk(chunkcoordintpair.x, chunkcoordintpair.z, ((WorldGenLevel) world).getSeed(), world.getMinecraftWorld().spigotConfig.slimeSeed).nextInt(10) == 0; // Spigot // Paper
+ 
+-            // Paper start - Replace rules for Height in Slime Chunks
+-            final double maxHeightSlimeChunk = world.getMinecraftWorld().paperConfig.slimeMaxSpawnHeightInSlimeChunks;
+-            if (random.nextInt(10) == 0 && flag && pos.getY() < maxHeightSlimeChunk) {
+-            // Paper end
++            if (random.nextInt(10) == 0 && flag && pos.getY() < 40) {
+                 return checkMobSpawnRules(type, world, spawnReason, pos, random);
+             }
+         }
+@@ -368,11 +427,12 @@ public class Slime extends Mob implements Enemy {
      }
  
      @Override
@@ -10153,7 +10214,7 @@ index 9c440625ce89686b2c250e6aaa62ed83b7015412..e90d32cf1e6b4045c1afb1e3fc599f0e
      }
  
      @Nullable
-@@ -405,7 +472,7 @@ public class Slime extends Mob implements Enemy {
+@@ -405,7 +465,7 @@ public class Slime extends Mob implements Enemy {
          return super.getDimensions(pose).scale(0.255F * (float) this.getSize());
      }
  
@@ -10162,7 +10223,7 @@ index 9c440625ce89686b2c250e6aaa62ed83b7015412..e90d32cf1e6b4045c1afb1e3fc599f0e
  
          private float yRot;
          private int jumpDelay;
-@@ -424,21 +491,33 @@ public class Slime extends Mob implements Enemy {
+@@ -424,21 +484,33 @@ public class Slime extends Mob implements Enemy {
          }
  
          public void setWantedMovement(double speed) {
@@ -10199,7 +10260,7 @@ index 9c440625ce89686b2c250e6aaa62ed83b7015412..e90d32cf1e6b4045c1afb1e3fc599f0e
                      if (this.jumpDelay-- <= 0) {
                          this.jumpDelay = this.slime.getJumpDelay();
                          if (this.isAggressive) {
-@@ -455,7 +534,7 @@ public class Slime extends Mob implements Enemy {
+@@ -455,7 +527,7 @@ public class Slime extends Mob implements Enemy {
                          this.mob.setSpeed(0.0F);
                      }
                  } else {

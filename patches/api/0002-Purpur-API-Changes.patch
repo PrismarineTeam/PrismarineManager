@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alpha <alphakr93@outlook.com>
-Date: Sat, 8 Jan 2022 09:52:29 +0900
+Date: Wed, 12 Jan 2022 16:10:46 +0900
 Subject: [PATCH] Purpur API Changes
 
 
@@ -4350,7 +4350,7 @@ index 9a395b138be3f6fa9a52639f0ac4070c23f7d77c..3e1cddb86fd721683220c2a2d1e016c9
  
      /**
 diff --git a/src/main/java/org/bukkit/scoreboard/Team.java b/src/main/java/org/bukkit/scoreboard/Team.java
-index 2b93692204a74ea0def513a54ddf77a40c64d3d2..918a572328971b6dc864de276475c0403fdbd879 100644
+index 04c8cc55a2fe19c888aba842775cc66648dddb0c..de53b5fced3b825ab4b3626330b981b9c43898d4 100644
 --- a/src/main/java/org/bukkit/scoreboard/Team.java
 +++ b/src/main/java/org/bukkit/scoreboard/Team.java
 @@ -108,7 +108,7 @@ public interface Team {
