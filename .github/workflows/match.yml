@@ -39,9 +39,3 @@ jobs:
 
       - name: Create Mojmap Jar
         run: ./gradlew createMojmapPaperclipJar --stacktrace
-        
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v1
-        with:
-          name: Artifacts - ${{ matrix.os }} ${{ matrix.java }} ${{ matrix.jdk }}
-          path: ./
