@@ -8,7 +8,7 @@ jobs:
       matrix:
         jdk: [17.0.1]
         java: ['temurin', 'zulu', 'microsoft', 'liberica']
-        os: [ubuntu-20.04, macos-11, windows-2022, windows-2019, windows-2016, macos-10.15, ubuntu-18.04]
+        os: [ubuntu-20.04, ubuntu-18.04, macos-11, macos-10.15]
 
     if: "!contains(github.event.commits[0].message, '[ci-skip]')"
     runs-on: ${{ matrix.os }}
