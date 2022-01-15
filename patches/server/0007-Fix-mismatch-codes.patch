@@ -1,0 +1,47 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Alpha <alphakr93@outlook.com>
+Date: Sun, 9 Jan 2022 11:22:01 +0900
+Subject: [PATCH] Fix mismatch codes
+
+
+diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
+index 5632b27c3d62d32cd10e4c2fec15d4e77eacade9..8a0c51e33404e35e54fe250949b23d3f3a5a10b4 100644
+--- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
++++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
+@@ -210,7 +210,14 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+         }
+         // Spigot start
+         this.setPlayerList(new DedicatedPlayerList(this, this.registryHolder, this.playerDataStorage));
+-        org.spigotmc.SpigotConfig.init((java.io.File) options.valueOf("spigot-settings"));
++        // Prismarine start
++        try {
++            org.spigotmc.SpigotConfig.init((java.io.File) options.valueOf("spigot-settings"));
++        } catch (Exception e) {
++            DedicatedServer.LOGGER.error("Unable to load server configuration", e);
++            return false;
++        }
++        // Prismarine end
+         org.spigotmc.SpigotConfig.registerCommands();
+         // Spigot end
+         // Paper start - moved up to right after PlayerList creation but before file load/save
+diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
+index 290306bb4a71d3582cb0715a282c1f6f9636dc71..0e4e62adeee6aaee45c5a6c434c68693deb2cf83 100644
+--- a/src/main/java/org/bukkit/craftbukkit/Main.java
++++ b/src/main/java/org/bukkit/craftbukkit/Main.java
+@@ -155,10 +155,12 @@ public class Main {
+ 
+                 // Purpur Start
+                 acceptsAll(asList("purpur", "purpur-settings"), "File for purpur settings")
+-                    .withRequiredArg()
+-                    .ofType(File.class)
+-                    .defaultsTo(new File("purpur.yml"))
+-                    .describedAs("Yml file");
++                        // Prismarine start
++                        .withRequiredArg()
++                        .ofType(File.class)
++                        .defaultsTo(new File("purpur.yml"))
++                        .describedAs("Yml file");
++                        // Prismarine end
+                 // Purpur end
+ 
+                 // Prismarine start

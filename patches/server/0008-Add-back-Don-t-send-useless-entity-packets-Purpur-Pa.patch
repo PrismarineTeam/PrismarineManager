@@ -1,0 +1,56 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Alpha <alphakr93@outlook.com>
+Date: Sat, 8 Jan 2022 22:35:13 +0900
+Subject: [PATCH] Add back "Don't send useless entity packets" Purpur Patch
+
+
+diff --git a/src/main/java/net/minecraft/server/level/ServerEntity.java b/src/main/java/net/minecraft/server/level/ServerEntity.java
+index e3d7a80f8c4b68933875ef90006b79776b4ab000..fd26fe1a040956fc9c6294c36ec407989ac78e60 100644
+--- a/src/main/java/net/minecraft/server/level/ServerEntity.java
++++ b/src/main/java/net/minecraft/server/level/ServerEntity.java
+@@ -189,6 +189,7 @@ public class ServerEntity {
+                         this.teleportDelay = 0;
+                         packet1 = new ClientboundTeleportEntityPacket(this.entity);
+                     }
++                    if (net.prismarineteam.prismarine.PrismarineConfig.doNotSendUselessEntityPackets && isUselessEntityPacket(packet1)) packet1 = null; // Prismarine
+                 }
+ 
+                 if ((this.trackDelta || this.entity.hasImpulse || this.entity instanceof LivingEntity && ((LivingEntity) this.entity).isFallFlying()) && this.tickCount > 0) {
+@@ -257,6 +258,22 @@ public class ServerEntity {
+ 
+     }
+ 
++    // Prismarine start
++    private boolean isUselessEntityPacket(Packet<?> possibleUselessEntityPacket) {
++        if (possibleUselessEntityPacket instanceof ClientboundMoveEntityPacket) {
++            ClientboundMoveEntityPacket packet = (ClientboundMoveEntityPacket) possibleUselessEntityPacket;
++            if (possibleUselessEntityPacket instanceof ClientboundMoveEntityPacket.Pos) {
++                return packet.getXa() == 0 && packet.getXa() == 0 && packet.getZa() == 0;
++            } else if (possibleUselessEntityPacket instanceof ClientboundMoveEntityPacket.PosRot) {
++                return packet.getXa() == 0 && packet.getXa() == 0 && packet.getZa() == 0 && packet.getxRot() == 0 && packet.getyRot() == 0;
++            } else if (possibleUselessEntityPacket instanceof ClientboundMoveEntityPacket.Rot) {
++                return packet.getxRot() == 0 && packet.getyRot() == 0;
++            }
++        }
++        return false;
++    }
++    // Prismarine end
++
+     public void removePairing(ServerPlayer player) {
+         this.entity.stopSeenByPlayer(player);
+         player.connection.send(new ClientboundRemoveEntitiesPacket(new int[]{this.entity.getId()}));
+diff --git a/src/main/java/net/prismarineteam/prismarine/PrismarineConfig.java b/src/main/java/net/prismarineteam/prismarine/PrismarineConfig.java
+index f4c79408be5530b3966e357c21883181e22b8967..5e379fd6d3d45b58edfd317ec6c19205b81526db 100644
+--- a/src/main/java/net/prismarineteam/prismarine/PrismarineConfig.java
++++ b/src/main/java/net/prismarineteam/prismarine/PrismarineConfig.java
+@@ -145,4 +145,9 @@ public class PrismarineConfig {
+         }
+         return builder.build();
+     }
++
++    public static boolean doNotSendUselessEntityPackets = true;
++    private static void doNotSendUselessEntityPackets() {
++        doNotSendUselessEntityPackets = getBoolean("settings.do-not-send-useless-entity-packets", doNotSendUselessEntityPackets);
++    }
+ }
+\ No newline at end of file
