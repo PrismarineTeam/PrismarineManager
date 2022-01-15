@@ -19,7 +19,6 @@ nbproject/
 nbactions.xml
 
 # Gradle
-!gradle-wrapper.jar
 .gradle/
 build/
 */build/
@@ -54,4 +53,3 @@ run/
 build-data/
 Prismarine-API
 Prismarine-Server
-*.jar
