@@ -1,0 +1,155 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Alpha <alphakr93@outlook.com>
+Date: Sun, 16 Jan 2022 15:00:37 +0900
+Subject: [PATCH] Optimize Configuration
+
+
+diff --git a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
+index e7c129c74ab808eb3dd2b4a249564f7804a28d01..46a0e4a7bdea95040d920c5b592615058a1c6960 100644
+--- a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
++++ b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
+@@ -77,9 +77,9 @@ public class PaperWorldConfig {
+         piglinsGuardChests = getBoolean("piglins-guard-chests", piglinsGuardChests);
+     }
+ 
+-    public boolean useEigencraftRedstone = false;
++    public boolean useEigencraftRedstone = true; // Prismarine
+     private void useEigencraftRedstone() {
+-        useEigencraftRedstone = this.getBoolean("use-faster-eigencraft-redstone", false);
++        useEigencraftRedstone = this.getBoolean("use-faster-eigencraft-redstone", useEigencraftRedstone); // Prismarine
+         if (useEigencraftRedstone) {
+             log("Using Eigencraft redstone algorithm by theosib.");
+         } else {
+@@ -120,7 +120,7 @@ public class PaperWorldConfig {
+         wanderingTraderSpawnChanceMax = getInt("wandering-trader.spawn-chance-max", wanderingTraderSpawnChanceMax);
+     }
+ 
+-    public boolean fixClimbingBypassingCrammingRule = false;
++    public boolean fixClimbingBypassingCrammingRule = true; // Prismarine
+     private void fixClimbingBypassingCrammingRule() {
+         fixClimbingBypassingCrammingRule = getBoolean("fix-climbing-bypassing-cramming-rule", fixClimbingBypassingCrammingRule);
+     }
+@@ -359,9 +359,9 @@ public class PaperWorldConfig {
+         log("End credits disabled: " + disableEndCredits);
+     }
+ 
+-    public boolean optimizeExplosions;
++    public boolean optimizeExplosions = true; // Prismarine
+     private void optimizeExplosions() {
+-        optimizeExplosions = getBoolean("optimize-explosions", false);
++        optimizeExplosions = getBoolean("optimize-explosions", optimizeExplosions); // Prismarine
+         log("Optimize explosions: " + optimizeExplosions);
+     }
+ 
+@@ -455,11 +455,11 @@ public class PaperWorldConfig {
+     public int nonPlayerArrowDespawnRate = -1;
+     public int creativeArrowDespawnRate = -1;
+     private void nonPlayerArrowDespawnRate() {
+-        nonPlayerArrowDespawnRate = getInt("non-player-arrow-despawn-rate", -1);
++        nonPlayerArrowDespawnRate = getInt("non-player-arrow-despawn-rate", 20); // Prismarine
+         if (nonPlayerArrowDespawnRate == -1) {
+             nonPlayerArrowDespawnRate = spigotConfig.arrowDespawnRate;
+         }
+-        creativeArrowDespawnRate = getInt("creative-arrow-despawn-rate", -1);
++        creativeArrowDespawnRate = getInt("creative-arrow-despawn-rate", 20); // Prismarine
+         if (creativeArrowDespawnRate == -1) {
+             creativeArrowDespawnRate = spigotConfig.arrowDespawnRate;
+         }
+@@ -538,9 +538,9 @@ public class PaperWorldConfig {
+         log("Prevent TNT from moving in water: " + preventTntFromMovingInWater);
+     }
+ 
+-    public boolean removeCorruptTEs = false;
++    public boolean removeCorruptTEs = true; // Prismarine
+     private void removeCorruptTEs() {
+-        removeCorruptTEs = getBoolean("remove-corrupt-tile-entities", false);
++        removeCorruptTEs = getBoolean("remove-corrupt-tile-entities", removeCorruptTEs); // Prismarine
+     }
+ 
+     public boolean filterNBTFromSpawnEgg = true;
+@@ -622,9 +622,9 @@ public class PaperWorldConfig {
+         log("Water over lava flow speed: " + waterOverLavaFlowSpeed);
+     }
+ 
+-    public boolean preventMovingIntoUnloadedChunks = false;
++    public boolean preventMovingIntoUnloadedChunks = true; // Prismarine
+     private void preventMovingIntoUnloadedChunks() {
+-        preventMovingIntoUnloadedChunks = getBoolean("prevent-moving-into-unloaded-chunks", false);
++        preventMovingIntoUnloadedChunks = getBoolean("prevent-moving-into-unloaded-chunks", preventMovingIntoUnloadedChunks); // Prismarine
+     }
+ 
+     public enum DuplicateUUIDMode {
+diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServerProperties.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServerProperties.java
+index e1c7b7a659e56fa5b3a1f52cb2ccc99bd95022b9..8088fd74f036a2768fb8c5604451e0f6490442d7 100644
+--- a/src/main/java/net/minecraft/server/dedicated/DedicatedServerProperties.java
++++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServerProperties.java
+@@ -82,7 +82,7 @@ public class DedicatedServerProperties extends Settings<DedicatedServerPropertie
+         this.levelName = this.get("level-name", "world");
+         this.serverPort = this.get("server-port", 25565);
+         this.announcePlayerAchievements = this.getLegacyBoolean("announce-player-achievements");
+-        this.enableQuery = this.get("enable-query", false);
++        this.enableQuery = this.get("enable-query", true); // Prismarine
+         this.queryPort = this.get("query.port", 25565);
+         this.enableRcon = this.get("enable-rcon", false);
+         this.rconPort = this.get("rcon.port", 25575);
+@@ -93,15 +93,23 @@ public class DedicatedServerProperties extends Settings<DedicatedServerPropertie
+         this.allowNether = this.get("allow-nether", true);
+         this.spawnMonsters = this.get("spawn-monsters", true);
+         this.useNativeTransport = this.get("use-native-transport", true);
+-        this.enableCommandBlock = this.get("enable-command-block", false);
+-        this.spawnProtection = this.get("spawn-protection", 16);
++        this.enableCommandBlock = this.get("enable-command-block", true); // Prismarine
++        this.spawnProtection = this.get("spawn-protection", 0); // Prismarine
+         this.opPermissionLevel = this.get("op-permission-level", 4);
+         this.functionPermissionLevel = this.get("function-permission-level", 2);
+         this.maxTickTime = this.get("max-tick-time", TimeUnit.MINUTES.toMillis(1L));
+         this.rateLimitPacketsPerSecond = this.get("rate-limit", 0);
+-        this.viewDistance = this.get("view-distance", 10);
+-        this.simulationDistance = this.get("simulation-distance", 10);
+-        this.maxPlayers = this.get("max-players", 20);
++        // Prismarine start
++        this.viewDistance = this.get("view-distance", (integer) -> {
++            return Mth.clamp(integer, (int) 1, Integer.MAX_VALUE);
++        }, 6);
++        this.simulationDistance = this.get("simulation-distance", (integer) -> {
++            return Mth.clamp(integer, (int) 1, Integer.MAX_VALUE);
++        }, 6);
++        this.maxPlayers = this.get("max-players", (integer) -> {
++            return Mth.clamp(integer, (int) 1, Integer.MAX_VALUE);
++        }, 128);
++        // Prismarine end
+         this.networkCompressionThreshold = this.get("network-compression-threshold", 256);
+         this.broadcastRconToOps = this.get("broadcast-rcon-to-ops", true);
+         this.broadcastConsoleToOps = this.get("broadcast-console-to-ops", true);
+diff --git a/src/main/java/org/purpurmc/purpur/PurpurConfig.java b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
+index 876e89337eef38399f1ac64c996e0fea2cb8b120..0b4ebceca4593f80a353f37279e5886c631244b2 100644
+--- a/src/main/java/org/purpurmc/purpur/PurpurConfig.java
++++ b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
+@@ -226,12 +226,12 @@ public class PurpurConfig {
+         laggingThreshold = getDouble("settings.lagging-threshold", laggingThreshold);
+     }
+ 
+-    public static boolean useAlternateKeepAlive = false;
++    public static boolean useAlternateKeepAlive = true; // Prismarine
+     private static void useAlternateKeepAlive() {
+         useAlternateKeepAlive = getBoolean("settings.use-alternate-keepalive", useAlternateKeepAlive);
+     }
+ 
+-    public static boolean disableGiveCommandDrops = false;
++    public static boolean disableGiveCommandDrops = true; // Prismarine
+     private static void disableGiveCommandDrops() {
+         disableGiveCommandDrops = getBoolean("settings.disable-give-dropping", disableGiveCommandDrops);
+     }
+diff --git a/src/main/java/org/spigotmc/SpigotWorldConfig.java b/src/main/java/org/spigotmc/SpigotWorldConfig.java
+index a7a0b94ed22e6e3b9063a17d086f96140c6e95cf..728a50f38edae72201e8464a815d901146041582 100644
+--- a/src/main/java/org/spigotmc/SpigotWorldConfig.java
++++ b/src/main/java/org/spigotmc/SpigotWorldConfig.java
+@@ -231,7 +231,7 @@ public class SpigotWorldConfig
+     public int villagersWorkImmunityFor = 20;
+     public boolean villagersActiveForPanic = true;
+     // Paper end
+-    public boolean tickInactiveVillagers = true;
++    public boolean tickInactiveVillagers = false; // Prismarine
+     public boolean ignoreSpectatorActivation = false;
+     private void activationRange()
+     {
