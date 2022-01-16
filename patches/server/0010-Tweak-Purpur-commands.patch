@@ -12,7 +12,7 @@ index f19e6c9af8cd559ba5a1492b0d579bf6182f342a..301291d158558a49c3c02b78d40b95d7
          disableGiveCommandDrops = getBoolean("settings.disable-give-dropping", disableGiveCommandDrops);
      }
  
-+    public static Boolean commandTPSBarEnabled = false;
++    public static Boolean commandTPSBarEnabled = false; // Prismarine
      public static String commandTPSBarTitle = "<gray>TPS<yellow>:</yellow> <tps> MSPT<yellow>:</yellow> <mspt> Ping<yellow>:</yellow> <ping>ms";
      public static BossBar.Overlay commandTPSBarProgressOverlay = BossBar.Overlay.NOTCHED_20;
      public static TPSBarTask.FillMode commandTPSBarProgressFillMode = TPSBarTask.FillMode.MSPT;
@@ -20,7 +20,7 @@ index f19e6c9af8cd559ba5a1492b0d579bf6182f342a..301291d158558a49c3c02b78d40b95d7
      public static String commandTPSBarTextColorMedium = "<gradient:#ffff55:#ffaa00><text></gradient>";
      public static String commandTPSBarTextColorLow = "<gradient:#ff5555:#aa0000><text></gradient>";
      public static int commandTPSBarTickInterval = 20;
-+    public static Boolean commandCompassBarEnabled = false;
++    public static Boolean commandCompassBarEnabled = false; // Prismarine
      public static String commandCompassBarTitle = "S  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  SW  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  W  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  NW  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  N  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  NE  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  E  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  SE  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  S  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  SW  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  W  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  NW  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  N  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  NE  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  E  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  SE  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  ";
      public static BossBar.Overlay commandCompassBarProgressOverlay = BossBar.Overlay.PROGRESS;
      public static BossBar.Color commandCompassBarProgressColor = BossBar.Color.BLUE;
@@ -28,7 +28,7 @@ index f19e6c9af8cd559ba5a1492b0d579bf6182f342a..301291d158558a49c3c02b78d40b95d7
      public static String uptimeSecond = "%02d second";
      public static String uptimeSeconds = "%02d seconds";
      private static void commandSettings() {
-+        commandTPSBarEnabled = getBoolean("settings.command.tpsbar.enabled", commandTPSBarEnabled);
++        commandTPSBarEnabled = getBoolean("settings.command.tpsbar.enabled", commandTPSBarEnabled); // Prismarine
          commandTPSBarTitle = getString("settings.command.tpsbar.title", commandTPSBarTitle);
          commandTPSBarProgressOverlay = BossBar.Overlay.valueOf(getString("settings.command.tpsbar.overlay", commandTPSBarProgressOverlay.name()));
          commandTPSBarProgressFillMode = TPSBarTask.FillMode.valueOf(getString("settings.command.tpsbar.fill-mode", commandTPSBarProgressFillMode.name()));
@@ -36,7 +36,7 @@ index f19e6c9af8cd559ba5a1492b0d579bf6182f342a..301291d158558a49c3c02b78d40b95d7
          commandTPSBarTextColorLow = getString("settings.command.tpsbar.text-color.low", commandTPSBarTextColorLow);
          commandTPSBarTickInterval = getInt("settings.command.tpsbar.tick-interval", commandTPSBarTickInterval);
  
-+        commandCompassBarEnabled = getBoolean("settings.command.compass.enabled", commandCompassBarEnabled);
++        commandCompassBarEnabled = getBoolean("settings.command.compass.enabled", commandCompassBarEnabled); // Prismarine
          commandCompassBarTitle = getString("settings.command.compass.title", commandCompassBarTitle);
          commandCompassBarProgressOverlay = BossBar.Overlay.valueOf(getString("settings.command.compass.overlay", commandCompassBarProgressOverlay.name()));
          commandCompassBarProgressColor = BossBar.Color.valueOf(getString("settings.command.compass.progress-color", commandCompassBarProgressColor.name()));
@@ -48,8 +48,8 @@ index 34b6b1db6ef85d40cb84a5e19453ef5c5110d539..08e161d3aa74f0c7cdb8709b63b6a7d5
  import net.minecraft.commands.CommandSourceStack;
  import net.minecraft.commands.Commands;
  import net.minecraft.server.level.ServerPlayer;
-+import org.bukkit.ChatColor;
-+import org.purpurmc.purpur.PurpurConfig;
++import org.bukkit.ChatColor; // Prismarine
++import org.purpurmc.purpur.PurpurConfig; // Prismarine
  import org.purpurmc.purpur.task.CompassTask;
  
  public class CompassCommand {
@@ -90,7 +90,7 @@ index 2621e54879e9ab0029a875f1d09eee67878b90d5..9dca8c512330dd86767ebe0cf50405ca
  import org.bukkit.Location;
  import org.bukkit.command.Command;
  import org.bukkit.command.CommandSender;
-+import org.purpurmc.purpur.task.BossBarTask;
++import org.purpurmc.purpur.task.BossBarTask; // Prismarine
  
  import java.io.File;
  import java.util.Collections;
@@ -110,8 +110,8 @@ index 2547eb09f34410ae5e6b3dcfd1706ca5f05ff896..1d21350b41e1305881a65d9ae40a5d6e
  import net.minecraft.commands.CommandSourceStack;
  import net.minecraft.commands.Commands;
  import net.minecraft.server.level.ServerPlayer;
-+import org.bukkit.ChatColor;
-+import org.purpurmc.purpur.PurpurConfig;
++import org.bukkit.ChatColor; // Prismarine
++import org.purpurmc.purpur.PurpurConfig; // Prismarine
  import org.purpurmc.purpur.task.TPSBarTask;
  
  public class TPSBarCommand {
@@ -148,7 +148,7 @@ index d333334f323049ca97e756324cff0b23eddacd2a..539f2aefafb734258b3a90f8eaa8c039
  import org.bukkit.craftbukkit.scheduler.MinecraftInternalPlugin;
  import org.bukkit.entity.Player;
  import org.bukkit.scheduler.BukkitRunnable;
-+import org.purpurmc.purpur.PurpurConfig;
++import org.purpurmc.purpur.PurpurConfig; // Prismarine
  
  import java.util.HashMap;
  import java.util.HashSet;
