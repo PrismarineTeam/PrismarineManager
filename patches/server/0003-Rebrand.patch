@@ -27,7 +27,7 @@ index 1bdcca4d1a25f4292ab9421d44fa3018af263341..f24e0c1b3d70b3ed6eda2238108c176d
              "Specification-Title" to "Bukkit",
              "Specification-Version" to project.version,
 diff --git a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
-index e93441d06da8c7f05aa451b0ffbb9059780da0d5..6d396c48ddf0e9b71df3e857644695b281164e54 100644
+index e93441d06da8c7f05aa451b0ffbb9059780da0d5..523e5ed4609b41af5e844addb8469bdae3c89ce3 100644
 --- a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
 +++ b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
 @@ -19,7 +19,7 @@ import java.util.stream.StreamSupport;
@@ -136,8 +136,21 @@ index cdefb2025eedea7e204d70d568adaf1c1ec4c03c..dc5c9dfa293850cf471d6cfaf44f538d
                  // We don't need to parse pending
                  // (async tasks must live with race-conditions if they attempt to cancel between these few lines of code)
              }
+diff --git a/src/main/java/org/purpurmc/purpur/PurpurConfig.java b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
+index f19e6c9af8cd559ba5a1492b0d579bf6182f342a..82a2b6fa8d2905569532aaca8c2dfc3c7ea12ca6 100644
+--- a/src/main/java/org/purpurmc/purpur/PurpurConfig.java
++++ b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
+@@ -216,7 +216,7 @@ public class PurpurConfig {
+         if (!TimingsManager.hiddenConfigs.contains("settings.seed")) TimingsManager.hiddenConfigs.add("settings.seed");
+     }
+ 
+-    public static String serverModName = "Purpur";
++    public static String serverModName = "Prismarine"; // Prismarine
+     private static void serverModName() {
+         serverModName = getString("settings.server-mod-name", serverModName);
+     }
 diff --git a/src/main/java/org/spigotmc/WatchdogThread.java b/src/main/java/org/spigotmc/WatchdogThread.java
-index bee38307494188800886a1622fed229b88dbd8f1..dc3217435f26f92cc7e61cfe42bc23e8563fdb7f 100644
+index bee38307494188800886a1622fed229b88dbd8f1..38642531191909225df3cbbd2ba9f9a603aa909e 100644
 --- a/src/main/java/org/spigotmc/WatchdogThread.java
 +++ b/src/main/java/org/spigotmc/WatchdogThread.java
 @@ -97,7 +97,7 @@ public class WatchdogThread extends Thread
