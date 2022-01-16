@@ -1,0 +1,189 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Alpha <alphakr93@outlook.com>
+Date: Sun, 16 Jan 2022 13:59:36 +0900
+Subject: [PATCH] Tweak Purpur commands
+
+
+diff --git a/src/main/java/org/purpurmc/purpur/PurpurConfig.java b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
+index f19e6c9af8cd559ba5a1492b0d579bf6182f342a..301291d158558a49c3c02b78d40b95d774b896fa 100644
+--- a/src/main/java/org/purpurmc/purpur/PurpurConfig.java
++++ b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
+@@ -236,6 +236,7 @@ public class PurpurConfig {
+         disableGiveCommandDrops = getBoolean("settings.disable-give-dropping", disableGiveCommandDrops);
+     }
+ 
++    public static Boolean commandTPSBarEnabled = false;
+     public static String commandTPSBarTitle = "<gray>TPS<yellow>:</yellow> <tps> MSPT<yellow>:</yellow> <mspt> Ping<yellow>:</yellow> <ping>ms";
+     public static BossBar.Overlay commandTPSBarProgressOverlay = BossBar.Overlay.NOTCHED_20;
+     public static TPSBarTask.FillMode commandTPSBarProgressFillMode = TPSBarTask.FillMode.MSPT;
+@@ -246,6 +247,7 @@ public class PurpurConfig {
+     public static String commandTPSBarTextColorMedium = "<gradient:#ffff55:#ffaa00><text></gradient>";
+     public static String commandTPSBarTextColorLow = "<gradient:#ff5555:#aa0000><text></gradient>";
+     public static int commandTPSBarTickInterval = 20;
++    public static Boolean commandCompassBarEnabled = false;
+     public static String commandCompassBarTitle = "S  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  SW  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  W  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  NW  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  N  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  NE  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  E  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  SE  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  S  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  SW  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  W  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  NW  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  N  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  NE  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  E  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  SE  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  ";
+     public static BossBar.Overlay commandCompassBarProgressOverlay = BossBar.Overlay.PROGRESS;
+     public static BossBar.Color commandCompassBarProgressColor = BossBar.Color.BLUE;
+@@ -263,6 +265,7 @@ public class PurpurConfig {
+     public static String uptimeSecond = "%02d second";
+     public static String uptimeSeconds = "%02d seconds";
+     private static void commandSettings() {
++        commandTPSBarEnabled = getBoolean("settings.command.tpsbar.enabled", commandTPSBarEnabled);
+         commandTPSBarTitle = getString("settings.command.tpsbar.title", commandTPSBarTitle);
+         commandTPSBarProgressOverlay = BossBar.Overlay.valueOf(getString("settings.command.tpsbar.overlay", commandTPSBarProgressOverlay.name()));
+         commandTPSBarProgressFillMode = TPSBarTask.FillMode.valueOf(getString("settings.command.tpsbar.fill-mode", commandTPSBarProgressFillMode.name()));
+@@ -274,6 +277,7 @@ public class PurpurConfig {
+         commandTPSBarTextColorLow = getString("settings.command.tpsbar.text-color.low", commandTPSBarTextColorLow);
+         commandTPSBarTickInterval = getInt("settings.command.tpsbar.tick-interval", commandTPSBarTickInterval);
+ 
++        commandCompassBarEnabled = getBoolean("settings.command.compass.enabled", commandCompassBarEnabled);
+         commandCompassBarTitle = getString("settings.command.compass.title", commandCompassBarTitle);
+         commandCompassBarProgressOverlay = BossBar.Overlay.valueOf(getString("settings.command.compass.overlay", commandCompassBarProgressOverlay.name()));
+         commandCompassBarProgressColor = BossBar.Color.valueOf(getString("settings.command.compass.progress-color", commandCompassBarProgressColor.name()));
+diff --git a/src/main/java/org/purpurmc/purpur/command/CompassCommand.java b/src/main/java/org/purpurmc/purpur/command/CompassCommand.java
+index 34b6b1db6ef85d40cb84a5e19453ef5c5110d539..08e161d3aa74f0c7cdb8709b63b6a7d5243f52f6 100644
+--- a/src/main/java/org/purpurmc/purpur/command/CompassCommand.java
++++ b/src/main/java/org/purpurmc/purpur/command/CompassCommand.java
+@@ -4,6 +4,8 @@ import com.mojang.brigadier.CommandDispatcher;
+ import net.minecraft.commands.CommandSourceStack;
+ import net.minecraft.commands.Commands;
+ import net.minecraft.server.level.ServerPlayer;
++import org.bukkit.ChatColor;
++import org.purpurmc.purpur.PurpurConfig;
+ import org.purpurmc.purpur.task.CompassTask;
+ 
+ public class CompassCommand {
+@@ -12,14 +14,22 @@ public class CompassCommand {
+                 .requires(listener -> listener.hasPermission(2))
+                 .executes(context -> {
+                     ServerPlayer player = context.getSource().getPlayerOrException();
+-                    CompassTask task = CompassTask.instance();
+-                    if (player.compassBar()) {
+-                        task.removePlayer(player.getBukkitEntity());
+-                        player.compassBar(false);
++                    // Prismarine start
++                    if (PurpurConfig.commandCompassBarEnabled) {
++                        CompassTask task = CompassTask.instance();
++                        if (player.compassBar()) {
++                            task.removePlayer(player.getBukkitEntity());
++                            player.compassBar(false);
++                            player.sendMessage("Hiding compass bar from " + player.getGameProfile().getName());
++                        } else {
++                            task.addPlayer(player.getBukkitEntity());
++                            player.compassBar(true);
++                            player.sendMessage("Showing compass bar to " + player.getGameProfile().getName());
++                        }
+                     } else {
+-                        task.addPlayer(player.getBukkitEntity());
+-                        player.compassBar(true);
++                        player.sendMessage(ChatColor.RED + "Compass bar is disabled in this server");
+                     }
++                    // Prismarine end
+                     return 1;
+                 })
+         ).setPermission("bukkit.command.compass");
+diff --git a/src/main/java/org/purpurmc/purpur/command/PurpurCommand.java b/src/main/java/org/purpurmc/purpur/command/PurpurCommand.java
+index 2621e54879e9ab0029a875f1d09eee67878b90d5..9dca8c512330dd86767ebe0cf50405ca399c0080 100644
+--- a/src/main/java/org/purpurmc/purpur/command/PurpurCommand.java
++++ b/src/main/java/org/purpurmc/purpur/command/PurpurCommand.java
+@@ -7,6 +7,7 @@ import org.bukkit.ChatColor;
+ import org.bukkit.Location;
+ import org.bukkit.command.Command;
+ import org.bukkit.command.CommandSender;
++import org.purpurmc.purpur.task.BossBarTask;
+ 
+ import java.io.File;
+ import java.util.Collections;
+@@ -51,6 +52,7 @@ public class PurpurCommand extends Command {
+                 level.purpurConfig.init();
+                 level.resetBreedingCooldowns();
+             }
++            BossBarTask.startAll(); // Prismarine
+             console.server.reloadCount++;
+ 
+             Command.broadcastCommandMessage(sender, ChatColor.GREEN + "Purpur config reload complete.");
+diff --git a/src/main/java/org/purpurmc/purpur/command/TPSBarCommand.java b/src/main/java/org/purpurmc/purpur/command/TPSBarCommand.java
+index 2547eb09f34410ae5e6b3dcfd1706ca5f05ff896..1d21350b41e1305881a65d9ae40a5d6e8dfe35c6 100644
+--- a/src/main/java/org/purpurmc/purpur/command/TPSBarCommand.java
++++ b/src/main/java/org/purpurmc/purpur/command/TPSBarCommand.java
+@@ -4,6 +4,8 @@ import com.mojang.brigadier.CommandDispatcher;
+ import net.minecraft.commands.CommandSourceStack;
+ import net.minecraft.commands.Commands;
+ import net.minecraft.server.level.ServerPlayer;
++import org.bukkit.ChatColor;
++import org.purpurmc.purpur.PurpurConfig;
+ import org.purpurmc.purpur.task.TPSBarTask;
+ 
+ public class TPSBarCommand {
+@@ -12,8 +14,22 @@ public class TPSBarCommand {
+                 .requires(listener -> listener.hasPermission(2))
+                 .executes(context -> {
+                     ServerPlayer player = context.getSource().getPlayerOrException();
+-                    boolean result = TPSBarTask.instance().togglePlayer(player.getBukkitEntity());
+-                    player.tpsBar(result);
++                    // Prismarine start
++                    if (PurpurConfig.commandTPSBarEnabled) {
++                        TPSBarTask task = TPSBarTask.instance();
++                        if (player.tpsBar()) {
++                            task.removePlayer(player.getBukkitEntity());
++                            player.tpsBar(false);
++                            player.sendMessage("Hiding TPS bar from " + player.getGameProfile().getName());
++                        } else {
++                            task.addPlayer(player.getBukkitEntity());
++                            player.tpsBar(true);
++                            player.sendMessage("Showing TPS bar to " + player.getGameProfile().getName());
++                        }
++                    } else {
++                        player.sendMessage(ChatColor.RED + "TPS bar is disabled in this server");
++                    }
++                    // Prismarine end
+                     return 1;
+                 })
+         ).setPermission("bukkit.command.tpsbar");
+diff --git a/src/main/java/org/purpurmc/purpur/task/BossBarTask.java b/src/main/java/org/purpurmc/purpur/task/BossBarTask.java
+index d333334f323049ca97e756324cff0b23eddacd2a..539f2aefafb734258b3a90f8eaa8c0390154749e 100644
+--- a/src/main/java/org/purpurmc/purpur/task/BossBarTask.java
++++ b/src/main/java/org/purpurmc/purpur/task/BossBarTask.java
+@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
+ import org.bukkit.craftbukkit.scheduler.MinecraftInternalPlugin;
+ import org.bukkit.entity.Player;
+ import org.bukkit.scheduler.BukkitRunnable;
++import org.purpurmc.purpur.PurpurConfig;
+ 
+ import java.util.HashMap;
+ import java.util.HashSet;
+@@ -68,6 +69,8 @@ public abstract class BossBarTask extends BukkitRunnable {
+         return this.bossbars.containsKey(uuid);
+     }
+ 
++    // Prismarine start - unneeded
++    /*
+     public boolean togglePlayer(Player player) {
+         if (removePlayer(player)) {
+             return false;
+@@ -75,6 +78,8 @@ public abstract class BossBarTask extends BukkitRunnable {
+         addPlayer(player);
+         return true;
+     }
++     */
++    // Prismarine end
+ 
+     public void start() {
+         stop();
+@@ -89,8 +94,14 @@ public abstract class BossBarTask extends BukkitRunnable {
+     }
+ 
+     public static void startAll() {
+-        TPSBarTask.instance().start();
+-        CompassTask.instance().start();
++        // Prismarine start
++        if (PurpurConfig.commandTPSBarEnabled) {
++            TPSBarTask.instance().start();
++        }
++        if (PurpurConfig.commandCompassBarEnabled) {
++            CompassTask.instance().start();
++        }
++        // Prismarine end
+     }
+ 
+     public static void stopAll() {
