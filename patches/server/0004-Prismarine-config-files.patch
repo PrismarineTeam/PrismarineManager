@@ -5,10 +5,10 @@ Subject: [PATCH] Prismarine config files
 
 
 diff --git a/src/main/java/co/aikar/timings/TimingsExport.java b/src/main/java/co/aikar/timings/TimingsExport.java
-index aa906caf51d81b26a5565a92ea24fb79c920a73a..426a2f235aa27196e8c5425a4254711124ea3b20 100644
+index 0f4b41fd7037f380f759a93f9ef70b4860816ad1..70dde92201c54a7e5210e5c9f0a5ed2f6d4f9c48 100644
 --- a/src/main/java/co/aikar/timings/TimingsExport.java
 +++ b/src/main/java/co/aikar/timings/TimingsExport.java
-@@ -235,7 +235,8 @@ public class TimingsExport extends Thread {
+@@ -231,7 +231,8 @@ public class TimingsExport extends Thread {
              pair("spigot", mapAsJSON(Bukkit.spigot().getSpigotConfig(), null)),
              pair("paper", mapAsJSON(Bukkit.spigot().getPaperConfig(), null)),
              pair("pufferfish", mapAsJSON(gg.pufferfish.pufferfish.PufferfishConfig.getConfigCopy(), null)), // Pufferfish
@@ -19,7 +19,7 @@ index aa906caf51d81b26a5565a92ea24fb79c920a73a..426a2f235aa27196e8c5425a42547111
          ));
  
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index 799955b4439ba7739dc011183aad25b39b526566..45d021a230e023881b5d7b7a0387bb8bc56666d4 100644
+index 799955b4439ba7739dc011183aad25b39b526566..bace0733a4c9984b02c9a2ac918d65299efd9869 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -237,6 +237,15 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
@@ -39,7 +39,7 @@ index 799955b4439ba7739dc011183aad25b39b526566..45d021a230e023881b5d7b7a0387bb8b
          io.papermc.paper.util.ObfHelper.INSTANCE.getClass(); // load mappings for stacktrace deobf and etc.
          io.papermc.paper.brigadier.PaperBrigadierProviderImpl.INSTANCE.getClass(); // init PaperBrigadierProvider
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index 4451967905f4e564cd354226c79bf6df4364833a..341edf225a63df765081e4686893237b6cd50ff3 100644
+index dfcb5d9fe165852bffe2a676f134ba060ea1aa71..12313412a6e1b0da195640c464175d320fd54a29 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
 @@ -171,6 +171,8 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
@@ -61,7 +61,7 @@ index 4451967905f4e564cd354226c79bf6df4364833a..341edf225a63df765081e4686893237b
          this.world = new CraftWorld((ServerLevel) this, gen, biomeProvider, env);
 diff --git a/src/main/java/net/prismarineteam/prismarine/PrismarineConfig.java b/src/main/java/net/prismarineteam/prismarine/PrismarineConfig.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..f4c79408be5530b3966e357c21883181e22b8967
+index 0000000000000000000000000000000000000000..40e5718ed69146cbf1aef7819bda1b8822e2499d
 --- /dev/null
 +++ b/src/main/java/net/prismarineteam/prismarine/PrismarineConfig.java
 @@ -0,0 +1,148 @@
@@ -216,7 +216,7 @@ index 0000000000000000000000000000000000000000..f4c79408be5530b3966e357c21883181
 \ No newline at end of file
 diff --git a/src/main/java/net/prismarineteam/prismarine/PrismarineWorldConfig.java b/src/main/java/net/prismarineteam/prismarine/PrismarineWorldConfig.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..a48b0cf1a4535dc1c593a11522881461360924ce
+index 0000000000000000000000000000000000000000..74020515e2ec917b7d921aa8501a71ff433a6abb
 --- /dev/null
 +++ b/src/main/java/net/prismarineteam/prismarine/PrismarineWorldConfig.java
 @@ -0,0 +1,78 @@
@@ -301,7 +301,7 @@ index 0000000000000000000000000000000000000000..a48b0cf1a4535dc1c593a11522881461
 \ No newline at end of file
 diff --git a/src/main/java/net/prismarineteam/prismarine/command/PrismarineCommand.java b/src/main/java/net/prismarineteam/prismarine/command/PrismarineCommand.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..d0a2ad0da11a6b6807f4aa9a12f5c26083b8e412
+index 0000000000000000000000000000000000000000..6fd00057defc1278c58b0f4c6e017ddcf27fc9ee
 --- /dev/null
 +++ b/src/main/java/net/prismarineteam/prismarine/command/PrismarineCommand.java
 @@ -0,0 +1,66 @@
@@ -373,7 +373,7 @@ index 0000000000000000000000000000000000000000..d0a2ad0da11a6b6807f4aa9a12f5c260
 +}
 \ No newline at end of file
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 307bedbd84c2740a30145647d6dbc69c3480930b..80d26efd755f72ce59e896e2e61ccb4137c2131c 100644
+index 307bedbd84c2740a30145647d6dbc69c3480930b..3d5758ea8ac01c6682427a87efba96ce1d5b5a41 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -953,6 +953,7 @@ public final class CraftServer implements Server {

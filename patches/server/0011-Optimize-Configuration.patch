@@ -5,7 +5,7 @@ Subject: [PATCH] Optimize Configuration
 
 
 diff --git a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
-index e7c129c74ab808eb3dd2b4a249564f7804a28d01..46a0e4a7bdea95040d920c5b592615058a1c6960 100644
+index e7c129c74ab808eb3dd2b4a249564f7804a28d01..3a82121d2b7ba4cf7f96c802a485ddf3dbf19575 100644
 --- a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
 +++ b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
 @@ -77,9 +77,9 @@ public class PaperWorldConfig {
@@ -80,7 +80,7 @@ index e7c129c74ab808eb3dd2b4a249564f7804a28d01..46a0e4a7bdea95040d920c5b59261505
  
      public enum DuplicateUUIDMode {
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServerProperties.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServerProperties.java
-index e1c7b7a659e56fa5b3a1f52cb2ccc99bd95022b9..8088fd74f036a2768fb8c5604451e0f6490442d7 100644
+index e1c7b7a659e56fa5b3a1f52cb2ccc99bd95022b9..a6da7343258c6db9fc1875e2d06bc9c97fc114f7 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServerProperties.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServerProperties.java
 @@ -82,7 +82,7 @@ public class DedicatedServerProperties extends Settings<DedicatedServerPropertie
@@ -122,10 +122,10 @@ index e1c7b7a659e56fa5b3a1f52cb2ccc99bd95022b9..8088fd74f036a2768fb8c5604451e0f6
          this.broadcastRconToOps = this.get("broadcast-rcon-to-ops", true);
          this.broadcastConsoleToOps = this.get("broadcast-console-to-ops", true);
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurConfig.java b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
-index 876e89337eef38399f1ac64c996e0fea2cb8b120..0b4ebceca4593f80a353f37279e5886c631244b2 100644
+index b484ace9566acd263a1e66e363c3fadb0cc1db0e..b256418b6dec2b4ff38c05e278d0ba9e51a545b4 100644
 --- a/src/main/java/org/purpurmc/purpur/PurpurConfig.java
 +++ b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
-@@ -226,12 +226,12 @@ public class PurpurConfig {
+@@ -233,12 +233,12 @@ public class PurpurConfig {
          laggingThreshold = getDouble("settings.lagging-threshold", laggingThreshold);
      }
  

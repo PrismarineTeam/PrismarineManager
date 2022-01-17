@@ -85,7 +85,7 @@ index cc0576e8e5e1dc77c22856f0f9c4376b6bf36677..8a31d3d72d604746d85a31f1f7cd971d
          stringbuilder.append(CrashReport.getErrorComment());
          stringbuilder.append("\n\n");
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 1cc0f873b458a6c3b555ac3388fe4465b304c975..a0f01934a5e7d6ed536bb14553c6f449ad3e8445 100644
+index 7fa050d087aa151887151c3a4b6f291a67c82d16..011e012b49d5184b8f38e8eb31a5a339015ee351 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -1024,7 +1024,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -137,10 +137,10 @@ index cdefb2025eedea7e204d70d568adaf1c1ec4c03c..dc5c9dfa293850cf471d6cfaf44f538d
                  // (async tasks must live with race-conditions if they attempt to cancel between these few lines of code)
              }
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurConfig.java b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
-index f19e6c9af8cd559ba5a1492b0d579bf6182f342a..82a2b6fa8d2905569532aaca8c2dfc3c7ea12ca6 100644
+index f36632cc8a5f842d58922d1a6b2ff41f180897ec..00208e03ee8613c25b3f752645ee8e85db3bea46 100644
 --- a/src/main/java/org/purpurmc/purpur/PurpurConfig.java
 +++ b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
-@@ -216,7 +216,7 @@ public class PurpurConfig {
+@@ -223,7 +223,7 @@ public class PurpurConfig {
          if (!TimingsManager.hiddenConfigs.contains("settings.seed")) TimingsManager.hiddenConfigs.add("settings.seed");
      }
  

@@ -5,10 +5,10 @@ Subject: [PATCH] Tweak Purpur commands
 
 
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurConfig.java b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
-index f19e6c9af8cd559ba5a1492b0d579bf6182f342a..301291d158558a49c3c02b78d40b95d774b896fa 100644
+index 00208e03ee8613c25b3f752645ee8e85db3bea46..b484ace9566acd263a1e66e363c3fadb0cc1db0e 100644
 --- a/src/main/java/org/purpurmc/purpur/PurpurConfig.java
 +++ b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
-@@ -236,6 +236,7 @@ public class PurpurConfig {
+@@ -243,6 +243,7 @@ public class PurpurConfig {
          disableGiveCommandDrops = getBoolean("settings.disable-give-dropping", disableGiveCommandDrops);
      }
  
@@ -16,7 +16,7 @@ index f19e6c9af8cd559ba5a1492b0d579bf6182f342a..301291d158558a49c3c02b78d40b95d7
      public static String commandTPSBarTitle = "<gray>TPS<yellow>:</yellow> <tps> MSPT<yellow>:</yellow> <mspt> Ping<yellow>:</yellow> <ping>ms";
      public static BossBar.Overlay commandTPSBarProgressOverlay = BossBar.Overlay.NOTCHED_20;
      public static TPSBarTask.FillMode commandTPSBarProgressFillMode = TPSBarTask.FillMode.MSPT;
-@@ -246,6 +247,7 @@ public class PurpurConfig {
+@@ -253,6 +254,7 @@ public class PurpurConfig {
      public static String commandTPSBarTextColorMedium = "<gradient:#ffff55:#ffaa00><text></gradient>";
      public static String commandTPSBarTextColorLow = "<gradient:#ff5555:#aa0000><text></gradient>";
      public static int commandTPSBarTickInterval = 20;
@@ -24,7 +24,7 @@ index f19e6c9af8cd559ba5a1492b0d579bf6182f342a..301291d158558a49c3c02b78d40b95d7
      public static String commandCompassBarTitle = "S  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  SW  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  W  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  NW  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  N  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  NE  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  E  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  SE  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  S  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  SW  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  W  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  NW  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  N  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  NE  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  E  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  SE  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  ";
      public static BossBar.Overlay commandCompassBarProgressOverlay = BossBar.Overlay.PROGRESS;
      public static BossBar.Color commandCompassBarProgressColor = BossBar.Color.BLUE;
-@@ -263,6 +265,7 @@ public class PurpurConfig {
+@@ -270,6 +272,7 @@ public class PurpurConfig {
      public static String uptimeSecond = "%02d second";
      public static String uptimeSeconds = "%02d seconds";
      private static void commandSettings() {
@@ -32,7 +32,7 @@ index f19e6c9af8cd559ba5a1492b0d579bf6182f342a..301291d158558a49c3c02b78d40b95d7
          commandTPSBarTitle = getString("settings.command.tpsbar.title", commandTPSBarTitle);
          commandTPSBarProgressOverlay = BossBar.Overlay.valueOf(getString("settings.command.tpsbar.overlay", commandTPSBarProgressOverlay.name()));
          commandTPSBarProgressFillMode = TPSBarTask.FillMode.valueOf(getString("settings.command.tpsbar.fill-mode", commandTPSBarProgressFillMode.name()));
-@@ -274,6 +277,7 @@ public class PurpurConfig {
+@@ -281,6 +284,7 @@ public class PurpurConfig {
          commandTPSBarTextColorLow = getString("settings.command.tpsbar.text-color.low", commandTPSBarTextColorLow);
          commandTPSBarTickInterval = getInt("settings.command.tpsbar.tick-interval", commandTPSBarTickInterval);
  
@@ -41,7 +41,7 @@ index f19e6c9af8cd559ba5a1492b0d579bf6182f342a..301291d158558a49c3c02b78d40b95d7
          commandCompassBarProgressOverlay = BossBar.Overlay.valueOf(getString("settings.command.compass.overlay", commandCompassBarProgressOverlay.name()));
          commandCompassBarProgressColor = BossBar.Color.valueOf(getString("settings.command.compass.progress-color", commandCompassBarProgressColor.name()));
 diff --git a/src/main/java/org/purpurmc/purpur/command/CompassCommand.java b/src/main/java/org/purpurmc/purpur/command/CompassCommand.java
-index 34b6b1db6ef85d40cb84a5e19453ef5c5110d539..08e161d3aa74f0c7cdb8709b63b6a7d5243f52f6 100644
+index 34b6b1db6ef85d40cb84a5e19453ef5c5110d539..1ba8637b59ef026501d94f5f2985ae51a3ac9e1c 100644
 --- a/src/main/java/org/purpurmc/purpur/command/CompassCommand.java
 +++ b/src/main/java/org/purpurmc/purpur/command/CompassCommand.java
 @@ -4,6 +4,8 @@ import com.mojang.brigadier.CommandDispatcher;
@@ -83,7 +83,7 @@ index 34b6b1db6ef85d40cb84a5e19453ef5c5110d539..08e161d3aa74f0c7cdb8709b63b6a7d5
                  })
          ).setPermission("bukkit.command.compass");
 diff --git a/src/main/java/org/purpurmc/purpur/command/PurpurCommand.java b/src/main/java/org/purpurmc/purpur/command/PurpurCommand.java
-index 2621e54879e9ab0029a875f1d09eee67878b90d5..9dca8c512330dd86767ebe0cf50405ca399c0080 100644
+index 2621e54879e9ab0029a875f1d09eee67878b90d5..d15cbb6fa08417cfa28a164a973e561b32094df4 100644
 --- a/src/main/java/org/purpurmc/purpur/command/PurpurCommand.java
 +++ b/src/main/java/org/purpurmc/purpur/command/PurpurCommand.java
 @@ -7,6 +7,7 @@ import org.bukkit.ChatColor;
@@ -103,7 +103,7 @@ index 2621e54879e9ab0029a875f1d09eee67878b90d5..9dca8c512330dd86767ebe0cf50405ca
  
              Command.broadcastCommandMessage(sender, ChatColor.GREEN + "Purpur config reload complete.");
 diff --git a/src/main/java/org/purpurmc/purpur/command/TPSBarCommand.java b/src/main/java/org/purpurmc/purpur/command/TPSBarCommand.java
-index 2547eb09f34410ae5e6b3dcfd1706ca5f05ff896..1d21350b41e1305881a65d9ae40a5d6e8dfe35c6 100644
+index 2547eb09f34410ae5e6b3dcfd1706ca5f05ff896..8185f7be3527b4ab659818aed52eb39f92ac2116 100644
 --- a/src/main/java/org/purpurmc/purpur/command/TPSBarCommand.java
 +++ b/src/main/java/org/purpurmc/purpur/command/TPSBarCommand.java
 @@ -4,6 +4,8 @@ import com.mojang.brigadier.CommandDispatcher;
@@ -141,7 +141,7 @@ index 2547eb09f34410ae5e6b3dcfd1706ca5f05ff896..1d21350b41e1305881a65d9ae40a5d6e
                  })
          ).setPermission("bukkit.command.tpsbar");
 diff --git a/src/main/java/org/purpurmc/purpur/task/BossBarTask.java b/src/main/java/org/purpurmc/purpur/task/BossBarTask.java
-index d333334f323049ca97e756324cff0b23eddacd2a..539f2aefafb734258b3a90f8eaa8c0390154749e 100644
+index d333334f323049ca97e756324cff0b23eddacd2a..8b233d8ee0fe818e66559a70eafc1dd5dd572226 100644
 --- a/src/main/java/org/purpurmc/purpur/task/BossBarTask.java
 +++ b/src/main/java/org/purpurmc/purpur/task/BossBarTask.java
 @@ -6,6 +6,7 @@ import org.bukkit.Bukkit;

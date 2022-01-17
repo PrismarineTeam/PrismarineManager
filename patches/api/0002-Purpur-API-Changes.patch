@@ -3022,7 +3022,7 @@ index b06995aa57aa9cba0bb59f1d26d81015619a08e6..5e33fe46ab9bb034acc6a38a3c00c33c
      public abstract String getTitle();
  }
 diff --git a/src/main/java/org/bukkit/inventory/ItemFactory.java b/src/main/java/org/bukkit/inventory/ItemFactory.java
-index 8677e273641a46aae7107361f23f6ded59a50dc0..fc6bbe662b1da5ca7f4e98c6cc4457bf00529fd4 100644
+index 6a4c4161adabb8e131761c2af4bdf1f26b52434d..7251beaec15dcd9f4dbd6a76b85b4006f5e20490 100644
 --- a/src/main/java/org/bukkit/inventory/ItemFactory.java
 +++ b/src/main/java/org/bukkit/inventory/ItemFactory.java
 @@ -148,6 +148,7 @@ public interface ItemFactory {
@@ -3033,7 +3033,7 @@ index 8677e273641a46aae7107361f23f6ded59a50dc0..fc6bbe662b1da5ca7f4e98c6cc4457bf
       * @return A hover event
       */
      @NotNull
-@@ -188,7 +189,7 @@ public interface ItemFactory {
+@@ -191,7 +192,7 @@ public interface ItemFactory {
      /**
       * Creates a {@link net.md_5.bungee.api.chat.hover.content.Content} of that ItemStack for displaying.
       *
@@ -3043,7 +3043,7 @@ index 8677e273641a46aae7107361f23f6ded59a50dc0..fc6bbe662b1da5ca7f4e98c6cc4457bf
       */
      @NotNull
 diff --git a/src/main/java/org/bukkit/inventory/ItemStack.java b/src/main/java/org/bukkit/inventory/ItemStack.java
-index 56072cb4d32ca8a09023be08a5a832c2c108379a..401080c53a0f69dcdfb920dbf0c5a07e249f6338 100644
+index 7dfc84c77d8e185bb0513d9f9c603ce1b501a5e0..f5a696e5951f01fc7f5ab285561dc9777c74228f 100644
 --- a/src/main/java/org/bukkit/inventory/ItemStack.java
 +++ b/src/main/java/org/bukkit/inventory/ItemStack.java
 @@ -17,6 +17,18 @@ import org.bukkit.inventory.meta.ItemMeta;
@@ -3065,7 +3065,7 @@ index 56072cb4d32ca8a09023be08a5a832c2c108379a..401080c53a0f69dcdfb920dbf0c5a07e
  
  /**
   * Represents a stack of items.
-@@ -954,4 +966,626 @@ public class ItemStack implements Cloneable, ConfigurationSerializable, net.kyor
+@@ -957,4 +969,626 @@ public class ItemStack implements Cloneable, ConfigurationSerializable, net.kyor
          return Bukkit.getUnsafe().isValidRepairItemStack(toBeRepaired, this);
      }
      // Paper end
