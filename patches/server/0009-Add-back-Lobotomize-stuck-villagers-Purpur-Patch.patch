@@ -42,10 +42,10 @@ index 0141d4d2dfaacfbce174e82e2d7c1a9419c64982..a05e23a444085f453cdba65fc9ed3888
      public boolean isSensitiveToWater() {
          return this.level.purpurConfig.villagerTakeDamageFromWater;
 diff --git a/src/main/java/net/prismarineteam/prismarine/PrismarineWorldConfig.java b/src/main/java/net/prismarineteam/prismarine/PrismarineWorldConfig.java
-index a48b0cf1a4535dc1c593a11522881461360924ce..76fb11aa3d4523f67dbc93060370177b6d578366 100644
+index cf494171713b5fc12e9627774f2705b911b54bd2..e2f0f17e4a53feabbeb5ac71d97e6b5c21da24df 100644
 --- a/src/main/java/net/prismarineteam/prismarine/PrismarineWorldConfig.java
 +++ b/src/main/java/net/prismarineteam/prismarine/PrismarineWorldConfig.java
-@@ -75,4 +75,7 @@ public class PrismarineWorldConfig {
+@@ -74,4 +74,7 @@ public class PrismarineWorldConfig {
          final Map<String, Object> value = PrismarineConfig.getMap("world-settings." + worldName + "." + path, null);
          return value.isEmpty() ? fallback : value;
      }

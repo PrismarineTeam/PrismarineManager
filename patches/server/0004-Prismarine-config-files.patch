@@ -216,13 +216,12 @@ index 0000000000000000000000000000000000000000..40e5718ed69146cbf1aef7819bda1b88
 \ No newline at end of file
 diff --git a/src/main/java/net/prismarineteam/prismarine/PrismarineWorldConfig.java b/src/main/java/net/prismarineteam/prismarine/PrismarineWorldConfig.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..74020515e2ec917b7d921aa8501a71ff433a6abb
+index 0000000000000000000000000000000000000000..cf494171713b5fc12e9627774f2705b911b54bd2
 --- /dev/null
 +++ b/src/main/java/net/prismarineteam/prismarine/PrismarineWorldConfig.java
-@@ -0,0 +1,78 @@
+@@ -0,0 +1,77 @@
 +package net.prismarineteam.prismarine;
 +
-+import net.minecraft.server.level.ServerLevel;
 +import org.apache.commons.lang.BooleanUtils;
 +import org.bukkit.configuration.ConfigurationSection;
 +
