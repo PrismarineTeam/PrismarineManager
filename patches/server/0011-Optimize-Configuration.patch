@@ -5,7 +5,7 @@ Subject: [PATCH] Optimize Configuration
 
 
 diff --git a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
-index e7c129c74ab808eb3dd2b4a249564f7804a28d01..3a82121d2b7ba4cf7f96c802a485ddf3dbf19575 100644
+index d7dcf36c8c972e30320c56e447822cf26f6d5fb3..8268155a41925792205947076f00cb014edd3182 100644
 --- a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
 +++ b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
 @@ -77,9 +77,9 @@ public class PaperWorldConfig {
@@ -122,10 +122,10 @@ index e1c7b7a659e56fa5b3a1f52cb2ccc99bd95022b9..a6da7343258c6db9fc1875e2d06bc9c9
          this.broadcastRconToOps = this.get("broadcast-rcon-to-ops", true);
          this.broadcastConsoleToOps = this.get("broadcast-console-to-ops", true);
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurConfig.java b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
-index b484ace9566acd263a1e66e363c3fadb0cc1db0e..b256418b6dec2b4ff38c05e278d0ba9e51a545b4 100644
+index 493387a7d3f59a9cba7edf6c747669ebada97e79..85996aa41692f5d93f8c6fa3201fbade206363fa 100644
 --- a/src/main/java/org/purpurmc/purpur/PurpurConfig.java
 +++ b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
-@@ -233,12 +233,12 @@ public class PurpurConfig {
+@@ -237,12 +237,12 @@ public class PurpurConfig {
          laggingThreshold = getDouble("settings.lagging-threshold", laggingThreshold);
      }
  

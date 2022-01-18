@@ -137,10 +137,10 @@ index cdefb2025eedea7e204d70d568adaf1c1ec4c03c..dc5c9dfa293850cf471d6cfaf44f538d
                  // (async tasks must live with race-conditions if they attempt to cancel between these few lines of code)
              }
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurConfig.java b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
-index f36632cc8a5f842d58922d1a6b2ff41f180897ec..00208e03ee8613c25b3f752645ee8e85db3bea46 100644
+index b73d039acf0bedf98702f5e4185d190e68f6cf7c..a8c765d26e92a0959ab9e7d53e818a2e46963aef 100644
 --- a/src/main/java/org/purpurmc/purpur/PurpurConfig.java
 +++ b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
-@@ -223,7 +223,7 @@ public class PurpurConfig {
+@@ -227,7 +227,7 @@ public class PurpurConfig {
          if (!TimingsManager.hiddenConfigs.contains("settings.seed")) TimingsManager.hiddenConfigs.add("settings.seed");
      }
  

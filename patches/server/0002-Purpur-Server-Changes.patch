@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alpha <alphakr93@outlook.com>
-Date: Tue, 18 Jan 2022 17:13:37 +0900
+Date: Tue, 18 Jan 2022 21:06:09 +0900
 Subject: [PATCH] Purpur Server Changes
 
 
@@ -12471,6 +12471,52 @@ index 2934b6de1f1fb914a532ee20184df99d1acd8e65..63584faeec4e5013be7a377e3203ec16
                  }
  
                  this.tickTimer = 0;
+diff --git a/src/main/java/net/minecraft/world/food/FoodProperties.java b/src/main/java/net/minecraft/world/food/FoodProperties.java
+index 9967ba762567631f2bdb1e4f8fe16a13ea927b46..6c945ae8fe8b1517e312c688f829fab41f12d9f4 100644
+--- a/src/main/java/net/minecraft/world/food/FoodProperties.java
++++ b/src/main/java/net/minecraft/world/food/FoodProperties.java
+@@ -2,15 +2,22 @@ package net.minecraft.world.food;
+ 
+ import com.google.common.collect.Lists;
+ import com.mojang.datafixers.util.Pair;
++
++import java.util.ArrayList;
+ import java.util.List;
+ import net.minecraft.world.effect.MobEffectInstance;
+ 
+ public class FoodProperties {
+-    private final int nutrition;
+-    private final float saturationModifier;
+-    private final boolean isMeat;
+-    private final boolean canAlwaysEat;
+-    private final boolean fastFood;
++    // Purpur start
++    private int nutrition; public void setNutrition(int nutrition) { this.nutrition = nutrition; }
++    private float saturationModifier; public void setSaturationModifier(float saturation) { this.saturationModifier = saturation; }
++    private boolean isMeat; public void setIsMeat(boolean isMeat) { this.isMeat = isMeat; }
++    private boolean canAlwaysEat; public void setCanAlwaysEat(boolean canAlwaysEat) { this.canAlwaysEat = canAlwaysEat; }
++    private boolean fastFood; public void setFastFood(boolean isFastFood) { this.fastFood = isFastFood; }
++    public FoodProperties copy() {
++        return new FoodProperties(this.nutrition, this.saturationModifier, this.isMeat, this.canAlwaysEat, this.fastFood, new ArrayList<>(this.effects));
++    }
++    // Purpur end
+     private final List<Pair<MobEffectInstance, Float>> effects;
+ 
+     FoodProperties(int hunger, float saturationModifier, boolean meat, boolean alwaysEdible, boolean snack, List<Pair<MobEffectInstance, Float>> statusEffects) {
+diff --git a/src/main/java/net/minecraft/world/food/Foods.java b/src/main/java/net/minecraft/world/food/Foods.java
+index b16d9e2eaa589f19c563ee70b1a56d67dbcdecb0..71beab673f04cd051c46ea37f8c847316885d38d 100644
+--- a/src/main/java/net/minecraft/world/food/Foods.java
++++ b/src/main/java/net/minecraft/world/food/Foods.java
+@@ -4,6 +4,9 @@ import net.minecraft.world.effect.MobEffectInstance;
+ import net.minecraft.world.effect.MobEffects;
+ 
+ public class Foods {
++    public static final java.util.Map<String, FoodProperties> ALL_PROPERTIES = new java.util.HashMap<>(); // Purpur
++    public static final java.util.Map<String, FoodProperties> DEFAULT_PROPERTIES = new java.util.HashMap<>(); // Purpur
++
+     public static final FoodProperties APPLE = (new FoodProperties.Builder()).nutrition(4).saturationMod(0.3F).build();
+     public static final FoodProperties BAKED_POTATO = (new FoodProperties.Builder()).nutrition(5).saturationMod(0.6F).build();
+     public static final FoodProperties BEEF = (new FoodProperties.Builder()).nutrition(3).saturationMod(0.3F).meat().build();
 diff --git a/src/main/java/net/minecraft/world/inventory/AbstractFurnaceMenu.java b/src/main/java/net/minecraft/world/inventory/AbstractFurnaceMenu.java
 index 4adfc26062b322443828e94e6b0943884a18846b..0d9ecca25bff63f3428ccf93e2789fca0bcef7cc 100644
 --- a/src/main/java/net/minecraft/world/inventory/AbstractFurnaceMenu.java
@@ -13259,7 +13305,7 @@ index 66f808cabcf6a9a6584849b285f1c60133adc7b4..28b1873989293b5e5d05f04a2bacbb9f
          this.getOrCreateTag().put(key, element);
      }
 diff --git a/src/main/java/net/minecraft/world/item/Items.java b/src/main/java/net/minecraft/world/item/Items.java
-index 20444c6887cbdd444b23bf018a6d63f22359e5e7..513343d225a71e242b0f237eefcd25147709d9d1 100644
+index 20444c6887cbdd444b23bf018a6d63f22359e5e7..1f65bba67cd4fab1dee115f24b213075c1d9c2a7 100644
 --- a/src/main/java/net/minecraft/world/item/Items.java
 +++ b/src/main/java/net/minecraft/world/item/Items.java
 @@ -258,7 +258,7 @@ public class Items {
@@ -13280,6 +13326,20 @@ index 20444c6887cbdd444b23bf018a6d63f22359e5e7..513343d225a71e242b0f237eefcd2514
      public static final Item CAMPFIRE = registerBlock(Blocks.CAMPFIRE, CreativeModeTab.TAB_DECORATIONS);
      public static final Item SOUL_CAMPFIRE = registerBlock(Blocks.SOUL_CAMPFIRE, CreativeModeTab.TAB_DECORATIONS);
      public static final Item SHROOMLIGHT = registerBlock(Blocks.SHROOMLIGHT, CreativeModeTab.TAB_DECORATIONS);
+@@ -1164,6 +1164,13 @@ public class Items {
+             ((BlockItem)item).registerBlocks(Item.BY_BLOCK, item);
+         }
+ 
++        // Purpur start
++        if (item.getFoodProperties() != null) {
++            Foods.ALL_PROPERTIES.put(id.getPath(), item.getFoodProperties());
++            Foods.DEFAULT_PROPERTIES.put(id.getPath(), item.getFoodProperties().copy());
++        }
++        // Purpur end
++
+         return Registry.register(Registry.ITEM, id, item);
+     }
+ }
 diff --git a/src/main/java/net/minecraft/world/item/MilkBucketItem.java b/src/main/java/net/minecraft/world/item/MilkBucketItem.java
 index f33977d95b6db473be4f95075ba99caf90ad0220..56dc04d8875971ee9a5d077a695509af74fe2473 100644
 --- a/src/main/java/net/minecraft/world/item/MilkBucketItem.java
@@ -16725,30 +16785,34 @@ index 6cc517b394bafefce50d877761e5b2eee8e14c78..46ca899a7abddea108f6ff1b4ca14ca5
          DefaultPermissions.registerPermission(CommandPermissions.PREFIX + "defaultgamemode", "Allows the user to change the default gamemode of the server", PermissionDefault.OP, commands);
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurConfig.java b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..f752bc96f4625cd133737a2f020c640893023936
+index 0000000000000000000000000000000000000000..b73d039acf0bedf98702f5e4185d190e68f6cf7c
 --- /dev/null
 +++ b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
-@@ -0,0 +1,423 @@
+@@ -0,0 +1,480 @@
 +package org.purpurmc.purpur;
 +
 +import co.aikar.timings.TimingsManager;
 +import com.google.common.base.Throwables;
 +import com.google.common.collect.ImmutableMap;
++import com.mojang.datafixers.util.Pair;
 +import net.kyori.adventure.bossbar.BossBar;
 +import net.minecraft.core.Registry;
 +import net.minecraft.resources.ResourceLocation;
 +import net.minecraft.server.MinecraftServer;
++import net.minecraft.world.effect.MobEffect;
++import net.minecraft.world.effect.MobEffectInstance;
 +import net.minecraft.world.entity.EntityDimensions;
 +import net.minecraft.world.entity.EntityType;
++import net.minecraft.world.food.FoodProperties;
++import net.minecraft.world.food.Foods;
 +import net.minecraft.world.item.enchantment.Enchantment;
-+
-+import org.purpurmc.purpur.command.PurpurCommand;
-+import org.purpurmc.purpur.task.TPSBarTask;
 +import org.bukkit.Bukkit;
 +import org.bukkit.command.Command;
 +import org.bukkit.configuration.ConfigurationSection;
 +import org.bukkit.configuration.InvalidConfigurationException;
 +import org.bukkit.configuration.file.YamlConfiguration;
++import org.purpurmc.purpur.command.PurpurCommand;
++import org.purpurmc.purpur.task.TPSBarTask;
 +
 +import java.io.File;
 +import java.io.IOException;
@@ -17150,6 +17214,59 @@ index 0000000000000000000000000000000000000000..f752bc96f4625cd133737a2f020c6408
 +        String defaultPattern = "^[a-zA-Z0-9_.]*$";
 +        String setPattern = getString("settings.username-valid-characters", defaultPattern);
 +        usernameValidCharactersPattern = java.util.regex.Pattern.compile(setPattern == null || setPattern.isBlank() ? defaultPattern : setPattern);
++    }
++
++    private static void foodSettings() {
++        ConfigurationSection properties = config.getConfigurationSection("settings.food-properties");
++        if (properties == null) {
++            PurpurConfig.log(Level.SEVERE, "missing food properties...");
++            config.addDefault("settings.food-properties", new HashMap<>());
++            return;
++        }
++        properties.getKeys(false).forEach(foodKey -> {
++            FoodProperties food = Foods.ALL_PROPERTIES.get(foodKey);
++            if (food == null) {
++                PurpurConfig.log(Level.SEVERE, "Invalid food property: " + foodKey);
++                return;
++            }
++            FoodProperties foodDefaults = Foods.DEFAULT_PROPERTIES.get(foodKey);
++            food.setNutrition(properties.getInt(foodKey + ".nutrition", foodDefaults.getNutrition()));
++            food.setSaturationModifier((float) properties.getDouble(foodKey + ".saturation-modifier", foodDefaults.getSaturationModifier()));
++            food.setIsMeat(properties.getBoolean(foodKey + ".is-meat", foodDefaults.isMeat()));
++            food.setCanAlwaysEat(properties.getBoolean(foodKey + ".can-always-eat", foodDefaults.canAlwaysEat()));
++            food.setFastFood(properties.getBoolean(foodKey + ".fast-food", foodDefaults.isFastFood()));
++            ConfigurationSection effects = properties.getConfigurationSection(foodKey + ".effects");
++            if (effects != null) {
++                Map<String, Object> effectDefaults = new HashMap<>();
++                foodDefaults.getEffects().forEach(pair -> {
++                    effectDefaults.put("chance", pair.getSecond());
++                    MobEffectInstance effect = pair.getFirst();
++                    effectDefaults.put("duration", effect.getDuration());
++                    effectDefaults.put("amplifier", effect.getAmplifier());
++                    effectDefaults.put("ambient", effect.isAmbient());
++                    effectDefaults.put("visible", effect.isVisible());
++                    effectDefaults.put("show-icon", effect.showIcon());
++                });
++                effects.getKeys(false).forEach(effectKey -> {
++                    MobEffect effect = Registry.MOB_EFFECT.get(new ResourceLocation(effectKey));
++                    if (effect == null) {
++                        PurpurConfig.log(Level.SEVERE, "Invalid food property effect for " + foodKey + ": " + effectKey);
++                        return;
++                    }
++                    food.getEffects().removeIf(pair -> pair.getFirst().getEffect() == effect);
++                    float chance = (float) effects.getDouble(effectKey + ".chance", (double) effectDefaults.get("chance"));
++                    int duration = effects.getInt(effectKey + ".duration", (int) effectDefaults.get("duration"));
++                    if (chance <= 0.0F || duration < 0) {
++                        return;
++                    }
++                    int amplifier = effects.getInt(effectKey + ".amplifier", (int) effectDefaults.get("amplifier"));
++                    boolean ambient = effects.getBoolean(effectKey + ".ambient", (boolean) effectDefaults.get("ambient"));
++                    boolean visible = effects.getBoolean(effectKey + ".visible", (boolean) effectDefaults.get("visible"));
++                    boolean showIcon = effects.getBoolean(effectKey + ".show-icon", (boolean) effectDefaults.get("show-icon"));
++                    food.getEffects().add(Pair.of(new MobEffectInstance(effect, duration, amplifier, ambient, visible, showIcon), chance));
++                });
++            }
++        });
 +    }
 +}
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java

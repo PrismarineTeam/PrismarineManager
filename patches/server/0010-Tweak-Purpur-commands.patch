@@ -5,10 +5,10 @@ Subject: [PATCH] Tweak Purpur commands
 
 
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurConfig.java b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
-index 00208e03ee8613c25b3f752645ee8e85db3bea46..b484ace9566acd263a1e66e363c3fadb0cc1db0e 100644
+index a8c765d26e92a0959ab9e7d53e818a2e46963aef..493387a7d3f59a9cba7edf6c747669ebada97e79 100644
 --- a/src/main/java/org/purpurmc/purpur/PurpurConfig.java
 +++ b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
-@@ -243,6 +243,7 @@ public class PurpurConfig {
+@@ -247,6 +247,7 @@ public class PurpurConfig {
          disableGiveCommandDrops = getBoolean("settings.disable-give-dropping", disableGiveCommandDrops);
      }
  
@@ -16,7 +16,7 @@ index 00208e03ee8613c25b3f752645ee8e85db3bea46..b484ace9566acd263a1e66e363c3fadb
      public static String commandTPSBarTitle = "<gray>TPS<yellow>:</yellow> <tps> MSPT<yellow>:</yellow> <mspt> Ping<yellow>:</yellow> <ping>ms";
      public static BossBar.Overlay commandTPSBarProgressOverlay = BossBar.Overlay.NOTCHED_20;
      public static TPSBarTask.FillMode commandTPSBarProgressFillMode = TPSBarTask.FillMode.MSPT;
-@@ -253,6 +254,7 @@ public class PurpurConfig {
+@@ -257,6 +258,7 @@ public class PurpurConfig {
      public static String commandTPSBarTextColorMedium = "<gradient:#ffff55:#ffaa00><text></gradient>";
      public static String commandTPSBarTextColorLow = "<gradient:#ff5555:#aa0000><text></gradient>";
      public static int commandTPSBarTickInterval = 20;
@@ -24,7 +24,7 @@ index 00208e03ee8613c25b3f752645ee8e85db3bea46..b484ace9566acd263a1e66e363c3fadb
      public static String commandCompassBarTitle = "S  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  SW  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  W  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  NW  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  N  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  NE  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  E  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  SE  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  S  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  SW  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  W  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  NW  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  N  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  NE  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  E  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  SE  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  \u25C8  \u00B7  ";
      public static BossBar.Overlay commandCompassBarProgressOverlay = BossBar.Overlay.PROGRESS;
      public static BossBar.Color commandCompassBarProgressColor = BossBar.Color.BLUE;
-@@ -270,6 +272,7 @@ public class PurpurConfig {
+@@ -274,6 +276,7 @@ public class PurpurConfig {
      public static String uptimeSecond = "%02d second";
      public static String uptimeSeconds = "%02d seconds";
      private static void commandSettings() {
@@ -32,7 +32,7 @@ index 00208e03ee8613c25b3f752645ee8e85db3bea46..b484ace9566acd263a1e66e363c3fadb
          commandTPSBarTitle = getString("settings.command.tpsbar.title", commandTPSBarTitle);
          commandTPSBarProgressOverlay = BossBar.Overlay.valueOf(getString("settings.command.tpsbar.overlay", commandTPSBarProgressOverlay.name()));
          commandTPSBarProgressFillMode = TPSBarTask.FillMode.valueOf(getString("settings.command.tpsbar.fill-mode", commandTPSBarProgressFillMode.name()));
-@@ -281,6 +284,7 @@ public class PurpurConfig {
+@@ -285,6 +288,7 @@ public class PurpurConfig {
          commandTPSBarTextColorLow = getString("settings.command.tpsbar.text-color.low", commandTPSBarTextColorLow);
          commandTPSBarTickInterval = getInt("settings.command.tpsbar.tick-interval", commandTPSBarTickInterval);
  
