@@ -1,0 +1,52 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Alpha <alphakr93@outlook.com>
+Date: Tue, 18 Jan 2022 18:05:49 +0900
+Subject: [PATCH] Purpur PR - Configurable minimum demand for trades
+ (PurpurMC#837)
+
+
+diff --git a/src/main/java/net/minecraft/world/entity/npc/Villager.java b/src/main/java/net/minecraft/world/entity/npc/Villager.java
+index a05e23a444085f453cdba65fc9ed388853ec92b7..033c38b8d0064a25bfa2bccfc2dae62e9e669eb0 100644
+--- a/src/main/java/net/minecraft/world/entity/npc/Villager.java
++++ b/src/main/java/net/minecraft/world/entity/npc/Villager.java
+@@ -546,7 +546,7 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+         while (iterator.hasNext()) {
+             MerchantOffer merchantrecipe = (MerchantOffer) iterator.next();
+ 
+-            merchantrecipe.updateDemand();
++            merchantrecipe.updateDemand(this.level.prismarineConfig.villagerMinimumDemand); // Prismarine
+         }
+ 
+     }
+diff --git a/src/main/java/net/minecraft/world/item/trading/MerchantOffer.java b/src/main/java/net/minecraft/world/item/trading/MerchantOffer.java
+index c9cb0717c2793acd5b5870a6cc4d672d69a40026..7e261c543e3a6f7cc6552ae078ddf6f1cf15ebe4 100644
+--- a/src/main/java/net/minecraft/world/item/trading/MerchantOffer.java
++++ b/src/main/java/net/minecraft/world/item/trading/MerchantOffer.java
+@@ -132,9 +132,15 @@ public class MerchantOffer {
+     }
+ 
+     public void updateDemand() {
+-        this.demand = Math.max(0, this.demand + this.uses - (this.maxUses - this.uses)); // Paper
++        this.updateDemand(0); // Prismarine
+     }
+ 
++    // Prismarine start
++    public void updateDemand(int minimumDemand) {
++        this.demand = Math.max(minimumDemand, this.demand + this.uses - (this.maxUses - this.uses)); // Paper
++    }
++    // Prismarine end
++
+     public ItemStack assemble() {
+         return this.result.copy();
+     }
+diff --git a/src/main/java/net/prismarineteam/prismarine/PrismarineWorldConfig.java b/src/main/java/net/prismarineteam/prismarine/PrismarineWorldConfig.java
+index e2f0f17e4a53feabbeb5ac71d97e6b5c21da24df..bb64605b1aaa33d480201233918d828ce49bb51c 100644
+--- a/src/main/java/net/prismarineteam/prismarine/PrismarineWorldConfig.java
++++ b/src/main/java/net/prismarineteam/prismarine/PrismarineWorldConfig.java
+@@ -77,4 +77,5 @@ public class PrismarineWorldConfig {
+ 
+     public boolean villagerLobotomizeEnabled = getBoolean("mobs.villager.lobotomize.enabled", false);
+     public int villagerLobotomizeCheck = getInt("mobs.villager.lobotomize.check-interval", 60);
++    public int villagerMinimumDemand = getInt("mobs.villager.minimum-demand", 0);
+ }
+\ No newline at end of file
