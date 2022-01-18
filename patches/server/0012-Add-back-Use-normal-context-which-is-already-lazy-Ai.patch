@@ -2,7 +2,7 @@ From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alpha <alphakr93@outlook.com>
 Date: Mon, 17 Jan 2022 11:52:13 +0900
 Subject: [PATCH] Add back "Use normal context, which is already lazy" Airplane
- patch
+ patch until Paper 1.18 Perfomance patch
 
 
 diff --git a/src/main/java/io/papermc/paper/util/CollisionUtil.java b/src/main/java/io/papermc/paper/util/CollisionUtil.java

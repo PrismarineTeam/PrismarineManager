@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alpha <alphakr93@outlook.com>
-Date: Sat, 8 Jan 2022 09:52:29 +0900
+Date: Tue, 18 Jan 2022 12:22:56 +0900
 Subject: [PATCH] Purpur API Changes
 
 
@@ -1962,7 +1962,7 @@ index d23226ccb0f6c25028f000ce31346cd0a8898e6a..1ef9479c962b3f4f6fed46671a1209c3
 +    // Purpur end
  }
 diff --git a/src/main/java/org/bukkit/entity/Panda.java b/src/main/java/org/bukkit/entity/Panda.java
-index a6a7429ed2e1eefb2b12b7480ed74fcc3963a864..e8027e1d505dda6effbb1698550016e87b2e581f 100644
+index 9d065625be5931d970d7f34e1225fae1af960314..de3ebfa362ee4d8147bb68c7c115fdfb4eb55143 100644
 --- a/src/main/java/org/bukkit/entity/Panda.java
 +++ b/src/main/java/org/bukkit/entity/Panda.java
 @@ -37,6 +37,9 @@ public interface Panda extends Animals {

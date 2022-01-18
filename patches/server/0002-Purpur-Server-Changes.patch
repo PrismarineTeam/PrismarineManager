@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alpha <alphakr93@outlook.com>
-Date: Mon, 17 Jan 2022 11:05:19 +0900
+Date: Tue, 18 Jan 2022 12:22:33 +0900
 Subject: [PATCH] Purpur Server Changes
 
 
@@ -844,7 +844,7 @@ index e80176708db486190dd527e3ade5fc690ceb39f7..e3d7a80f8c4b68933875ef90006b7977
      public ServerEntity(ServerLevel worldserver, Entity entity, int i, boolean flag, Consumer<Packet<?>> consumer, Set<ServerPlayerConnection> trackedPlayers) {
          this.trackedPlayers = trackedPlayers;
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index 27791d82b3343f14ff99efd4aed2193ea276b852..1ef08117f8249e4eb59b0a10263312e3874b4f0b 100644
+index 8cdacd7ed9a26e6757eeff89545fde21ddb80fd2..1ef08117f8249e4eb59b0a10263312e3874b4f0b 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
 @@ -83,6 +83,7 @@ import net.minecraft.world.entity.MobCategory;
@@ -971,7 +971,15 @@ index 27791d82b3343f14ff99efd4aed2193ea276b852..1ef08117f8249e4eb59b0a10263312e3
      public void tickCustomSpawners(boolean spawnMonsters, boolean spawnAnimals) {
          Iterator iterator = this.customSpawners.iterator();
  
-@@ -764,9 +811,15 @@ public class ServerLevel extends Level implements WorldGenLevel {
+@@ -757,16 +804,22 @@ public class ServerLevel extends Level implements WorldGenLevel {
+         gameprofilerfiller.push("thunder");
+         final BlockPos.MutableBlockPos blockposition = this.chunkTickMutablePosition; // Paper - use mutable to reduce allocation rate, final to force compile fail on change
+ 
+-        if (!this.paperConfig.disableThunder && flag && this.isThundering() && this.spigotConfig.thunderChance > 0 && /*this.random.nextInt(this.spigotConfig.thunderChance) == 0 &&*/ chunk.shouldDoLightning(this.random)) { // Spigot // Paper - disable thunder // Pufferfish - replace random with shouldDoLightning
++        if (!this.paperConfig.disableThunder && flag && this.isThundering() && this.spigotConfig.thunderChance > 0 && this.random.nextInt(this.spigotConfig.thunderChance) == 0 && chunk.shouldDoLightning(this.random)) { // Spigot // Paper - disable thunder // Pufferfish - replace random with shouldDoLightning
+             blockposition.set(this.findLightningTargetAround(this.getBlockRandomPos(j, 0, k, 15))); // Paper
+             if (this.isRainingAt(blockposition)) {
+                 DifficultyInstance difficultydamagescaler = this.getCurrentDifficultyAt(blockposition);
                  boolean flag1 = this.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING) && this.random.nextDouble() < (double) difficultydamagescaler.getEffectiveDifficulty() * paperConfig.skeleHorseSpawnChance && !this.getBlockState(blockposition.below()).is(Blocks.LIGHTNING_ROD); // Paper
  
                  if (flag1) {
@@ -5090,7 +5098,7 @@ index a781048b0c43e63e441e6afecec125d7f838c342..cbbfcfa93af935ec07986f85948f416d
          this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Turtle.class, 10, false, false, Turtle.BABY_ON_LAND_SELECTOR));
      }
 diff --git a/src/main/java/net/minecraft/world/entity/animal/Panda.java b/src/main/java/net/minecraft/world/entity/animal/Panda.java
-index f9be50049325a1139d67ccf590caeeceadb2fd23..4c555b7fabb03618cefaf9171002a006684059c6 100644
+index 26e1898f6c9d716f8efa7b0cc4b9ad947e36ebd6..5a5af987d23dcccd81c04d57d701f4cc7bc2df80 100644
 --- a/src/main/java/net/minecraft/world/entity/animal/Panda.java
 +++ b/src/main/java/net/minecraft/world/entity/animal/Panda.java
 @@ -107,6 +107,48 @@ public class Panda extends Animal {
@@ -12597,7 +12605,7 @@ index e9d9245f7efaaeefc8f107b8016a462ce173816a..56dcc1b6ceaad998be62e3b8c125e8f5
          return new ChestMenu(MenuType.GENERIC_9x6, syncId, playerInventory, inventory, 6);
      }
 diff --git a/src/main/java/net/minecraft/world/inventory/GrindstoneMenu.java b/src/main/java/net/minecraft/world/inventory/GrindstoneMenu.java
-index 0bdf874ddb951daf8d469575a44144504472d12d..24dc7535ca60ba49666b45c8cf6327ce0541ca1a 100644
+index 0bdf874ddb951daf8d469575a44144504472d12d..fec92799e82adf64c6efa5f067261357ccbac211 100644
 --- a/src/main/java/net/minecraft/world/inventory/GrindstoneMenu.java
 +++ b/src/main/java/net/minecraft/world/inventory/GrindstoneMenu.java
 @@ -96,8 +96,9 @@ public class GrindstoneMenu extends AbstractContainerMenu {
@@ -12638,15 +12646,21 @@ index 0bdf874ddb951daf8d469575a44144504472d12d..24dc7535ca60ba49666b45c8cf6327ce
          }).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
  
          EnchantmentHelper.setEnchantments(map, itemstack1);
-@@ -267,6 +268,14 @@ public class GrindstoneMenu extends AbstractContainerMenu {
+@@ -267,6 +268,20 @@ public class GrindstoneMenu extends AbstractContainerMenu {
              itemstack1.setRepairCost(AnvilMenu.calculateIncreasedRepairCost(itemstack1.getBaseRepairCost()));
          }
  
 +        // Purpur start
-+        if (org.purpurmc.purpur.PurpurConfig.grindstoneRemoveAttributes) {
++        if (org.purpurmc.purpur.PurpurConfig.grindstoneRemoveAttributes && itemstack1.getTag() != null) {
 +            for (String key : itemstack1.getTag().getAllKeys()) {
-+                itemstack1.getTag().remove(key);
++                if (!key.equals("display")) {
++                    itemstack1.getTag().remove(key);
++                }
 +            }
++        }
++
++        if (org.purpurmc.purpur.PurpurConfig.grindstoneRemoveDisplay && itemstack1.getTag() != null) {
++            itemstack1.getTag().remove("display");
 +        }
 +        // Purpur end
 +
@@ -15303,6 +15317,19 @@ index e4591c0b3c8547cc6f4e2a0891fc378ee4334d9e..b2c93ce627cf0a50b4b0a60d2d4206e6
      }
  
      private void generateStrongholds() {
+diff --git a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
+index 9e9cdabefce3767a2e482f7cc5eb69c635ea17a7..2b697f0d0b59b5af5aa59850d5e501cde9acf577 100644
+--- a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
++++ b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
+@@ -99,7 +99,7 @@ public class LevelChunk extends ChunkAccess {
+     // shouldDoLightning compiles down to 29 bytes, which with the default of 35 byte inlining should guarantee an inline
+     public final boolean shouldDoLightning(java.util.Random random) {
+         if (this.lightningTick-- <= 0) {
+-            this.lightningTick = random.nextInt(this.level.spigotConfig.thunderChance) << 1;
++            this.lightningTick = random.nextInt(100000) << 1;
+             return true;
+         }
+         return false;
 diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/EntityStorage.java b/src/main/java/net/minecraft/world/level/chunk/storage/EntityStorage.java
 index fec7d5c6a7b7a20ac9aecec1d3187f5c61fc430c..d4fd425c934e1e033d9aefda66958c864c11ea7d 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/storage/EntityStorage.java
@@ -16664,10 +16691,10 @@ index 6cc517b394bafefce50d877761e5b2eee8e14c78..46ca899a7abddea108f6ff1b4ca14ca5
          DefaultPermissions.registerPermission(CommandPermissions.PREFIX + "defaultgamemode", "Allows the user to change the default gamemode of the server", PermissionDefault.OP, commands);
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurConfig.java b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..f36632cc8a5f842d58922d1a6b2ff41f180897ec
+index 0000000000000000000000000000000000000000..9f7631b643ebfb3b472bf2fd4280140d0b32cfc5
 --- /dev/null
 +++ b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
-@@ -0,0 +1,421 @@
+@@ -0,0 +1,423 @@
 +package org.purpurmc.purpur;
 +
 +import co.aikar.timings.TimingsManager;
@@ -16979,6 +17006,7 @@ index 0000000000000000000000000000000000000000..f36632cc8a5f842d58922d1a6b2ff41f
 +    public static int lightningRodRange = 128;
 +    public static Set<Enchantment> grindstoneIgnoredEnchants = new HashSet<>();
 +    public static boolean grindstoneRemoveAttributes = false;
++    public static boolean grindstoneRemoveDisplay = false;
 +    private static void blockSettings() {
 +        if (version < 3) {
 +            boolean oldValue = getBoolean("settings.barrel.packed-barrels", true);
@@ -17025,6 +17053,7 @@ index 0000000000000000000000000000000000000000..f36632cc8a5f842d58922d1a6b2ff41f
 +            grindstoneIgnoredEnchants.add(enchantment);
 +        });
 +        grindstoneRemoveAttributes = getBoolean("settings.blocks.grindstone.remove-attributes", grindstoneRemoveAttributes);
++        grindstoneRemoveDisplay = getBoolean("settings.blocks.grindstone.remove-name-and-lore", grindstoneRemoveDisplay);
 +    }
 +
 +    public static boolean allowInfinityMending = false;
