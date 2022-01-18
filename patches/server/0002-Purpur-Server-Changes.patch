@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alpha <alphakr93@outlook.com>
-Date: Tue, 18 Jan 2022 12:22:33 +0900
+Date: Tue, 18 Jan 2022 17:13:37 +0900
 Subject: [PATCH] Purpur Server Changes
 
 
@@ -844,7 +844,7 @@ index e80176708db486190dd527e3ade5fc690ceb39f7..e3d7a80f8c4b68933875ef90006b7977
      public ServerEntity(ServerLevel worldserver, Entity entity, int i, boolean flag, Consumer<Packet<?>> consumer, Set<ServerPlayerConnection> trackedPlayers) {
          this.trackedPlayers = trackedPlayers;
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index 8cdacd7ed9a26e6757eeff89545fde21ddb80fd2..1ef08117f8249e4eb59b0a10263312e3874b4f0b 100644
+index 8cdacd7ed9a26e6757eeff89545fde21ddb80fd2..70bbd689e60901b76e9c1d2aab470e09beaf389b 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
 @@ -83,6 +83,7 @@ import net.minecraft.world.entity.MobCategory;
@@ -971,15 +971,7 @@ index 8cdacd7ed9a26e6757eeff89545fde21ddb80fd2..1ef08117f8249e4eb59b0a10263312e3
      public void tickCustomSpawners(boolean spawnMonsters, boolean spawnAnimals) {
          Iterator iterator = this.customSpawners.iterator();
  
-@@ -757,16 +804,22 @@ public class ServerLevel extends Level implements WorldGenLevel {
-         gameprofilerfiller.push("thunder");
-         final BlockPos.MutableBlockPos blockposition = this.chunkTickMutablePosition; // Paper - use mutable to reduce allocation rate, final to force compile fail on change
- 
--        if (!this.paperConfig.disableThunder && flag && this.isThundering() && this.spigotConfig.thunderChance > 0 && /*this.random.nextInt(this.spigotConfig.thunderChance) == 0 &&*/ chunk.shouldDoLightning(this.random)) { // Spigot // Paper - disable thunder // Pufferfish - replace random with shouldDoLightning
-+        if (!this.paperConfig.disableThunder && flag && this.isThundering() && this.spigotConfig.thunderChance > 0 && this.random.nextInt(this.spigotConfig.thunderChance) == 0 && chunk.shouldDoLightning(this.random)) { // Spigot // Paper - disable thunder // Pufferfish - replace random with shouldDoLightning
-             blockposition.set(this.findLightningTargetAround(this.getBlockRandomPos(j, 0, k, 15))); // Paper
-             if (this.isRainingAt(blockposition)) {
-                 DifficultyInstance difficultydamagescaler = this.getCurrentDifficultyAt(blockposition);
+@@ -764,9 +811,15 @@ public class ServerLevel extends Level implements WorldGenLevel {
                  boolean flag1 = this.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING) && this.random.nextDouble() < (double) difficultydamagescaler.getEffectiveDifficulty() * paperConfig.skeleHorseSpawnChance && !this.getBlockState(blockposition.below()).is(Blocks.LIGHTNING_ROD); // Paper
  
                  if (flag1) {
@@ -1416,7 +1408,7 @@ index 3125af569ec2bb1cd613a9dd96c3a181d723006d..c5c7fd414953fb432549e46918fe7e32
 +    // Purpur end
  }
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 889a4804eaa128e2f79a4ea48b8aa796336576d1..5a55fbfd42e00a2cb725173d2d9f0bb97ab53dc7 100644
+index 2cb12547c778fe439536e2e2aa479d4a25ab4a6e..858d590a68c9ed5a7162252bc36a76a95d7cb89c 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -228,6 +228,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Ser
@@ -1654,7 +1646,7 @@ index 889a4804eaa128e2f79a4ea48b8aa796336576d1..5a55fbfd42e00a2cb725173d2d9f0bb9
          player.getBukkitEntity().setResourcePackStatus(packStatus);
          this.cserver.getPluginManager().callEvent(new PlayerResourcePackStatusEvent(this.getCraftPlayer(), packStatus)); // CraftBukkit
          // Paper end
-@@ -2454,6 +2536,8 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Ser
+@@ -2456,6 +2538,8 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Ser
  
                          ServerGamePacketListenerImpl.this.cserver.getPluginManager().callEvent(event);
  
@@ -1663,7 +1655,7 @@ index 889a4804eaa128e2f79a4ea48b8aa796336576d1..5a55fbfd42e00a2cb725173d2d9f0bb9
                          // Entity in bucket - SPIGOT-4048 and SPIGOT-6859
                          if ((entity instanceof Bucketable && entity instanceof LivingEntity && origItem != null && origItem.asItem() == Items.WATER_BUCKET) && (event.isCancelled() || ServerGamePacketListenerImpl.this.player.getInventory().getSelected() == null || ServerGamePacketListenerImpl.this.player.getInventory().getSelected().getItem() != origItem)) {
                              ServerGamePacketListenerImpl.this.send(new ClientboundAddMobPacket((LivingEntity) entity));
-@@ -3074,11 +3158,15 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Ser
+@@ -3076,11 +3160,15 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Ser
                  }
                  // Paper end
  
@@ -1684,7 +1676,7 @@ index 889a4804eaa128e2f79a4ea48b8aa796336576d1..5a55fbfd42e00a2cb725173d2d9f0bb9
              }
              SignChangeEvent event = new SignChangeEvent((org.bukkit.craftbukkit.block.CraftBlock) player.getWorld().getBlockAt(x, y, z), this.player.getBukkitEntity(), lines);
              this.cserver.getPluginManager().callEvent(event);
-@@ -3100,6 +3188,16 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Ser
+@@ -3102,6 +3190,16 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Ser
  
      @Override
      public void handleKeepAlive(ServerboundKeepAlivePacket packet) {
@@ -1701,7 +1693,7 @@ index 889a4804eaa128e2f79a4ea48b8aa796336576d1..5a55fbfd42e00a2cb725173d2d9f0bb9
          //PlayerConnectionUtils.ensureMainThread(packetplayinkeepalive, this, this.player.getWorldServer()); // CraftBukkit // Paper - This shouldn't be on the main thread
          if (this.keepAlivePending && packet.getId() == this.keepAliveChallenge) {
              int i = (int) (Util.getMillis() - this.keepAliveTime);
-@@ -3143,6 +3241,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Ser
+@@ -3145,6 +3243,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Ser
      private static final ResourceLocation CUSTOM_UNREGISTER = new ResourceLocation("unregister");
  
      private static final ResourceLocation MINECRAFT_BRAND = new ResourceLocation("brand"); // Paper - Brand support
@@ -1709,7 +1701,7 @@ index 889a4804eaa128e2f79a4ea48b8aa796336576d1..5a55fbfd42e00a2cb725173d2d9f0bb9
  
      @Override
      public void handleCustomPayload(ServerboundCustomPayloadPacket packet) {
-@@ -3167,6 +3266,13 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Ser
+@@ -3169,6 +3268,13 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Ser
                  ServerGamePacketListenerImpl.LOGGER.error("Couldn\'t unregister custom payload", ex);
                  this.disconnect("Invalid payload UNREGISTER!", org.bukkit.event.player.PlayerKickEvent.Cause.INVALID_PAYLOAD); // Paper - kick event cause
              }
@@ -1724,10 +1716,10 @@ index 889a4804eaa128e2f79a4ea48b8aa796336576d1..5a55fbfd42e00a2cb725173d2d9f0bb9
              try {
                  byte[] data = new byte[packet.data.readableBytes()];
 diff --git a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index 60ba196e17df34c3ae2a9883e5d28830a2243517..fd0f5b13c4254dd976a38a6e60d9e1567df32390 100644
+index 368e32bc12a1a09bf7309f299a1a72554947f43b..547158e80c501aec66f4ffc96c0a496a346e0dd3 100644
 --- a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-@@ -236,6 +236,8 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener
+@@ -237,6 +237,8 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener
              return false;
          }
  
@@ -1736,7 +1728,7 @@ index 60ba196e17df34c3ae2a9883e5d28830a2243517..fd0f5b13c4254dd976a38a6e60d9e156
          for (int i = 0, len = in.length(); i < len; ++i) {
              char c = in.charAt(i);
  
-@@ -338,7 +340,7 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener
+@@ -339,7 +341,7 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener
                          ServerLoginPacketListenerImpl.this.gameProfile = ServerLoginPacketListenerImpl.this.createFakeProfile(gameprofile);
                          ServerLoginPacketListenerImpl.this.state = ServerLoginPacketListenerImpl.State.READY_TO_ACCEPT;
                      } else {
@@ -9281,10 +9273,10 @@ index 86f7fdd42461db151221d2c0d5cff6953392fa80..e8cb4bd5081d1435ab1eeffe559f224d
          this.targetSelector.addGoal(2, (new NearestAttackableTargetGoal<>(this, Player.class, true)).setUnseenMemoryTicks(300));
          this.targetSelector.addGoal(3, (new NearestAttackableTargetGoal<>(this, AbstractVillager.class, false)).setUnseenMemoryTicks(300));
 diff --git a/src/main/java/net/minecraft/world/entity/monster/MagmaCube.java b/src/main/java/net/minecraft/world/entity/monster/MagmaCube.java
-index 2ffe85ee5565bcae56b8a64567c34eeed71e4e4b..9f555a02d2fec242953e5c2d12d68d6a2ff2a30f 100644
+index 2ffe85ee5565bcae56b8a64567c34eeed71e4e4b..e086b048ff4aec4220d95a42688691a58986ac0e 100644
 --- a/src/main/java/net/minecraft/world/entity/monster/MagmaCube.java
 +++ b/src/main/java/net/minecraft/world/entity/monster/MagmaCube.java
-@@ -27,6 +27,43 @@ public class MagmaCube extends Slime {
+@@ -27,6 +27,53 @@ public class MagmaCube extends Slime {
          super(type, world);
      }
  
@@ -9305,13 +9297,23 @@ index 2ffe85ee5565bcae56b8a64567c34eeed71e4e4b..9f555a02d2fec242953e5c2d12d68d6a
 +    }
 +
 +    @Override
-+    public void initAttributes() {
-+        this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(this.generateMaxHealth());
++    protected String getMaxHealthEquation() {
++        return level.purpurConfig.magmaCubeMaxHealth;
 +    }
 +
 +    @Override
-+    protected String getMaxHealthEquation() {
-+        return level.purpurConfig.magmaCubeMaxHealth;
++    protected String getAttackDamageEquation() {
++        return level.purpurConfig.magmaCubeAttackDamage;
++    }
++
++    @Override
++    protected java.util.Map<Integer, Double> getMaxHealthCache() {
++        return level.purpurConfig.magmaCubeMaxHealthCache;
++    }
++
++    @Override
++    protected java.util.Map<Integer, Double> getAttackDamageCache() {
++        return level.purpurConfig.magmaCubeAttackDamageCache;
 +    }
 +
 +    @Override
@@ -9328,7 +9330,7 @@ index 2ffe85ee5565bcae56b8a64567c34eeed71e4e4b..9f555a02d2fec242953e5c2d12d68d6a
      public static AttributeSupplier.Builder createAttributes() {
          return Monster.createMonsterAttributes().add(Attributes.MOVEMENT_SPEED, (double)0.2F);
      }
-@@ -57,7 +94,7 @@ public class MagmaCube extends Slime {
+@@ -57,7 +104,7 @@ public class MagmaCube extends Slime {
      }
  
      @Override
@@ -9337,7 +9339,7 @@ index 2ffe85ee5565bcae56b8a64567c34eeed71e4e4b..9f555a02d2fec242953e5c2d12d68d6a
          return this.isTiny() ? BuiltInLootTables.EMPTY : this.getType().getDefaultLootTable();
      }
  
-@@ -77,10 +114,11 @@ public class MagmaCube extends Slime {
+@@ -77,10 +124,11 @@ public class MagmaCube extends Slime {
      }
  
      @Override
@@ -9370,7 +9372,7 @@ index 1d66588cfe94d190a34dc376b4b5bff9461a3529..9459255dd06d71dc1728e440e501cb3c
              return false;
          } else if (world.getBrightness(LightLayer.BLOCK, pos) > (world.getLevel().paperConfig.maxBlockLightForMonsterSpawning >= 0 ? world.getLevel().paperConfig.maxBlockLightForMonsterSpawning : 0)) { // Paper - configurable max block light level
 diff --git a/src/main/java/net/minecraft/world/entity/monster/Phantom.java b/src/main/java/net/minecraft/world/entity/monster/Phantom.java
-index 5c35b73c13c3826be9705e05154076810a78d147..69e0bfc7fdd50567c5370399a2437578a7dc7144 100644
+index 5c35b73c13c3826be9705e05154076810a78d147..520a5a6f3683048d64edc96b6ee69ffbbdb29af9 100644
 --- a/src/main/java/net/minecraft/world/entity/monster/Phantom.java
 +++ b/src/main/java/net/minecraft/world/entity/monster/Phantom.java
 @@ -49,6 +49,8 @@ public class Phantom extends FlyingMob implements Enemy {
@@ -9382,7 +9384,7 @@ index 5c35b73c13c3826be9705e05154076810a78d147..69e0bfc7fdd50567c5370399a2437578
  
      public Phantom(EntityType<? extends Phantom> type, Level world) {
          super(type, world);
-@@ -58,8 +60,95 @@ public class Phantom extends FlyingMob implements Enemy {
+@@ -58,8 +60,105 @@ public class Phantom extends FlyingMob implements Enemy {
          this.xpReward = 5;
          this.moveControl = new Phantom.PhantomMoveControl(this);
          this.lookControl = new Phantom.PhantomLookControl(this);
@@ -9441,9 +9443,19 @@ index 5c35b73c13c3826be9705e05154076810a78d147..69e0bfc7fdd50567c5370399a2437578
 +        return true;
 +    }
 +
-+    @Override
-+    public void initAttributes() {
-+        this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(this.level.purpurConfig.phantomMaxHealth);
++    private double getFromCache(java.util.function.Supplier<String> equation, java.util.function.Supplier<java.util.Map<Integer, Double>> cache, java.util.function.Supplier<Double> defaultValue) {
++        int size = getPhantomSize();
++        Double value = cache.get().get(size);
++        if (value == null) {
++            try {
++                scriptEngine.eval("size = " + size);
++                value = (double) scriptEngine.eval(equation.get());
++            } catch (Exception e) {
++                value = defaultValue.get();
++            }
++            cache.get().put(size, value);
++        }
++        return value;
 +    }
 +
 +    @Override
@@ -9478,7 +9490,7 @@ index 5c35b73c13c3826be9705e05154076810a78d147..69e0bfc7fdd50567c5370399a2437578
      @Override
      public boolean isFlapping() {
          return (this.getUniqueFlapTickOffset() + this.tickCount) % Phantom.TICKS_PER_FLAP == 0;
-@@ -72,9 +161,17 @@ public class Phantom extends FlyingMob implements Enemy {
+@@ -72,9 +171,17 @@ public class Phantom extends FlyingMob implements Enemy {
  
      @Override
      protected void registerGoals() {
@@ -9499,7 +9511,19 @@ index 5c35b73c13c3826be9705e05154076810a78d147..69e0bfc7fdd50567c5370399a2437578
          this.targetSelector.addGoal(1, new Phantom.PhantomAttackPlayerTargetGoal());
      }
  
-@@ -140,11 +237,12 @@ public class Phantom extends FlyingMob implements Enemy {
+@@ -90,7 +197,10 @@ public class Phantom extends FlyingMob implements Enemy {
+ 
+     private void updatePhantomSizeInfo() {
+         this.refreshDimensions();
+-        this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue((double) (6 + this.getPhantomSize()));
++        // Purpur start
++        this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(getFromCache(() -> this.level.purpurConfig.phantomMaxHealth, () -> this.level.purpurConfig.phantomMaxHealthCache, () -> 20.0D));
++        this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(getFromCache(() -> this.level.purpurConfig.phantomAttackDamage, () -> this.level.purpurConfig.phantomAttackDamageCache, () -> (double) 6 + this.getPhantomSize()));
++        // Purpur end
+     }
+ 
+     public int getPhantomSize() {
+@@ -140,11 +250,12 @@ public class Phantom extends FlyingMob implements Enemy {
              this.level.addParticle(ParticleTypes.MYCELIUM, this.getX() - (double) f2, this.getY() + (double) f4, this.getZ() - (double) f3, 0.0D, 0.0D, 0.0D);
          }
  
@@ -9513,7 +9537,20 @@ index 5c35b73c13c3826be9705e05154076810a78d147..69e0bfc7fdd50567c5370399a2437578
              this.setSecondsOnFire(8);
          }
  
-@@ -176,7 +274,7 @@ public class Phantom extends FlyingMob implements Enemy {
+@@ -159,7 +270,11 @@ public class Phantom extends FlyingMob implements Enemy {
+     @Override
+     public SpawnGroupData finalizeSpawn(ServerLevelAccessor world, DifficultyInstance difficulty, MobSpawnType spawnReason, @Nullable SpawnGroupData entityData, @Nullable CompoundTag entityNbt) {
+         this.anchorPoint = this.blockPosition().above(5);
+-        this.setPhantomSize(0);
++        // Purpur start
++        int min = world.getLevel().purpurConfig.phantomMinSize;
++        int max = world.getLevel().purpurConfig.phantomMaxSize;
++        this.setPhantomSize(min == max ? min : world.getRandom().nextInt(max + 1 - min) + min);
++        // Purpur end
+         return super.finalizeSpawn(world, difficulty, spawnReason, entityData, entityNbt);
+     }
+ 
+@@ -176,7 +291,7 @@ public class Phantom extends FlyingMob implements Enemy {
              this.spawningEntity = nbt.getUUID("Paper.SpawningEntity");
          }
          if (nbt.contains("Paper.ShouldBurnInDay")) {
@@ -9522,7 +9559,7 @@ index 5c35b73c13c3826be9705e05154076810a78d147..69e0bfc7fdd50567c5370399a2437578
          }
          // Paper end
      }
-@@ -192,7 +290,7 @@ public class Phantom extends FlyingMob implements Enemy {
+@@ -192,7 +307,7 @@ public class Phantom extends FlyingMob implements Enemy {
          if (this.spawningEntity != null) {
              nbt.putUUID("Paper.SpawningEntity", this.spawningEntity);
          }
@@ -9531,7 +9568,7 @@ index 5c35b73c13c3826be9705e05154076810a78d147..69e0bfc7fdd50567c5370399a2437578
          // Paper end
      }
  
-@@ -253,7 +351,7 @@ public class Phantom extends FlyingMob implements Enemy {
+@@ -253,7 +368,7 @@ public class Phantom extends FlyingMob implements Enemy {
      }
      public void setSpawningEntity(java.util.UUID entity) { this.spawningEntity = entity; }
  
@@ -9540,7 +9577,7 @@ index 5c35b73c13c3826be9705e05154076810a78d147..69e0bfc7fdd50567c5370399a2437578
      public boolean shouldBurnInDay() { return shouldBurnInDay; }
      public void setShouldBurnInDay(boolean shouldBurnInDay) { this.shouldBurnInDay = shouldBurnInDay; }
      // Paper end
-@@ -264,7 +362,125 @@ public class Phantom extends FlyingMob implements Enemy {
+@@ -264,7 +379,125 @@ public class Phantom extends FlyingMob implements Enemy {
          private AttackPhase() {}
      }
  
@@ -9667,7 +9704,7 @@ index 5c35b73c13c3826be9705e05154076810a78d147..69e0bfc7fdd50567c5370399a2437578
  
          private float speed = 0.1F;
  
-@@ -272,8 +488,19 @@ public class Phantom extends FlyingMob implements Enemy {
+@@ -272,8 +505,19 @@ public class Phantom extends FlyingMob implements Enemy {
              super(entity);
          }
  
@@ -9688,7 +9725,7 @@ index 5c35b73c13c3826be9705e05154076810a78d147..69e0bfc7fdd50567c5370399a2437578
              if (Phantom.this.horizontalCollision) {
                  Phantom.this.setYRot(Phantom.this.getYRot() + 180.0F);
                  this.speed = 0.1F;
-@@ -319,14 +546,20 @@ public class Phantom extends FlyingMob implements Enemy {
+@@ -319,14 +563,20 @@ public class Phantom extends FlyingMob implements Enemy {
          }
      }
  
@@ -9711,7 +9748,7 @@ index 5c35b73c13c3826be9705e05154076810a78d147..69e0bfc7fdd50567c5370399a2437578
      }
  
      private class PhantomBodyRotationControl extends BodyRotationControl {
-@@ -413,6 +646,12 @@ public class Phantom extends FlyingMob implements Enemy {
+@@ -413,6 +663,12 @@ public class Phantom extends FlyingMob implements Enemy {
                  return false;
              } else if (!entityliving.isAlive()) {
                  return false;
@@ -9724,7 +9761,7 @@ index 5c35b73c13c3826be9705e05154076810a78d147..69e0bfc7fdd50567c5370399a2437578
              } else {
                  if (entityliving instanceof Player) {
                      Player entityhuman = (Player) entityliving;
-@@ -558,6 +797,7 @@ public class Phantom extends FlyingMob implements Enemy {
+@@ -558,6 +814,7 @@ public class Phantom extends FlyingMob implements Enemy {
                  this.nextScanTick = reducedTickDelay(60);
                  List<Player> list = Phantom.this.level.getNearbyPlayers(this.attackTargeting, Phantom.this, Phantom.this.getBoundingBox().inflate(16.0D, 64.0D, 16.0D));
  
@@ -10081,10 +10118,10 @@ index 3a3f3358c4bbd16bdcadc56c6a865ecfb942ad54..6a2340dd54d4a8b688444eb4621c58e0
      protected void defineSynchedData() {
          super.defineSynchedData();
 diff --git a/src/main/java/net/minecraft/world/entity/monster/Slime.java b/src/main/java/net/minecraft/world/entity/monster/Slime.java
-index 9c440625ce89686b2c250e6aaa62ed83b7015412..e90d32cf1e6b4045c1afb1e3fc599f0eb9ee0a84 100644
+index 9c440625ce89686b2c250e6aaa62ed83b7015412..538479c14c064d51ccd6e10f021ffc8c5ca9c75f 100644
 --- a/src/main/java/net/minecraft/world/entity/monster/Slime.java
 +++ b/src/main/java/net/minecraft/world/entity/monster/Slime.java
-@@ -67,18 +67,84 @@ public class Slime extends Mob implements Enemy {
+@@ -67,18 +67,91 @@ public class Slime extends Mob implements Enemy {
      public float squish;
      public float oSquish;
      private boolean wasOnGround;
@@ -10123,28 +10160,35 @@ index 9c440625ce89686b2c250e6aaa62ed83b7015412..e90d32cf1e6b4045c1afb1e3fc599f0e
 +        return true; // do not jump() in wasd controller, let vanilla controller handle
 +    }
 +
-+    @Override
-+    public void initAttributes() {
-+        this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(this.generateMaxHealth());
-+    }
-+
 +    protected String getMaxHealthEquation() {
 +        return level.purpurConfig.slimeMaxHealth;
 +    }
 +
-+    protected double generateMaxHealth() {
++    protected String getAttackDamageEquation() {
++        return level.purpurConfig.slimeAttackDamage;
++    }
++
++    protected java.util.Map<Integer, Double> getMaxHealthCache() {
++        return level.purpurConfig.slimeMaxHealthCache;
++    }
++
++    protected java.util.Map<Integer, Double> getAttackDamageCache() {
++        return level.purpurConfig.slimeAttackDamageCache;
++    }
++
++    protected double getFromCache(java.util.function.Supplier<String> equation, java.util.function.Supplier<java.util.Map<Integer, Double>> cache, java.util.function.Supplier<Double> defaultValue) {
 +        int size = getSize();
-+        Double maxHealth = level.purpurConfig.slimeMaxHealthCache.get(size);
-+        if (maxHealth == null) {
++        Double value = cache.get().get(size);
++        if (value == null) {
 +            try {
 +                scriptEngine.eval("size = " + size);
-+                maxHealth = (double) scriptEngine.eval(getMaxHealthEquation());
++                value = (double) scriptEngine.eval(equation.get());
 +            } catch (Exception e) {
-+                maxHealth = (double) size * size;
++                value = defaultValue.get();
 +            }
-+            level.purpurConfig.slimeMaxHealthCache.put(size, maxHealth);
++            cache.get().put(size, value);
 +        }
-+        return maxHealth;
++        return value;
 +    }
 +
 +    @Override
@@ -10169,16 +10213,19 @@ index 9c440625ce89686b2c250e6aaa62ed83b7015412..e90d32cf1e6b4045c1afb1e3fc599f0e
          this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, (entityliving) -> {
              return Math.abs(entityliving.getY() - this.getY()) <= 4.0D;
          }));
-@@ -97,7 +163,7 @@ public class Slime extends Mob implements Enemy {
+@@ -97,9 +170,9 @@ public class Slime extends Mob implements Enemy {
          this.entityData.set(Slime.ID_SIZE, j);
          this.reapplyPosition();
          this.refreshDimensions();
 -        this.getAttribute(Attributes.MAX_HEALTH).setBaseValue((double) (j * j));
-+        this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(generateMaxHealth()); // Purpur
++        this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(getFromCache(this::getMaxHealthEquation, this::getMaxHealthCache, () -> (double) size * size)); // Purpur
          this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue((double) (0.2F + 0.1F * (float) j));
-         this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue((double) j);
+-        this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue((double) j);
++        this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(getFromCache(this::getAttackDamageEquation, this::getAttackDamageCache, () -> (double) j)); // Purpur
          if (heal) {
-@@ -368,11 +434,12 @@ public class Slime extends Mob implements Enemy {
+             this.setHealth(this.getMaxHealth());
+         }
+@@ -368,11 +441,12 @@ public class Slime extends Mob implements Enemy {
      }
  
      @Override
@@ -10192,7 +10239,7 @@ index 9c440625ce89686b2c250e6aaa62ed83b7015412..e90d32cf1e6b4045c1afb1e3fc599f0e
      }
  
      @Nullable
-@@ -405,7 +472,7 @@ public class Slime extends Mob implements Enemy {
+@@ -405,7 +479,7 @@ public class Slime extends Mob implements Enemy {
          return super.getDimensions(pose).scale(0.255F * (float) this.getSize());
      }
  
@@ -10201,7 +10248,7 @@ index 9c440625ce89686b2c250e6aaa62ed83b7015412..e90d32cf1e6b4045c1afb1e3fc599f0e
  
          private float yRot;
          private int jumpDelay;
-@@ -424,21 +491,33 @@ public class Slime extends Mob implements Enemy {
+@@ -424,21 +498,33 @@ public class Slime extends Mob implements Enemy {
          }
  
          public void setWantedMovement(double speed) {
@@ -10238,7 +10285,7 @@ index 9c440625ce89686b2c250e6aaa62ed83b7015412..e90d32cf1e6b4045c1afb1e3fc599f0e
                      if (this.jumpDelay-- <= 0) {
                          this.jumpDelay = this.slime.getJumpDelay();
                          if (this.isAggressive) {
-@@ -455,7 +534,7 @@ public class Slime extends Mob implements Enemy {
+@@ -455,7 +541,7 @@ public class Slime extends Mob implements Enemy {
                          this.mob.setSpeed(0.0F);
                      }
                  } else {
@@ -11853,7 +11900,7 @@ index fe502e148e218ae404e0049c0251d3e3ca08c825..11befaed9c2845262607cd9e1e38a178
 +    // Purpur end
  }
 diff --git a/src/main/java/net/minecraft/world/entity/projectile/FishingHook.java b/src/main/java/net/minecraft/world/entity/projectile/FishingHook.java
-index 2015223c1703935faef52a8b88263ab3f1fbe92a..3b36a5f79b830dcf0b3eb4ff278c82134a58da96 100644
+index f958ce70efb64d4077fae60a790a0df6786ad0ea..4430c4bfc29fa5d03bd2c0c45087789c18ea17dd 100644
 --- a/src/main/java/net/minecraft/world/entity/projectile/FishingHook.java
 +++ b/src/main/java/net/minecraft/world/entity/projectile/FishingHook.java
 @@ -663,4 +663,11 @@ public class FishingHook extends Projectile {
@@ -15317,19 +15364,6 @@ index e4591c0b3c8547cc6f4e2a0891fc378ee4334d9e..b2c93ce627cf0a50b4b0a60d2d4206e6
      }
  
      private void generateStrongholds() {
-diff --git a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
-index 9e9cdabefce3767a2e482f7cc5eb69c635ea17a7..2b697f0d0b59b5af5aa59850d5e501cde9acf577 100644
---- a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
-+++ b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
-@@ -99,7 +99,7 @@ public class LevelChunk extends ChunkAccess {
-     // shouldDoLightning compiles down to 29 bytes, which with the default of 35 byte inlining should guarantee an inline
-     public final boolean shouldDoLightning(java.util.Random random) {
-         if (this.lightningTick-- <= 0) {
--            this.lightningTick = random.nextInt(this.level.spigotConfig.thunderChance) << 1;
-+            this.lightningTick = random.nextInt(100000) << 1;
-             return true;
-         }
-         return false;
 diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/EntityStorage.java b/src/main/java/net/minecraft/world/level/chunk/storage/EntityStorage.java
 index fec7d5c6a7b7a20ac9aecec1d3187f5c61fc430c..d4fd425c934e1e033d9aefda66958c864c11ea7d 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/storage/EntityStorage.java
@@ -16691,7 +16725,7 @@ index 6cc517b394bafefce50d877761e5b2eee8e14c78..46ca899a7abddea108f6ff1b4ca14ca5
          DefaultPermissions.registerPermission(CommandPermissions.PREFIX + "defaultgamemode", "Allows the user to change the default gamemode of the server", PermissionDefault.OP, commands);
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurConfig.java b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..9f7631b643ebfb3b472bf2fd4280140d0b32cfc5
+index 0000000000000000000000000000000000000000..f752bc96f4625cd133737a2f020c640893023936
 --- /dev/null
 +++ b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
 @@ -0,0 +1,423 @@
@@ -16765,8 +16799,8 @@ index 0000000000000000000000000000000000000000..9f7631b643ebfb3b472bf2fd4280140d
 +        commands = new HashMap<>();
 +        commands.put("purpur", new PurpurCommand("purpur"));
 +
-+        version = getInt("config-version", 24);
-+        set("config-version", 24);
++        version = getInt("config-version", 25);
++        set("config-version", 25);
 +
 +        readConfig(PurpurConfig.class, null);
 +    }
@@ -17120,14 +17154,15 @@ index 0000000000000000000000000000000000000000..9f7631b643ebfb3b472bf2fd4280140d
 +}
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..8c583df41f14e8997d59ec61f06552a273e3ddf7
+index 0000000000000000000000000000000000000000..a1cd8d5bd68b74bc7548105255061e8caf7374a5
 --- /dev/null
 +++ b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
-@@ -0,0 +1,2868 @@
+@@ -0,0 +1,2898 @@
 +package org.purpurmc.purpur;
 +
 +import net.minecraft.core.Registry;
 +import net.minecraft.resources.ResourceLocation;
++import net.minecraft.util.Mth;
 +import net.minecraft.world.item.DyeColor;
 +import net.minecraft.world.item.Item;
 +import net.minecraft.world.item.Items;
@@ -18886,6 +18921,9 @@ index 0000000000000000000000000000000000000000..8c583df41f14e8997d59ec61f06552a2
 +    public boolean magmaCubeRidable = false;
 +    public boolean magmaCubeRidableInWater = false;
 +    public String magmaCubeMaxHealth = "size * size";
++    public String magmaCubeAttackDamage = "size";
++    public Map<Integer, Double> magmaCubeMaxHealthCache = new HashMap<>();
++    public Map<Integer, Double> magmaCubeAttackDamageCache = new HashMap<>();
 +    public boolean magmaCubeTakeDamageFromWater = false;
 +    public boolean magmaCubeAlwaysDropExp = false;
 +    private void magmaCubeSettings() {
@@ -18897,6 +18935,9 @@ index 0000000000000000000000000000000000000000..8c583df41f14e8997d59ec61f06552a2
 +            set("mobs.magma_cube.attributes.max_health", oldValue);
 +        }
 +        magmaCubeMaxHealth = getString("mobs.magma_cube.attributes.max_health", magmaCubeMaxHealth);
++        magmaCubeAttackDamage = getString("mobs.magma_cube.attributes.attack_damage", magmaCubeAttackDamage);
++        magmaCubeMaxHealthCache.clear();
++        magmaCubeAttackDamageCache.clear();
 +        magmaCubeTakeDamageFromWater = getBoolean("mobs.magma_cube.takes-damage-from-water", magmaCubeTakeDamageFromWater);
 +        magmaCubeAlwaysDropExp = getBoolean("mobs.magma_cube.always-drop-exp", magmaCubeAlwaysDropExp);
 +    }
@@ -19019,8 +19060,10 @@ index 0000000000000000000000000000000000000000..8c583df41f14e8997d59ec61f06552a2
 +    public float phantomFlameDamage = 1.0F;
 +    public int phantomFlameFireTime = 8;
 +    public boolean phantomAllowGriefing = false;
-+    public boolean phantomFlamesOnSwoop = false;
-+    public double phantomMaxHealth = 20.0D;
++    public String phantomMaxHealth = "20.0";
++    public String phantomAttackDamage = "6 + size";
++    public Map<Integer, Double> phantomMaxHealthCache = new HashMap<>();
++    public Map<Integer, Double> phantomAttackDamageCache = new HashMap<>();
 +    public double phantomAttackedByCrystalRadius = 0.0D;
 +    public float phantomAttackedByCrystalDamage = 1.0F;
 +    public double phantomOrbitCrystalRadius = 0.0D;
@@ -19039,8 +19082,11 @@ index 0000000000000000000000000000000000000000..8c583df41f14e8997d59ec61f06552a2
 +    public int phantomBurnInLight = 0;
 +    public boolean phantomIgnorePlayersWithTorch = false;
 +    public boolean phantomBurnInDaylight = true;
++    public boolean phantomFlamesOnSwoop = false;
 +    public boolean phantomTakeDamageFromWater = false;
 +    public boolean phantomAlwaysDropExp = false;
++    public int phantomMinSize = 0;
++    public int phantomMaxSize = 0;
 +    private void phantomSettings() {
 +        phantomRidable = getBoolean("mobs.phantom.ridable", phantomRidable);
 +        phantomRidableInWater = getBoolean("mobs.phantom.ridable-in-water", phantomRidableInWater);
@@ -19048,13 +19094,19 @@ index 0000000000000000000000000000000000000000..8c583df41f14e8997d59ec61f06552a2
 +        phantomFlameDamage = (float) getDouble("mobs.phantom.flames.damage", phantomFlameDamage);
 +        phantomFlameFireTime = getInt("mobs.phantom.flames.fire-time", phantomFlameFireTime);
 +        phantomAllowGriefing = getBoolean("mobs.phantom.allow-griefing", phantomAllowGriefing);
-+        phantomFlamesOnSwoop = getBoolean("mobs.phantom.flames-on-swoop", phantomFlamesOnSwoop);
 +        if (PurpurConfig.version < 10) {
-+            double oldValue = getDouble("mobs.phantom.attributes.max-health", phantomMaxHealth);
++            double oldValue = getDouble("mobs.phantom.attributes.max-health", Double.parseDouble(phantomMaxHealth));
 +            set("mobs.phantom.attributes.max-health", null);
-+            set("mobs.phantom.attributes.max_health", oldValue);
++            set("mobs.phantom.attributes.max_health", String.valueOf(oldValue));
 +        }
-+        phantomMaxHealth = getDouble("mobs.phantom.attributes.max_health", phantomMaxHealth);
++        if (PurpurConfig.version < 25) {
++            double oldValue = getDouble("mobs.phantom.attributes.max_health", Double.parseDouble(phantomMaxHealth));
++            set("mobs.phantom.attributes.max_health", String.valueOf(oldValue));
++        }
++        phantomMaxHealth = getString("mobs.phantom.attributes.max_health", phantomMaxHealth);
++        phantomAttackDamage = getString("mobs.phantom.attributes.attack_damage", phantomAttackDamage);
++        phantomMaxHealthCache.clear();
++        phantomAttackDamageCache.clear();
 +        phantomAttackedByCrystalRadius = getDouble("mobs.phantom.attacked-by-crystal-range", phantomAttackedByCrystalRadius);
 +        phantomAttackedByCrystalDamage = (float) getDouble("mobs.phantom.attacked-by-crystal-damage", phantomAttackedByCrystalDamage);
 +        phantomOrbitCrystalRadius = getDouble("mobs.phantom.orbit-crystal-radius", phantomOrbitCrystalRadius);
@@ -19073,8 +19125,16 @@ index 0000000000000000000000000000000000000000..8c583df41f14e8997d59ec61f06552a2
 +        phantomBurnInLight = getInt("mobs.phantom.burn-in-light", phantomBurnInLight);
 +        phantomBurnInDaylight = getBoolean("mobs.phantom.burn-in-daylight", phantomBurnInDaylight);
 +        phantomIgnorePlayersWithTorch = getBoolean("mobs.phantom.ignore-players-with-torch", phantomIgnorePlayersWithTorch);
++        phantomFlamesOnSwoop = getBoolean("mobs.phantom.flames-on-swoop", phantomFlamesOnSwoop);
 +        phantomTakeDamageFromWater = getBoolean("mobs.phantom.takes-damage-from-water", phantomTakeDamageFromWater);
 +        phantomAlwaysDropExp = getBoolean("mobs.phantom.always-drop-exp", phantomAlwaysDropExp);
++        phantomMinSize = Mth.clamp(getInt("mobs.phantom.size.min", phantomMinSize), 0, 64);
++        phantomMaxSize = Mth.clamp(getInt("mobs.phantom.size.max", phantomMaxSize), 0, 64);
++        if (phantomMinSize > phantomMaxSize) {
++            phantomMinSize = phantomMinSize ^ phantomMaxSize;
++            phantomMaxSize = phantomMinSize ^ phantomMaxSize;
++            phantomMinSize = phantomMinSize ^ phantomMaxSize;
++        }
 +    }
 +
 +    public boolean pigRidable = false;
@@ -19406,7 +19466,9 @@ index 0000000000000000000000000000000000000000..8c583df41f14e8997d59ec61f06552a2
 +    public boolean slimeRidable = false;
 +    public boolean slimeRidableInWater = false;
 +    public String slimeMaxHealth = "size * size";
++    public String slimeAttackDamage = "size";
 +    public Map<Integer, Double> slimeMaxHealthCache = new HashMap<>();
++    public Map<Integer, Double> slimeAttackDamageCache = new HashMap<>();
 +    public boolean slimeTakeDamageFromWater = false;
 +    public boolean slimeAlwaysDropExp = false;
 +    private void slimeSettings() {
@@ -19418,7 +19480,9 @@ index 0000000000000000000000000000000000000000..8c583df41f14e8997d59ec61f06552a2
 +            set("mobs.slime.attributes.max_health", oldValue);
 +        }
 +        slimeMaxHealth = getString("mobs.slime.attributes.max_health", slimeMaxHealth);
++        slimeAttackDamage = getString("mobs.slime.attributes.attack_damage", slimeAttackDamage);
 +        slimeMaxHealthCache.clear();
++        slimeAttackDamageCache.clear();
 +        slimeTakeDamageFromWater = getBoolean("mobs.slime.takes-damage-from-water", slimeTakeDamageFromWater);
 +        slimeAlwaysDropExp = getBoolean("mobs.slime.always-drop-exp", slimeAlwaysDropExp);
 +    }
