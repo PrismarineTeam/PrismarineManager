@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alpha <alphakr93@outlook.com>
-Date: Tue, 18 Jan 2022 22:09:11 +0900
+Date: Wed, 19 Jan 2022 10:30:59 +0900
 Subject: [PATCH] Purpur API Changes
 
 
@@ -121,16 +121,17 @@ index f2e3233a3d1744e32fb76d3731b9858ef0067e30..e66e8b28c673216dd1587582f44c26f6
      /**
       * Attack the specified entity using a ranged attack.
 diff --git a/src/main/java/com/destroystokyo/paper/entity/ai/VanillaGoal.java b/src/main/java/com/destroystokyo/paper/entity/ai/VanillaGoal.java
-index 2405254739a83b2fb517da7fa4ea0721c68f9f6d..2b2fd0da10b84a2a93629a8fbd60f1258d45b3ee 100644
+index 2405254739a83b2fb517da7fa4ea0721c68f9f6d..b3e4d10e54952be23ba3f4bcc374c24cff8b0ce2 100644
 --- a/src/main/java/com/destroystokyo/paper/entity/ai/VanillaGoal.java
 +++ b/src/main/java/com/destroystokyo/paper/entity/ai/VanillaGoal.java
-@@ -197,6 +197,17 @@ public interface VanillaGoal<T extends Mob> extends Goal<T> {
+@@ -197,6 +197,18 @@ public interface VanillaGoal<T extends Mob> extends Goal<T> {
      GoalKey<Raider> RAIDER_MOVE_THROUGH_VILLAGE = GoalKey.of(Raider.class, NamespacedKey.minecraft("raider_move_through_village"));
      GoalKey<Creature> PARROT_WANDER = GoalKey.of(Creature.class, NamespacedKey.minecraft("parrot_wander"));
  
 +    // Purpur start
 +    GoalKey<Mob> MOB_HAS_RIDER = GoalKey.of(Mob.class, NamespacedKey.minecraft("has_rider"));
 +    GoalKey<AbstractHorse> HORSE_HAS_RIDER = GoalKey.of(AbstractHorse.class, NamespacedKey.minecraft("horse_has_rider"));
++    GoalKey<Llama> LLAMA_HAS_RIDER = GoalKey.of(Llama.class, NamespacedKey.minecraft("llama_has_rider"));
 +    GoalKey<Phantom> FIND_CRYSTAL = GoalKey.of(Phantom.class, NamespacedKey.minecraft("find_crystal"));
 +    GoalKey<Phantom> ORBIT_CRYSTAL = GoalKey.of(Phantom.class, NamespacedKey.minecraft("orbit_crystal"));
 +    GoalKey<Drowned> DROWNED_ATTACK_VILLAGER = GoalKey.of(Drowned.class, NamespacedKey.minecraft("drowned_attack_villager"));

@@ -6,10 +6,10 @@ Subject: [PATCH] Purpur PR - Configurable minimum demand for trades
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/npc/Villager.java b/src/main/java/net/minecraft/world/entity/npc/Villager.java
-index a05e23a444085f453cdba65fc9ed388853ec92b7..033c38b8d0064a25bfa2bccfc2dae62e9e669eb0 100644
+index b5114a0bbf83c8dd7dbcf1326ce6e235b510e715..c85ce8534509bf97d6f3841eb619cf32c6a97470 100644
 --- a/src/main/java/net/minecraft/world/entity/npc/Villager.java
 +++ b/src/main/java/net/minecraft/world/entity/npc/Villager.java
-@@ -546,7 +546,7 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+@@ -551,7 +551,7 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
          while (iterator.hasNext()) {
              MerchantOffer merchantrecipe = (MerchantOffer) iterator.next();
  

@@ -5,7 +5,7 @@ Subject: [PATCH] Add back "Lobotomize stuck villagers" Purpur Patch
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/npc/Villager.java b/src/main/java/net/minecraft/world/entity/npc/Villager.java
-index 0141d4d2dfaacfbce174e82e2d7c1a9419c64982..a05e23a444085f453cdba65fc9ed388853ec92b7 100644
+index 9755517f0c1d66db5bfd00946114fab5db6776d6..b5114a0bbf83c8dd7dbcf1326ce6e235b510e715 100644
 --- a/src/main/java/net/minecraft/world/entity/npc/Villager.java
 +++ b/src/main/java/net/minecraft/world/entity/npc/Villager.java
 @@ -138,6 +138,7 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
@@ -16,7 +16,7 @@ index 0141d4d2dfaacfbce174e82e2d7c1a9419c64982..a05e23a444085f453cdba65fc9ed3888
  
      public long nextGolemPanic = -1; // Pufferfish
  
-@@ -182,6 +183,24 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+@@ -187,6 +188,24 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
          return level.purpurConfig.villagerCanBeLeashed && !this.isLeashed();
      }
  
