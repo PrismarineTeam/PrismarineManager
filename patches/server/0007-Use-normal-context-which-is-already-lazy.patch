@@ -13,7 +13,7 @@ index 58629451977c89db2fa895bde946135784a0d8bc..359f6f01d1103de60d5ff7de82a1bce8
                                  mutablePos.set(blockX, blockY, blockZ);
                                  if (collisionShape == null) {
 -                                    collisionShape = new LazyEntityCollisionContext(entity);
-+                                    if (net.prismarineteam.prismarine.PrismarineConfig.useAirplaneCollisionContext) {
++                                    if (net.prismarineteam.prismarine.PrismarineConfig.useNormalCollisionContext) {
 +                                        collisionShape = CollisionContext.of(entity);
 +                                    } else {
 +                                        collisionShape = new LazyEntityCollisionContext(entity);
