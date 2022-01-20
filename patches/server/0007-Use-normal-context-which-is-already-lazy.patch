@@ -5,7 +5,7 @@ Subject: [PATCH] Use normal context, which is already lazy
 
 
 diff --git a/src/main/java/io/papermc/paper/util/CollisionUtil.java b/src/main/java/io/papermc/paper/util/CollisionUtil.java
-index 58629451977c89db2fa895bde946135784a0d8bc..359f6f01d1103de60d5ff7de82a1bce88165d250 100644
+index 58629451977c89db2fa895bde946135784a0d8bc..1909c3b485becf19bf3cacc2987877b0a4a33caf 100644
 --- a/src/main/java/io/papermc/paper/util/CollisionUtil.java
 +++ b/src/main/java/io/papermc/paper/util/CollisionUtil.java
 @@ -519,7 +519,11 @@ public final class CollisionUtil {

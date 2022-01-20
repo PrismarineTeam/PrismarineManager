@@ -8122,7 +8122,7 @@ index 0c94b4cb6ee0c3dffe0b67a2291d0160ae0ef96f..92a9869dbabcaa704a0da8bc86f75786
              }
              // Paper end - fix sand duping
 diff --git a/src/main/java/net/minecraft/world/entity/item/ItemEntity.java b/src/main/java/net/minecraft/world/entity/item/ItemEntity.java
-index 3ad87457cc1279540b5b633216aa0161e6e9b1b2..cc5396761d67a7d9e9fcc5959caf1f9330d8a6af 100644
+index 7889c9832c6a1ac2afebe4e1030495b3ea52fc2b..ee5d8fc20dc761d71eaebb6d0a7ecbbe611bcdd4 100644
 --- a/src/main/java/net/minecraft/world/entity/item/ItemEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/item/ItemEntity.java
 @@ -54,6 +54,12 @@ public class ItemEntity extends Entity {
@@ -15415,7 +15415,7 @@ index 5be46c6f3db4848b9b88a5227d58705f40b9c16f..2b2ad683e5ac1210ab81c2f72ea05df2
                      if (!world.addFreshEntity(entitywither, SpawnReason.BUILD_WITHER)) {
                          return;
 diff --git a/src/main/java/net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity.java b/src/main/java/net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity.java
-index fb15ece736dde16066818216749fb2efba0b3b21..f5fd6e0fd67c1b760000c2e75ce09d1c680b4cf6 100644
+index 7b8f51853499540a86326e2c8870ea3c7c8c65c8..f11ec870135e9cccaeb209c76fd4ee0d62f465a2 100644
 --- a/src/main/java/net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity.java
 +++ b/src/main/java/net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity.java
 @@ -40,6 +40,7 @@ import net.minecraft.world.level.Level;
@@ -22410,7 +22410,7 @@ index 0000000000000000000000000000000000000000..b7586f494528f30eb0da82420d3bcf5b
 +    }
 +}
 diff --git a/src/main/java/org/spigotmc/ActivationRange.java b/src/main/java/org/spigotmc/ActivationRange.java
-index 8d3147b48eff5418f452eb1449639316399942ee..b72234ede04005c8d2be1e339f5bcebd7790bb61 100644
+index 59a6cb575e40465275184cb816c862c79995c729..51357702045a87340169b6ddd6365cdc30955bc8 100644
 --- a/src/main/java/org/spigotmc/ActivationRange.java
 +++ b/src/main/java/org/spigotmc/ActivationRange.java
 @@ -15,6 +15,7 @@ import net.minecraft.world.entity.ambient.AmbientCreature;
