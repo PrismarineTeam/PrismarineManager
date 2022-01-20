@@ -1,20 +1,19 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alpha <alphakr93@outlook.com>
-Date: Tue, 18 Jan 2022 18:05:49 +0900
-Subject: [PATCH] Purpur PR - Configurable minimum demand for trades
- (PurpurMC#837)
+Date: Thu, 20 Jan 2022 10:07:31 +0900
+Subject: [PATCH] Configurable minimum demand for trades
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/npc/Villager.java b/src/main/java/net/minecraft/world/entity/npc/Villager.java
-index b5114a0bbf83c8dd7dbcf1326ce6e235b510e715..c85ce8534509bf97d6f3841eb619cf32c6a97470 100644
+index 90ab67d6dcbd3961fcaa05b034a6d35e7fd096b6..7dd28482e54b44ba2b812a14f9af3192a6325a65 100644
 --- a/src/main/java/net/minecraft/world/entity/npc/Villager.java
 +++ b/src/main/java/net/minecraft/world/entity/npc/Villager.java
-@@ -551,7 +551,7 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+@@ -554,7 +554,7 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
          while (iterator.hasNext()) {
              MerchantOffer merchantrecipe = (MerchantOffer) iterator.next();
  
 -            merchantrecipe.updateDemand();
-+            merchantrecipe.updateDemand(this.level.prismarineConfig.villagerMinimumDemand); // Prismarine
++            merchantrecipe.updateDemand(this.level.prismarineConfig.villagerMinimumDemand);
          }
  
      }
@@ -40,13 +39,18 @@ index c9cb0717c2793acd5b5870a6cc4d672d69a40026..7e261c543e3a6f7cc6552ae078ddf6f1
          return this.result.copy();
      }
 diff --git a/src/main/java/net/prismarineteam/prismarine/PrismarineWorldConfig.java b/src/main/java/net/prismarineteam/prismarine/PrismarineWorldConfig.java
-index e2f0f17e4a53feabbeb5ac71d97e6b5c21da24df..bb64605b1aaa33d480201233918d828ce49bb51c 100644
+index 10c3b105adfd91f8b1f21caed0aaee12ee043d03..cc3d74ee9edf4dd85182b326e76684f484741e11 100644
 --- a/src/main/java/net/prismarineteam/prismarine/PrismarineWorldConfig.java
 +++ b/src/main/java/net/prismarineteam/prismarine/PrismarineWorldConfig.java
-@@ -77,4 +77,5 @@ public class PrismarineWorldConfig {
+@@ -78,8 +78,10 @@ public class PrismarineWorldConfig {
  
-     public boolean villagerLobotomizeEnabled = getBoolean("mobs.villager.lobotomize.enabled", false);
-     public int villagerLobotomizeCheck = getInt("mobs.villager.lobotomize.check-interval", 60);
-+    public int villagerMinimumDemand = getInt("mobs.villager.minimum-demand", 0);
+     public boolean villagerLobotomized = false;
+     public int villagerLobotomizeCheckInterval = 60;
++    public int villagerMinimumDemand = 0;
+     private void villagerSettings() {
+         villagerLobotomized = getBoolean("mobs.villager.lobotomize.enabled", villagerLobotomized);
+         villagerLobotomizeCheckInterval = getInt("mobs.villager.lobotomize.check-interval", villagerLobotomizeCheckInterval);
++        villagerMinimumDemand = getInt("mobs.villager.minimum-demand", villagerMinimumDemand);
+     }
  }
 \ No newline at end of file
