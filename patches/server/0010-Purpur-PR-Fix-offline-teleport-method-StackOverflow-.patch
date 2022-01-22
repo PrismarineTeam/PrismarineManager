@@ -1,0 +1,38 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Alpha <alphakr93@outlook.com>
+Date: Sat, 22 Jan 2022 22:24:14 +0900
+Subject: [PATCH] Purpur PR - Fix offline teleport method StackOverflow (Closes
+ PurpurMC#855)
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index f4ed262e51a0cc64df56dfc23ba816c23c5ce11e..9a90d084a05ad4865f3cd2d3b9cf1d7e3e0466d6 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -1970,22 +1970,22 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+     // Purpur start - OfflinePlayer API
+     @Override
+     public boolean teleportOffline(@NotNull Location destination) {
+-        return ((OfflinePlayer)this).teleportOffline(destination);
++        return this.teleport(destination);
+     }
+ 
+     @Override
+     public boolean teleportOffline(Location destination, PlayerTeleportEvent.TeleportCause cause) {
+-        return ((OfflinePlayer)this).teleportOffline(destination, cause);
++        return this.teleport(destination, cause);
+     }
+ 
+     @Override
+     public java.util.concurrent.CompletableFuture<Boolean> teleportOfflineAsync(@NotNull Location destination) {
+-        return ((OfflinePlayer)this).teleportOfflineAsync(destination);
++        return this.teleportAsync(destination);
+     }
+ 
+     @Override
+     public java.util.concurrent.CompletableFuture<Boolean> teleportOfflineAsync(@NotNull Location destination, PlayerTeleportEvent.TeleportCause cause) {
+-        return ((OfflinePlayer)this).teleportOfflineAsync(destination, cause);
++        return this.teleportAsync(destination, cause);
+     }
+     // Purpur end - OfflinePlayer API
+ 

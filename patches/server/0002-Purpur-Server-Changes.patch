@@ -14949,7 +14949,7 @@ index cc8e94dc7ad93a9b7cf71315f5910daa35bc0778..c0ef9c9c438a2716f5d2cd589a0b4e85
 +    // Purpur end
  }
 diff --git a/src/main/java/net/minecraft/world/level/block/NoteBlock.java b/src/main/java/net/minecraft/world/level/block/NoteBlock.java
-index 16e11e31077f160198e0b04abdfeabb97ed20c6f..8d0a1da17c38118293d1f05849cdc99970ed8795 100644
+index 0e106bcc1f882877a5e444a2621466c6e4696d42..ce6701d46e28a24aecd348a4019aad5aa08f0b05 100644
 --- a/src/main/java/net/minecraft/world/level/block/NoteBlock.java
 +++ b/src/main/java/net/minecraft/world/level/block/NoteBlock.java
 @@ -34,11 +34,13 @@ public class NoteBlock extends Block {
@@ -14980,8 +14980,8 @@ index 16e11e31077f160198e0b04abdfeabb97ed20c6f..8d0a1da17c38118293d1f05849cdc999
 -        if (world.getBlockState(blockposition.above()).isAir()) {
 +        if (world.purpurConfig.noteBlockIgnoreAbove || world.getBlockState(blockposition.above()).isAir()) { // Purpur
              // CraftBukkit start
-             org.bukkit.event.block.NotePlayEvent event = org.bukkit.craftbukkit.event.CraftEventFactory.callNotePlayEvent(world, blockposition, data.getValue(NoteBlock.INSTRUMENT), data.getValue(NoteBlock.NOTE));
-             if (!event.isCancelled()) {
+             // Paper start - move NotePlayEvent call to fix instrument/note changes
+                 world.blockEvent(blockposition, this, 0, 0);
 diff --git a/src/main/java/net/minecraft/world/level/block/ObserverBlock.java b/src/main/java/net/minecraft/world/level/block/ObserverBlock.java
 index 4a34a08a1d46e4d3020644a51d9e30a36a18791a..be28b5aba28383058548cfb68f98266415367968 100644
 --- a/src/main/java/net/minecraft/world/level/block/ObserverBlock.java
@@ -16671,10 +16671,10 @@ index ae05f526f9ec70a2992ef3ee66b7f57eca2351fc..b010d7398c657367651fc576af5b0514
 +    // Purpur end
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 148e1985017f6955267b5c970730645394d700f6..9a307b74a1c6e43d497dc59286e3885116fb1cb4 100644
+index 43d96760828e4c9683398f3f6925701d003556e4..f4ed262e51a0cc64df56dfc23ba816c23c5ce11e 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -430,10 +430,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -431,10 +431,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
  
      @Override
      public void setPlayerListName(String name) {
@@ -16691,7 +16691,7 @@ index 148e1985017f6955267b5c970730645394d700f6..9a307b74a1c6e43d497dc59286e38851
          for (ServerPlayer player : (List<ServerPlayer>) server.getHandle().players) {
              if (player.getBukkitEntity().canSee(this)) {
                  player.connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.UPDATE_DISPLAY_NAME, this.getHandle()));
-@@ -976,6 +981,10 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1006,6 +1011,10 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          }
  
          if (entity.isVehicle()) {
@@ -16702,7 +16702,7 @@ index 148e1985017f6955267b5c970730645394d700f6..9a307b74a1c6e43d497dc59286e38851
              return false;
          }
  
-@@ -1558,7 +1567,13 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1588,7 +1597,13 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
  
      @Override
      public boolean canSee(org.bukkit.entity.Entity entity) {
@@ -16717,7 +16717,7 @@ index 148e1985017f6955267b5c970730645394d700f6..9a307b74a1c6e43d497dc59286e38851
      }
  
      @Override
-@@ -1922,6 +1937,28 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1952,6 +1967,28 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          return this.getHandle().getAbilities().walkingSpeed * 2f;
      }
  
@@ -16746,7 +16746,7 @@ index 148e1985017f6955267b5c970730645394d700f6..9a307b74a1c6e43d497dc59286e38851
      private void validateSpeed(float value) {
          if (value < 0) {
              if (value < -1f) {
-@@ -2623,4 +2660,50 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2653,4 +2690,50 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          return this.spigot;
      }
      // Spigot end
