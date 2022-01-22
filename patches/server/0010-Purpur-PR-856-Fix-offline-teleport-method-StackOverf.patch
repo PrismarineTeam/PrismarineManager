@@ -1,8 +1,9 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Alpha <alphakr93@outlook.com>
-Date: Sat, 22 Jan 2022 22:24:14 +0900
-Subject: [PATCH] Purpur PR - Fix offline teleport method StackOverflow (Closes
- PurpurMC#855)
+From: YouHaveTrouble <youhavetrouble@youhavetrouble.me>
+Date: Sun, 22 Aug 2021 05:11:09 +0200
+Subject: [PATCH] Fix offline teleport method StackOverflow (Closes #855)
+
+Updated to Prismarine by AlphaKR93 <alphakr93@outlook.com>
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
