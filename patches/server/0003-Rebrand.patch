@@ -1,11 +1,11 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alpha <alphakr93@outlook.com>
-Date: Wed, 19 Jan 2022 22:39:49 +0900
+Date: Sun, 23 Jan 2022 17:19:54 +0900
 Subject: [PATCH] Rebrand
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 1bdcca4d1a25f4292ab9421d44fa3018af263341..14e02a48fdf5feb19c6718cfa5e23bb3ff1b59b2 100644
+index 1bdcca4d1a25f4292ab9421d44fa3018af263341..7d5089f58a126277cfafcb543e9943e8def9c305 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -18,7 +18,7 @@ repositories {
@@ -17,14 +17,12 @@ index 1bdcca4d1a25f4292ab9421d44fa3018af263341..14e02a48fdf5feb19c6718cfa5e23bb3
      // Pufferfish start
      implementation("io.papermc.paper:paper-mojangapi:1.18.1-R0.1-SNAPSHOT") {
          exclude("io.papermc.paper", "paper-api")
-@@ -80,13 +80,13 @@ tasks.jar {
-         val date = git("show", "-s", "--format=%ci", gitHash).getText().trim() // Paper
+@@ -81,12 +81,12 @@ tasks.jar {
          val gitBranch = git("rev-parse", "--abbrev-ref", "HEAD").getText().trim() // Paper
          attributes(
--            "Main-Class" to "org.bukkit.craftbukkit.Main",
+             "Main-Class" to "org.bukkit.craftbukkit.Main",
 -            "Implementation-Title" to "CraftBukkit",
 -            "Implementation-Version" to "git-Purpur-$implementationVersion", // Pufferfish // Purpur
-+            "Main-Class" to "org.bukkit.craftbukkit.Main", // Prismarine
 +            "Implementation-Title" to "Prismarine", // Prismarine
 +            "Implementation-Version" to "git-Prismarine-$implementationVersion", // Pufferfish // Purpur // Prismarine
              "Implementation-Vendor" to date, // Paper
@@ -37,30 +35,30 @@ index 1bdcca4d1a25f4292ab9421d44fa3018af263341..14e02a48fdf5feb19c6718cfa5e23bb3
              "Git-Commit" to gitHash, // Paper
          )
 diff --git a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
-index e93441d06da8c7f05aa451b0ffbb9059780da0d5..682af7520e35ca9d976250683bd8bf7f7c0b5e45 100644
+index fba5dbdb7bcbb55400ef18342c9b54612972a718..0ba70db8fa910ecba576c858ee21a5038caab2a2 100644
 --- a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
 +++ b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
-@@ -19,7 +19,7 @@ import java.util.stream.StreamSupport;
- 
+@@ -20,7 +20,7 @@ import java.util.stream.StreamSupport;
  public class PaperVersionFetcher implements VersionFetcher {
      private static final java.util.regex.Pattern VER_PATTERN = java.util.regex.Pattern.compile("^([0-9\\.]*)\\-.*R"); // R is an anchor, will always give '-R' at end
--    private static final String DOWNLOAD_PAGE = "https://purpurmc.org/downloads"; // Purpur
+     // Purpur start
+-    private static final String DOWNLOAD_PAGE = "https://purpurmc.org/downloads";
 +    private static final String DOWNLOAD_PAGE = "https://github.com/PrismarineTeam/Prismarine/releases"; // Purpur // Prismarine
+     private static int distance = -2; public int distance() { return distance; }
+     // Purpur end
      private static @Nullable String mcVer;
- 
-     @Override
-@@ -30,8 +30,8 @@ public class PaperVersionFetcher implements VersionFetcher {
+@@ -33,8 +33,8 @@ public class PaperVersionFetcher implements VersionFetcher {
      @Nonnull
      @Override
      public Component getVersionMessage(@Nonnull String serverVersion) {
 -        String[] parts = serverVersion.substring("git-Purpur-".length()).split("[-\\s]"); // Purpur
 -        final Component updateMessage = getUpdateStatusMessage("PurpurMC/Purpur", "ver/" + getMinecraftVersion(), parts[0]); // Purpur
 +        String[] parts = serverVersion.substring("git-Prismarine-".length()).split("[-\\s]"); // Purpur // Prismarine
-+        final Component updateMessage = getUpdateStatusMessage("PrismarineTeam/Prismarine", "ver/" + getMinecraftVersion(), parts[0]); // Purpur // Prismarine
++        final Component updateMessage = getUpdateStatusMessage("PrismarineMC/Prismairne", "ver/" + getMinecraftVersion(), parts[0]); // Purpur // Prismarine
          final Component history = getHistory();
  
-         return history != null ? TextComponent.ofChildren(updateMessage, Component.newline(), history) : updateMessage;
-@@ -44,7 +44,7 @@ public class PaperVersionFetcher implements VersionFetcher {
+         return history != null ? Component.join(net.kyori.adventure.text.JoinConfiguration.separator(Component.newline()), history, updateMessage) : updateMessage; // Purpur
+@@ -47,7 +47,7 @@ public class PaperVersionFetcher implements VersionFetcher {
                  String result = matcher.group();
                  mcVer = result.substring(0, result.length() - 2); // strip 'R' anchor and trailing '-'
              } else {
@@ -69,46 +67,46 @@ index e93441d06da8c7f05aa451b0ffbb9059780da0d5..682af7520e35ca9d976250683bd8bf7f
                  org.bukkit.Bukkit.getLogger().warning("Pattern: " + VER_PATTERN.toString());
                  org.bukkit.Bukkit.getLogger().warning("Version: " + org.bukkit.Bukkit.getBukkitVersion());
              }
-@@ -54,6 +54,8 @@ public class PaperVersionFetcher implements VersionFetcher {
-     }
+@@ -58,6 +58,8 @@ public class PaperVersionFetcher implements VersionFetcher {
  
      private static Component getUpdateStatusMessage(@Nonnull String repo, @Nonnull String branch, @Nonnull String versionInfo) {
-+        // Prismarine start - disable jenkins/api checking
+         //int distance; // Purpur - use field
++        // Prismarine start - disable api checking
 +        /*
-         int distance;
          try {
              int jenkinsBuild = Integer.parseInt(versionInfo);
-@@ -62,6 +64,10 @@ public class PaperVersionFetcher implements VersionFetcher {
+             distance = fetchDistanceFromSiteApi(jenkinsBuild, getMinecraftVersion());
+@@ -65,6 +67,10 @@ public class PaperVersionFetcher implements VersionFetcher {
              versionInfo = versionInfo.replace("\"", "");
              distance = fetchDistanceFromGitHub(repo, branch, versionInfo);
          }
 +         */
 +        versionInfo = versionInfo.replace("\"", "");
-+        int distance = fetchDistanceFromGitHub(repo, branch, versionInfo);
++        distance = fetchDistanceFromGitHub(repo, branch, versionInfo);
 +        // Prismarine end
  
          switch (distance) {
              case -1:
-@@ -80,6 +86,8 @@ public class PaperVersionFetcher implements VersionFetcher {
+@@ -83,6 +89,8 @@ public class PaperVersionFetcher implements VersionFetcher {
          }
      }
  
-+    // Prismarine start - disable jenkins/api checking
++    // Prismarine start
 +    /*
      private static int fetchDistanceFromSiteApi(int jenkinsBuild, @Nullable String siteApiVersion) {
          if (siteApiVersion == null) { return -1; }
          try {
-@@ -99,6 +107,8 @@ public class PaperVersionFetcher implements VersionFetcher {
+@@ -102,6 +110,8 @@ public class PaperVersionFetcher implements VersionFetcher {
              return -1;
          }
      }
-+     */
++    */
 +    // Prismarine end
  
      // Contributed by Techcable <Techcable@outlook.com> in GH-65
      private static int fetchDistanceFromGitHub(@Nonnull String repo, @Nonnull String branch, @Nonnull String hash) {
 diff --git a/src/main/java/net/minecraft/CrashReport.java b/src/main/java/net/minecraft/CrashReport.java
-index cc0576e8e5e1dc77c22856f0f9c4376b6bf36677..e323da12adea2edecd4dcbe674f9d7ac977ab76c 100644
+index 6654c5a547cb49bce98d6b0feed9a245c1a5ce7c..79bf89df427f48733059fe5aafef0e647a2b1abc 100644
 --- a/src/main/java/net/minecraft/CrashReport.java
 +++ b/src/main/java/net/minecraft/CrashReport.java
 @@ -33,7 +33,7 @@ public class CrashReport {
@@ -120,29 +118,38 @@ index cc0576e8e5e1dc77c22856f0f9c4376b6bf36677..e323da12adea2edecd4dcbe674f9d7ac
      }
  
      public String getTitle() {
+@@ -123,7 +123,7 @@ public class CrashReport {
+         stringbuilder.append("---- Minecraft Crash Report ----\n");
+         // Purpur start
+         stringbuilder.append("// ");
+-        stringbuilder.append("// DO NOT REPORT THIS TO PAPER! REPORT TO PURPUR INSTEAD!");
++        stringbuilder.append("// DO NOT REPORT THIS TO PAPER OR PURPUR! REPORT TO PRISMARINE INSTEAD!"); // Prismarine
+         // Purpur end
+         stringbuilder.append("// ");
+         stringbuilder.append(CrashReport.getErrorComment());
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 7fa050d087aa151887151c3a4b6f291a67c82d16..011e012b49d5184b8f38e8eb31a5a339015ee351 100644
+index 4502e3c1382041ed3896233d2b04e7feb78944eb..2e217fa705e0faefe91322c3711b5e041db0e9a6 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -1024,7 +1024,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          shutdownThread = Thread.currentThread();
          org.spigotmc.WatchdogThread.doStop(); // Paper
          if (!isSameThread()) {
--            MinecraftServer.LOGGER.info("Stopping main thread (Ignore any thread death message you see! - DO NOT REPORT THREAD DEATH TO PAPER)");
-+            MinecraftServer.LOGGER.info("Stopping main thread (Ignore any thread death message you see! - DO NOT REPORT THREAD DEATH TO PRISMARINE)"); // Prismarine
+-            MinecraftServer.LOGGER.info("Stopping main thread (Ignore any thread death message you see! - DO NOT REPORT THREAD DEATH TO PURPUR)"); // Purpur
++            MinecraftServer.LOGGER.info("Stopping main thread (Ignore any thread death message you see! - DO NOT REPORT THREAD DEATH TO PRISMARINE)"); // Purpur // Prismarine
              while (this.getRunningThread().isAlive()) {
                  this.getRunningThread().stop();
                  try {
 diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
-index bffb2915d84be3a1b642788e21c803b54b2db6ea..44c90eb9e4999a43dd243873888f5801c107048c 100644
+index 399afb3a3c3064b0d21fda553908fedc9579aa9f..beb7933b534c7e956cbb799c106741f58e623232 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
 @@ -113,7 +113,7 @@ public class RegionFileStorage implements AutoCloseable {
  
      // Paper start
      private static void printOversizedLog(String msg, Path file, int x, int z) {
--        org.apache.logging.log4j.LogManager.getLogger().fatal(msg + " (" + file.toString().replaceAll(".+[\\\\/]", "") + " - " + x + "," + z + ") Go clean it up to remove this message. /minecraft:tp " + (x<<4)+" 128 "+(z<<4) + " - DO NOT REPORT THIS TO PAPER - You may ask for help on Discord, but do not file an issue. These error messages can not be removed.");
-+        org.apache.logging.log4j.LogManager.getLogger().fatal(msg + " (" + file.toString().replaceAll(".+[\\\\/]", "") + " - " + x + "," + z + ") Go clean it up to remove this message. /minecraft:tp " + (x<<4)+" 128 "+(z<<4) + " - DO NOT REPORT THIS TO PRISMARINE - You may ask for help on Discord, but do not file an issue. These error messages can not be removed."); // Prismarine
+-        org.apache.logging.log4j.LogManager.getLogger().fatal(msg + " (" + file.toString().replaceAll(".+[\\\\/]", "") + " - " + x + "," + z + ") Go clean it up to remove this message. /minecraft:tp " + (x<<4)+" 128 "+(z<<4) + " - DO NOT REPORT THIS TO PURPUR - You may ask for help on Discord, but do not file an issue. These error messages can not be removed."); // Purpur
++        org.apache.logging.log4j.LogManager.getLogger().fatal(msg + " (" + file.toString().replaceAll(".+[\\\\/]", "") + " - " + x + "," + z + ") Go clean it up to remove this message. /minecraft:tp " + (x<<4)+" 128 "+(z<<4) + " - DO NOT REPORT THIS TO PRISMARINE - You may ask for help on Discord, but do not file an issue. These error messages can not be removed."); // Purpur // Prismarine
      }
  
      private static final int DEFAULT_SIZE_THRESHOLD = 1024 * 8;
@@ -160,33 +167,33 @@ index 307bedbd84c2740a30145647d6dbc69c3480930b..9504612bc1fa795526b43fa6ae94634b
      private final String bukkitVersion = Versioning.getBukkitVersion();
      private final Logger logger = Logger.getLogger("Minecraft");
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
-index d2439ebab74c53e01f27fe9a9fe9366b99974dea..c92daa4532596ed6acbd2ff0f3df2d5218cc6b7d 100644
+index 7534889c4169cbd26f7e778cbd3be49bd2640c83..277bff69ab5aa13b29577611320158fd7fa0124f 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
 @@ -808,7 +808,7 @@ public class CraftLivingEntity extends CraftEntity implements LivingEntity {
              return EntityCategory.WATER;
          }
  
--        throw new UnsupportedOperationException("Unsupported monster type: " + type + ". This is a bug, report this to Spigot.");
-+        throw new UnsupportedOperationException("Unsupported monster type: " + type + ". This is a bug, report this to Prismarine."); // Prismarine
+-        throw new UnsupportedOperationException("Unsupported monster type: " + type + ". This is a bug, report this to Purpur."); // Purpur
++        throw new UnsupportedOperationException("Unsupported monster type: " + type + ". This is a bug, report this to Prismarine."); // Purpur // Prismarine
      }
  
      @Override
 diff --git a/src/main/java/org/bukkit/craftbukkit/scheduler/CraftScheduler.java b/src/main/java/org/bukkit/craftbukkit/scheduler/CraftScheduler.java
-index cdefb2025eedea7e204d70d568adaf1c1ec4c03c..dc5c9dfa293850cf471d6cfaf44f538dd13ce2b9 100644
+index d1526ed7197b883e1d1f07baf285bf5eef4d20d5..304c3fbd4c120546f666f89c0042d764d0f188b7 100644
 --- a/src/main/java/org/bukkit/craftbukkit/scheduler/CraftScheduler.java
 +++ b/src/main/java/org/bukkit/craftbukkit/scheduler/CraftScheduler.java
 @@ -504,7 +504,7 @@ public class CraftScheduler implements BukkitScheduler {
                  this.parsePending();
              } else {
                  //this.debugTail = this.debugTail.setNext(new CraftAsyncDebugger(currentTick + CraftScheduler.RECENT_TICKS, task.getOwner(), task.getTaskClass())); // Paper
--                task.getOwner().getLogger().log(Level.SEVERE, "Unexpected Async Task in the Sync Scheduler. Report this to Paper"); // Paper
-+                task.getOwner().getLogger().log(Level.SEVERE, "Unexpected Async Task in the Sync Scheduler. Report this to Prismarine"); // Paper // Prismarine
+-                task.getOwner().getLogger().log(Level.SEVERE, "Unexpected Async Task in the Sync Scheduler. Report this to Purpur"); // Paper // Purpur
++                task.getOwner().getLogger().log(Level.SEVERE, "Unexpected Async Task in the Sync Scheduler. Report this to Prismarine"); // Paper // Purpur // Prismarine
                  // We don't need to parse pending
                  // (async tasks must live with race-conditions if they attempt to cancel between these few lines of code)
              }
 diff --git a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
-index 99597258e8e88cd9e2c901c4ac3ff7faeeabee2b..7ed7f16a7b32f7ae0a83f00b9cace4c75501e18a 100644
+index 99597258e8e88cd9e2c901c4ac3ff7faeeabee2b..9b59fe56110ee38ebab56509daec156e73bffa2a 100644
 --- a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
 +++ b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
 @@ -11,7 +11,7 @@ public final class Versioning {
@@ -194,7 +201,7 @@ index 99597258e8e88cd9e2c901c4ac3ff7faeeabee2b..7ed7f16a7b32f7ae0a83f00b9cace4c7
          String result = "Unknown-Version";
  
 -        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/org.purpurmc.purpur/purpur-api/pom.properties"); // Pufferfish // Purpur
-+        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/net.prismarineteam.prismarine/Prismarine-API/pom.properties"); // Pufferfish // Purpur // Prismarine
++        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/net.prismarineteam.prismarine/Prismarine-API/pom.properties"); // Pufferfish // Purpur
          Properties properties = new Properties();
  
          if (stream != null) {
@@ -203,7 +210,7 @@ index 99597258e8e88cd9e2c901c4ac3ff7faeeabee2b..7ed7f16a7b32f7ae0a83f00b9cace4c7
                  result = properties.getProperty("version");
              } catch (IOException ex) {
 -                Logger.getLogger(Versioning.class.getName()).log(Level.SEVERE, "Could not get Bukkit version!", ex);
-+                Logger.getLogger(Versioning.class.getName()).log(Level.SEVERE, "Could not get Prismarine version!", ex); // Prismarine
++                Logger.getLogger(Versioning.class.getName()).log(Level.SEVERE, "Could not get Prismarine version!", ex);
              }
          }
  
@@ -221,33 +228,24 @@ index 672cdb5d3a48ca66fb62c49f7b5ce88dea781b97..5a6d0cd647466d581e9168e977d8620e
          serverModName = getString("settings.server-mod-name", serverModName);
      }
 diff --git a/src/main/java/org/spigotmc/WatchdogThread.java b/src/main/java/org/spigotmc/WatchdogThread.java
-index bee38307494188800886a1622fed229b88dbd8f1..553349989ad35f2b0569a3bba2bc3940eedcd992 100644
+index 04e836cf07b64a99f87e016834f9e365b29f0cc2..1e8f39e7f88f5e4fa88a00cb537f172f2f505194 100644
 --- a/src/main/java/org/spigotmc/WatchdogThread.java
 +++ b/src/main/java/org/spigotmc/WatchdogThread.java
-@@ -97,7 +97,7 @@ public class WatchdogThread extends Thread
- 
-     private WatchdogThread(long timeoutTime, boolean restart)
-     {
--        super( "Paper Watchdog Thread" );
-+        super( "Prismarine Watchdog Thread" ); // Prismarine
-         this.timeoutTime = timeoutTime;
-         this.restart = restart;
-         earlyWarningEvery = Math.min(PaperConfig.watchdogPrintEarlyWarningEvery, timeoutTime); // Paper
 @@ -156,14 +156,14 @@ public class WatchdogThread extends Thread
                  if (isLongTimeout) {
                  // Paper end
                  log.log( Level.SEVERE, "------------------------------" );
--                log.log( Level.SEVERE, "The server has stopped responding! This is (probably) not a Paper bug." ); // Paper
-+                log.log( Level.SEVERE, "The server has stopped responding! This is (probably) not a Prismarine bug." ); // Paper // Prismarine
+-                log.log( Level.SEVERE, "The server has stopped responding! This is (probably) not a Purpur bug." ); // Paper // Purpur
++                log.log( Level.SEVERE, "The server has stopped responding! This is (probably) not a Prismarine bug." ); // Paper // Purpur // Prismarine
                  log.log( Level.SEVERE, "If you see a plugin in the Server thread dump below, then please report it to that author" );
                  log.log( Level.SEVERE, "\t *Especially* if it looks like HTTP or MySQL operations are occurring" );
                  log.log( Level.SEVERE, "If you see a world save or edit, then it means you did far more than your server can handle at once" );
                  log.log( Level.SEVERE, "\t If this is the case, consider increasing timeout-time in spigot.yml but note that this will replace the crash with LARGE lag spikes" );
--                log.log( Level.SEVERE, "If you are unsure or still think this is a Paper bug, please report this to https://github.com/PaperMC/Paper/issues" );
-+                log.log( Level.SEVERE, "If you are unsure or still think this is a Prismarine bug, please report this to https://github.com/PrismarineTeam/Prismarine/issues" ); // Prismarine
+-                log.log( Level.SEVERE, "If you are unsure or still think this is a Purpur bug, please report this to https://github.com/PurpurMC/Purpur/issues" ); // Purpur
++                log.log( Level.SEVERE, "If you are unsure or still think this is a Prismarine bug, please report this to https://github.com/PrismarineTeam/Prismarine/issues" ); // Purpur // Prismarine
                  log.log( Level.SEVERE, "Be sure to include ALL relevant console errors and Minecraft crash reports" );
--                log.log( Level.SEVERE, "Paper version: " + Bukkit.getServer().getVersion() );
-+                log.log( Level.SEVERE, "Prismarine version: " + Bukkit.getServer().getVersion() ); // Prismarine
+-                log.log( Level.SEVERE, "Purpur version: " + Bukkit.getServer().getVersion() ); // Purpur
++                log.log( Level.SEVERE, "Prismarine version: " + Bukkit.getServer().getVersion() ); // Purpur // Prismarine
                  //
                  if ( net.minecraft.world.level.Level.lastPhysicsProblem != null )
                  {
@@ -255,14 +253,14 @@ index bee38307494188800886a1622fed229b88dbd8f1..553349989ad35f2b0569a3bba2bc3940
                  // Paper end
                  } else
                  {
--                    log.log(Level.SEVERE, "--- DO NOT REPORT THIS TO PAPER - THIS IS NOT A BUG OR A CRASH  - " + Bukkit.getServer().getVersion() + " ---");
-+                    log.log(Level.SEVERE, "--- DO NOT REPORT THIS TO PRISMARINE - THIS IS NOT A BUG OR A CRASH  - " + Bukkit.getServer().getVersion() + " ---"); // Prismarine
+-                    log.log(Level.SEVERE, "--- DO NOT REPORT THIS TO PURPUR - THIS IS NOT A BUG OR A CRASH  - " + Bukkit.getServer().getVersion() + " ---"); // Purpur
++                    log.log(Level.SEVERE, "--- DO NOT REPORT THIS TO PRISMARINE - THIS IS NOT A BUG OR A CRASH  - " + Bukkit.getServer().getVersion() + " ---"); // Purpur // Prismarine
                      log.log(Level.SEVERE, "The server has not responded for " + (currentTime - lastTick) / 1000 + " seconds! Creating thread dump");
                  }
                  // Paper end - Different message for short timeout
                  log.log( Level.SEVERE, "------------------------------" );
--                log.log( Level.SEVERE, "Server thread dump (Look for plugins here before reporting to Paper!):" ); // Paper
-+                log.log( Level.SEVERE, "Server thread dump (Look for plugins here before reporting to Prismarine!):" ); // Paper // Prismarine
+-                log.log( Level.SEVERE, "Server thread dump (Look for plugins here before reporting to Purpur!):" ); // Paper // Purpur
++                log.log( Level.SEVERE, "Server thread dump (Look for plugins here before reporting to Prismarine!):" ); // Paper // Purpur // Prismarine
                  com.destroystokyo.paper.io.chunk.ChunkTaskManager.dumpAllChunkLoadInfo(); // Paper
                  this.dumpTickingInfo(); // Paper - log detailed tick information
                  WatchdogThread.dumpThread( ManagementFactory.getThreadMXBean().getThreadInfo( server.serverThread.getId(), Integer.MAX_VALUE ), log );
@@ -270,8 +268,8 @@ index bee38307494188800886a1622fed229b88dbd8f1..553349989ad35f2b0569a3bba2bc3940
                      WatchdogThread.dumpThread( thread, log );
                  }
                  } else {
--                    log.log(Level.SEVERE, "--- DO NOT REPORT THIS TO PAPER - THIS IS NOT A BUG OR A CRASH ---");
-+                    log.log(Level.SEVERE, "--- DO NOT REPORT THIS TO PRISMARINE - THIS IS NOT A BUG OR A CRASH ---"); // Prismarine
+-                    log.log(Level.SEVERE, "--- DO NOT REPORT THIS TO PURPUR - THIS IS NOT A BUG OR A CRASH ---"); // Purpur
++                    log.log(Level.SEVERE, "--- DO NOT REPORT THIS TO PRISMARINE - THIS IS NOT A BUG OR A CRASH ---"); // Purpur // Prismarine
                  }
  
                  log.log( Level.SEVERE, "------------------------------" );

@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alpha <alphakr93@outlook.com>
-Date: Wed, 19 Jan 2022 10:25:04 +0900
+Date: Sun, 23 Jan 2022 16:10:53 +0900
 Subject: [PATCH] Pufferfish Server Changes
 
 
@@ -2521,10 +2521,10 @@ index 7437f01ca8f416e2c9150250e324af4725a4efb6..7ac51dbfce18a2bc52faa7a915abeccc
      int LARGE_MAX_STACK_SIZE = 64;
  
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 8ca6388ddd834c4f0e94450c8a6ce6b5e73a5f60..5ded03b80f71111e8480036ae2787b419ac57133 100644
+index eac13465c8c1827953a8b1bb2feb4d7f92c773fb..04298bb935eacab6245afc0ae465ef0fab09101e 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -222,7 +222,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource, i
+@@ -227,7 +227,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource, i
      public double yo;
      public double zo;
      private Vec3 position;
@@ -2533,7 +2533,7 @@ index 8ca6388ddd834c4f0e94450c8a6ce6b5e73a5f60..5ded03b80f71111e8480036ae2787b41
      private ChunkPos chunkPosition;
      private Vec3 deltaMovement;
      public float yRot; // Paper - private->public
-@@ -342,6 +342,11 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource, i
+@@ -348,6 +348,11 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource, i
          return this.originWorld;
      }
      // Paper end
@@ -2545,7 +2545,7 @@ index 8ca6388ddd834c4f0e94450c8a6ce6b5e73a5f60..5ded03b80f71111e8480036ae2787b41
      public float getBukkitYaw() {
          return this.yRot;
      }
-@@ -365,17 +370,36 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource, i
+@@ -371,17 +376,36 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource, i
          this.isLegacyTrackingEntity = isLegacyTrackingEntity;
      }
  
@@ -2583,7 +2583,7 @@ index 8ca6388ddd834c4f0e94450c8a6ce6b5e73a5f60..5ded03b80f71111e8480036ae2787b41
          for (Entity passenger : passengers) {
              org.spigotmc.TrackingRange.TrackingRangeType passengerType = passenger.trackingRangeType;
              int passengerRange = chunkMap.getEntityTrackerRange(passengerType.ordinal());
-@@ -384,6 +408,9 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource, i
+@@ -390,6 +414,9 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource, i
                  range = passengerRange;
              }
          }
@@ -2593,7 +2593,7 @@ index 8ca6388ddd834c4f0e94450c8a6ce6b5e73a5f60..5ded03b80f71111e8480036ae2787b41
  
          return chunkMap.playerEntityTrackerTrackMaps[type.ordinal()].getObjectsInRange(MCUtil.getCoordinateKey(this));
      }
-@@ -3845,16 +3872,18 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource, i
+@@ -3860,16 +3887,18 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource, i
      }
  
      public boolean updateFluidHeightAndDoFluidPushing(Tag<Fluid> tag, double speed) {
@@ -2619,7 +2619,7 @@ index 8ca6388ddd834c4f0e94450c8a6ce6b5e73a5f60..5ded03b80f71111e8480036ae2787b41
              double d1 = 0.0D;
              boolean flag = this.isPushedByFluid();
              boolean flag1 = false;
-@@ -3862,14 +3891,61 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource, i
+@@ -3877,14 +3906,61 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource, i
              int k1 = 0;
              BlockPos.MutableBlockPos blockposition_mutableblockposition = new BlockPos.MutableBlockPos();
  
@@ -2687,7 +2687,7 @@ index 8ca6388ddd834c4f0e94450c8a6ce6b5e73a5f60..5ded03b80f71111e8480036ae2787b41
  
                              if (d2 >= axisalignedbb.minY) {
                                  flag1 = true;
-@@ -3891,9 +3967,12 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource, i
+@@ -3906,9 +3982,12 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource, i
                                  // CraftBukkit end
                              }
                          }
@@ -2713,7 +2713,7 @@ index 419a7e9614af2328ed401fc954196056243a984c..9bc568a2b0df13f55ee8670839b9e6a6
      public final String id;
  
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index 572f9ca81b78c6229725f6693940ac0a70ecdfd5..d4da096f22bd3c118304fb00c7b9763562b9c889 100644
+index 44a32fd2c08a09af0bba01547847b8594a7cd077..eeef768b8a4235276812ac060da5505274688a57 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
 @@ -139,7 +139,6 @@ import org.bukkit.event.entity.EntityTeleportEvent;
@@ -2724,7 +2724,7 @@ index 572f9ca81b78c6229725f6693940ac0a70ecdfd5..d4da096f22bd3c118304fb00c7b97635
  
  public abstract class LivingEntity extends Entity {
  
-@@ -394,8 +393,7 @@ public abstract class LivingEntity extends Entity {
+@@ -393,8 +392,7 @@ public abstract class LivingEntity extends Entity {
  
          if (this.isAlive()) {
              boolean flag = this instanceof net.minecraft.world.entity.player.Player;
@@ -2734,7 +2734,7 @@ index 572f9ca81b78c6229725f6693940ac0a70ecdfd5..d4da096f22bd3c118304fb00c7b97635
                  this.hurt(DamageSource.IN_WALL, 1.0F);
              } else if (flag && !this.level.getWorldBorder().isWithinBounds(this.getBoundingBox())) {
                  double d0 = this.level.getWorldBorder().getDistanceToBorder(this) + this.level.getWorldBorder().getDamageSafeZone();
-@@ -1288,6 +1286,15 @@ public abstract class LivingEntity extends Entity {
+@@ -1287,6 +1285,15 @@ public abstract class LivingEntity extends Entity {
          return this.getHealth() <= 0.0F;
      }
  
@@ -2750,7 +2750,7 @@ index 572f9ca81b78c6229725f6693940ac0a70ecdfd5..d4da096f22bd3c118304fb00c7b97635
      @Override
      public boolean hurt(DamageSource source, float amount) {
          if (this.isInvulnerableTo(source)) {
-@@ -1840,6 +1847,20 @@ public abstract class LivingEntity extends Entity {
+@@ -1839,6 +1846,20 @@ public abstract class LivingEntity extends Entity {
          return this.lastClimbablePos;
      }
  
@@ -2771,7 +2771,7 @@ index 572f9ca81b78c6229725f6693940ac0a70ecdfd5..d4da096f22bd3c118304fb00c7b97635
      public boolean onClimbable() {
          if (this.isSpectator()) {
              return false;
-@@ -3537,7 +3558,10 @@ public abstract class LivingEntity extends Entity {
+@@ -3536,7 +3557,10 @@ public abstract class LivingEntity extends Entity {
              Vec3 vec3d1 = new Vec3(entity.getX(), entity.getEyeY(), entity.getZ());
  
              // Paper - diff on change - used in CraftLivingEntity#hasLineOfSight(Location) and CraftWorld#lineOfSightExists
@@ -2971,10 +2971,10 @@ index 29dfbcecfbb2560e6ecde997abd5224a16c08c94..a76b754305036bf9c6387e27b86ec155
      @Override
      protected float getStandingEyeHeight(Pose pose, EntityDimensions dimensions) {
 diff --git a/src/main/java/net/minecraft/world/entity/animal/axolotl/Axolotl.java b/src/main/java/net/minecraft/world/entity/animal/axolotl/Axolotl.java
-index 86acf89ce875e215da8469947b382f70e42314b0..0fe2d6190ebba24713a3da7ef5367ecb86814a66 100644
+index a3ad957a9131168656b8e30c82d762c77e96ae6e..c296862063d2dcaf5e2d03d316c49ae03ab7d625 100644
 --- a/src/main/java/net/minecraft/world/entity/animal/axolotl/Axolotl.java
 +++ b/src/main/java/net/minecraft/world/entity/animal/axolotl/Axolotl.java
-@@ -276,9 +276,11 @@ public class Axolotl extends Animal implements LerpingModel, Bucketable {
+@@ -282,9 +282,11 @@ public class Axolotl extends Animal implements LerpingModel, Bucketable {
          return true;
      }
  

@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alpha <alphakr93@outlook.com>
-Date: Wed, 19 Jan 2022 10:30:59 +0900
+Date: Sun, 23 Jan 2022 16:15:23 +0900
 Subject: [PATCH] Purpur API Changes
 
 
@@ -415,7 +415,7 @@ index 9db0056ab94145819628b3ad8d8d26130d117fcf..680410d8404a6d3b0ac91aa5fc4cd9d7
  
      public static void sneaky(@NotNull Throwable exception) {
 diff --git a/src/main/java/com/destroystokyo/paper/util/VersionFetcher.java b/src/main/java/com/destroystokyo/paper/util/VersionFetcher.java
-index a736d7bcdc5861a01b66ba36158db1c716339346..4825c9ca2191d3bf1440b986827fc32e230a3280 100644
+index a736d7bcdc5861a01b66ba36158db1c716339346..0c3da2ec9478ed5a981e204b0c390913b1d06bfb 100644
 --- a/src/main/java/com/destroystokyo/paper/util/VersionFetcher.java
 +++ b/src/main/java/com/destroystokyo/paper/util/VersionFetcher.java
 @@ -5,6 +5,9 @@ import net.kyori.adventure.text.format.NamedTextColor;
@@ -428,10 +428,16 @@ index a736d7bcdc5861a01b66ba36158db1c716339346..4825c9ca2191d3bf1440b986827fc32e
  public interface VersionFetcher {
      /**
       * Amount of time to cache results for in milliseconds
-@@ -26,6 +29,9 @@ public interface VersionFetcher {
+@@ -26,6 +29,15 @@ public interface VersionFetcher {
      @NotNull
      Component getVersionMessage(@NotNull String serverVersion);
  
++    // Purpur start
++    default int distance() {
++        return 0;
++    }
++    // Purpur end
++
 +    /**
 +     * Dummy version fetcher
 +     */
@@ -593,7 +599,7 @@ index 53c4e5ca208ee17c7c244e416c537c7b63edf194..91c1d04b77929438bb5c79d8829e14b1
 +    // Purpur end
  }
 diff --git a/src/main/java/org/bukkit/ChatColor.java b/src/main/java/org/bukkit/ChatColor.java
-index 4594701d77c5d0f744bece871b98d9f6f73eb5a7..0aa79a9fbd5861d217a877a36e985e18fba6256f 100644
+index 4594701d77c5d0f744bece871b98d9f6f73eb5a7..a991bfe33f695a6166be6937039098ddea892f7b 100644
 --- a/src/main/java/org/bukkit/ChatColor.java
 +++ b/src/main/java/org/bukkit/ChatColor.java
 @@ -2,6 +2,7 @@ package org.bukkit;
@@ -604,7 +610,7 @@ index 4594701d77c5d0f744bece871b98d9f6f73eb5a7..0aa79a9fbd5861d217a877a36e985e18
  import java.util.regex.Pattern;
  import org.apache.commons.lang.Validate;
  import org.jetbrains.annotations.Contract;
-@@ -413,4 +414,72 @@ public enum ChatColor {
+@@ -413,4 +414,77 @@ public enum ChatColor {
              BY_CHAR.put(color.code, color);
          }
      }
@@ -646,6 +652,11 @@ index 4594701d77c5d0f744bece871b98d9f6f73eb5a7..0aa79a9fbd5861d217a877a36e985e18
 +                .replace("&n", "<u>")
 +                .replace("&o", "<i>")
 +                .replace("&r", "<r>");
++    }
++
++    @NotNull
++    public static net.kyori.adventure.text.Component parseMM(@NotNull String string, @Nullable Object... args) {
++        return net.kyori.adventure.text.minimessage.MiniMessage.get().parse(String.format(string, args));
 +    }
 +
 +    @Deprecated
@@ -1097,7 +1108,7 @@ index 14986911b4d0099ea2c91ab2196a771b7dee4c50..d1eed20ea3b27f0800a08b42b62aac40
      @NotNull
      public static WorldCreator ofKey(@NotNull NamespacedKey worldKey) {
 diff --git a/src/main/java/org/bukkit/block/Block.java b/src/main/java/org/bukkit/block/Block.java
-index 5f35ba35f8517ec28c1b21b3007c9a20dea097a7..cc058cb90d5343fed28a68855e8f2c311b16f29e 100644
+index 3e980c630452c8ea72227bc4cd92c605253cd41b..583468889ad302f9a88930691c83aa5b5f19985f 100644
 --- a/src/main/java/org/bukkit/block/Block.java
 +++ b/src/main/java/org/bukkit/block/Block.java
 @@ -186,6 +186,9 @@ public interface Block extends Metadatable, net.kyori.adventure.translation.Tran
@@ -1363,63 +1374,33 @@ index 1aa58c59e1e8738bbdc77752885ff3b18b29de42..0b4937dc6d003caf0f43a01a5a0801d5
 +    // Spigot end
  }
 diff --git a/src/main/java/org/bukkit/command/defaults/VersionCommand.java b/src/main/java/org/bukkit/command/defaults/VersionCommand.java
-index 57a21495843f3a144cd73473cdc8781d6129b7ca..7d9ffef457da0571bb2254c35b908d9c22a3dd46 100644
+index 57a21495843f3a144cd73473cdc8781d6129b7ca..b7fa160a305ee89004c11a3d8a01ac3b721f59b6 100644
 --- a/src/main/java/org/bukkit/command/defaults/VersionCommand.java
 +++ b/src/main/java/org/bukkit/command/defaults/VersionCommand.java
-@@ -168,14 +168,14 @@ public class VersionCommand extends BukkitCommand {
-                 lastCheck = System.currentTimeMillis();
-                 hasVersion = false;
-             } else {
--                sender.sendMessage(versionMessage);
-+                sendVersionMessage(sender); // Purpur
-                 return;
-             }
+@@ -199,7 +199,7 @@ public class VersionCommand extends BukkitCommand {
+         String version = Bukkit.getVersion();
+         // Paper start
+         if (version.startsWith("null")) { // running from ide?
+-            setVersionMessage(Component.text("Unknown version, custom build?", net.kyori.adventure.text.format.NamedTextColor.YELLOW));
++            setVersionMessage(Component.text("* Unknown version, custom build?", net.kyori.adventure.text.format.NamedTextColor.RED)); // Purpur
+             return;
          }
-         versionLock.lock();
-         try {
-             if (hasVersion) {
--                sender.sendMessage(versionMessage);
-+                sendVersionMessage(sender); // Purpur
-                 return;
-             }
-             versionWaiters.add(sender);
-@@ -256,7 +256,7 @@ public class VersionCommand extends BukkitCommand {
-             hasVersion = true;
-             versionTaskStarted = false;
-             for (CommandSender sender : versionWaiters) {
--                sender.sendMessage(versionMessage);
-+                sendVersionMessage(sender); // Purpur
-             }
-             versionWaiters.clear();
-         } finally {
-@@ -284,4 +284,27 @@ public class VersionCommand extends BukkitCommand {
-             return -1;
-         }
-     }
-+
-+    // Purpur start
-+    private void sendVersionMessage(CommandSender sender) {
-+        if (!(sender instanceof org.bukkit.command.ConsoleCommandSender)) {
-+            sender.sendMessage(versionMessage);
-+            return;
-+        }
-+        List<Component> list = new ArrayList<>();
-+        if (versionMessage.children().size() == 1) {
-+            versionMessage.children().get(0).children().forEach(child -> {
-+                if (child.children().size() > 1) {
-+                    list.addAll(child.children());
-+                } else {
-+                    list.add(child);
-+                }
-+            });
-+        } else {
-+            list.addAll(versionMessage.children());
-+        }
-+        list.removeIf(component -> net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer.plainText().serialize(component).equals("\n"));
-+        list.forEach(sender::sendMessage);
-+    }
-+    // Purpur end
- }
+         setVersionMessage(getVersionFetcher().getVersionMessage(version));
+@@ -240,9 +240,11 @@ public class VersionCommand extends BukkitCommand {
+     // Paper start
+     private void setVersionMessage(final @NotNull Component msg) {
+         lastCheck = System.currentTimeMillis();
+-        final Component message = net.kyori.adventure.text.TextComponent.ofChildren(
+-            Component.text(Bukkit.getVersionMessage(), net.kyori.adventure.text.format.NamedTextColor.WHITE),
+-            Component.newline(),
++        // Purpur start
++        int distance = getVersionFetcher().distance();
++        final Component message = Component.join(net.kyori.adventure.text.JoinConfiguration.separator(Component.newline()),
++            ChatColor.parseMM("<grey>Current: %s%s*", distance == 0 ? "<green>" : distance > 0 ? "<yellow>" : "<red>", Bukkit.getVersion()),
++            // Purpur end
+             msg
+         );
+         this.versionMessage = Component.text()
 diff --git a/src/main/java/org/bukkit/conversations/Conversation.java b/src/main/java/org/bukkit/conversations/Conversation.java
 index bf2407c838bc20197802687c150d513f4e86ed2b..ae09abfe9fe2979e89cfb4bb5c9cc0e7760943e7 100644
 --- a/src/main/java/org/bukkit/conversations/Conversation.java
@@ -1977,7 +1958,7 @@ index 9d065625be5931d970d7f34e1225fae1af960314..de3ebfa362ee4d8147bb68c7c115fdfb
  
          NORMAL(false),
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index fb8bd05a0204740ec323e9b657916de6ccbf6f90..6a978af4a08e0f03c7d4091c5be67452d57fa8ae 100644
+index ec1e115879c4f6608e8ba764ed87063577ee44b0..c642889243590e76a953182db4e04208dcefce3e 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
 @@ -76,7 +76,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
@@ -2088,7 +2069,7 @@ index fb8bd05a0204740ec323e9b657916de6ccbf6f90..6a978af4a08e0f03c7d4091c5be67452
      public void sendSignChange(@NotNull Location loc, @Nullable String[] lines, @NotNull DyeColor dyeColor) throws IllegalArgumentException;
  
      /**
-@@ -2205,7 +2205,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+@@ -2213,7 +2213,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
       * @deprecated in favour of {@link #locale()}
       */
      @NotNull
@@ -2097,7 +2078,7 @@ index fb8bd05a0204740ec323e9b657916de6ccbf6f90..6a978af4a08e0f03c7d4091c5be67452
      public String getLocale();
  
      // Paper start
-@@ -2479,6 +2479,8 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+@@ -2487,6 +2487,8 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
      void resetCooldown();
  
      /**
@@ -2106,7 +2087,7 @@ index fb8bd05a0204740ec323e9b657916de6ccbf6f90..6a978af4a08e0f03c7d4091c5be67452
       * @return the client option value of the player
       */
      @NotNull
-@@ -2510,6 +2512,9 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+@@ -2518,6 +2520,9 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
      // Paper end
  
      // Spigot start
@@ -2116,7 +2097,7 @@ index fb8bd05a0204740ec323e9b657916de6ccbf6f90..6a978af4a08e0f03c7d4091c5be67452
      public class Spigot extends Entity.Spigot {
  
          /**
-@@ -2649,4 +2654,67 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+@@ -2657,4 +2662,67 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
      @Override
      Spigot spigot();
      // Spigot end

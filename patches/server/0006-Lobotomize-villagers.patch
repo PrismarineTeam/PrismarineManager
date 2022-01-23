@@ -5,7 +5,7 @@ Subject: [PATCH] Lobotomize villagers
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/npc/Villager.java b/src/main/java/net/minecraft/world/entity/npc/Villager.java
-index 9755517f0c1d66db5bfd00946114fab5db6776d6..90ab67d6dcbd3961fcaa05b034a6d35e7fd096b6 100644
+index b9f228d660b2279284e64fc3bbfa90fc7d2d20b0..2cda545dbc7e143a8066f0899de23581addf52c3 100644
 --- a/src/main/java/net/minecraft/world/entity/npc/Villager.java
 +++ b/src/main/java/net/minecraft/world/entity/npc/Villager.java
 @@ -141,6 +141,8 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
