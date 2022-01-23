@@ -54,7 +54,7 @@ index fba5dbdb7bcbb55400ef18342c9b54612972a718..0ba70db8fa910ecba576c858ee21a503
 -        String[] parts = serverVersion.substring("git-Purpur-".length()).split("[-\\s]"); // Purpur
 -        final Component updateMessage = getUpdateStatusMessage("PurpurMC/Purpur", "ver/" + getMinecraftVersion(), parts[0]); // Purpur
 +        String[] parts = serverVersion.substring("git-Prismarine-".length()).split("[-\\s]"); // Purpur // Prismarine
-+        final Component updateMessage = getUpdateStatusMessage("PrismarineMC/Prismairne", "ver/" + getMinecraftVersion(), parts[0]); // Purpur // Prismarine
++        final Component updateMessage = getUpdateStatusMessage("PrismarineTeam/Prismairne", "ver/" + getMinecraftVersion(), parts[0]); // Purpur // Prismarine
          final Component history = getHistory();
  
          return history != null ? Component.join(net.kyori.adventure.text.JoinConfiguration.separator(Component.newline()), history, updateMessage) : updateMessage; // Purpur
