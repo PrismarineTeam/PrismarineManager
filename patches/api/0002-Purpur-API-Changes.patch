@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alpha <alphakr93@outlook.com>
-Date: Sun, 23 Jan 2022 16:15:23 +0900
+Date: Mon, 24 Jan 2022 10:54:26 +0900
 Subject: [PATCH] Purpur API Changes
 
 
@@ -1505,16 +1505,19 @@ index ec8443b67014c0129256c9227cc89686422b9217..6b41e09d6ed075aae5455929b5b29efb
  
      /**
 diff --git a/src/main/java/org/bukkit/entity/Dolphin.java b/src/main/java/org/bukkit/entity/Dolphin.java
-index f00eaadcdde7ceef95def2d8ec6eb63a76c177bd..a4a645799d82c730e3280519facf1347d26a859f 100644
+index 8ab329946daaff25646f3dd4582feb9e4c0685ca..52c96388a05c31c05373e03dbb67c8d237f8d894 100644
 --- a/src/main/java/org/bukkit/entity/Dolphin.java
 +++ b/src/main/java/org/bukkit/entity/Dolphin.java
-@@ -1,3 +1,6 @@
- package org.bukkit.entity;
+@@ -2,6 +2,9 @@ package org.bukkit.entity;
+ 
+ import org.bukkit.Location;
  
 +/**
 + * Represents a dolphin
 + */
- public interface Dolphin extends WaterMob { }
+ public interface Dolphin extends WaterMob { // Paper start - Dolphin API
+ 
+     /**
 diff --git a/src/main/java/org/bukkit/entity/DragonFireball.java b/src/main/java/org/bukkit/entity/DragonFireball.java
 index 6c475a3723721b33bb7709d8c1bbf487a10f9bbe..210d955e9bbb669c8ce644c935c1607ae8e7419b 100644
 --- a/src/main/java/org/bukkit/entity/DragonFireball.java
@@ -1565,10 +1568,10 @@ index 9e7f42caab1204036f4203354c115fd40c6def92..d71afdfa9f7eb66dffd9943d6e51314b
      void setPlayerSpawned(boolean playerSpawned);
  }
 diff --git a/src/main/java/org/bukkit/entity/Entity.java b/src/main/java/org/bukkit/entity/Entity.java
-index 51ec2e4ec4239659272bba3d6ba2ad73926ebb88..b2504a24ee2cc142f7b07fa5a908c0c693f18b8b 100644
+index c2c45a93887f99466a8ac4275355ac75c7f901c4..f0254799088d5343ef5c0c0a2841a6b51f17d14f 100644
 --- a/src/main/java/org/bukkit/entity/Entity.java
 +++ b/src/main/java/org/bukkit/entity/Entity.java
-@@ -668,6 +668,9 @@ public interface Entity extends Metadatable, CommandSender, Nameable, Persistent
+@@ -688,6 +688,9 @@ public interface Entity extends Metadatable, CommandSender, Nameable, Persistent
      Pose getPose();
  
      // Spigot start
@@ -1578,7 +1581,7 @@ index 51ec2e4ec4239659272bba3d6ba2ad73926ebb88..b2504a24ee2cc142f7b07fa5a908c0c6
      public class Spigot extends CommandSender.Spigot {
  
      }
-@@ -728,36 +731,50 @@ public interface Entity extends Metadatable, CommandSender, Nameable, Persistent
+@@ -748,36 +751,50 @@ public interface Entity extends Metadatable, CommandSender, Nameable, Persistent
  
      /**
       * Check if entity is in rain
@@ -1629,7 +1632,7 @@ index 51ec2e4ec4239659272bba3d6ba2ad73926ebb88..b2504a24ee2cc142f7b07fa5a908c0c6
       */
      public boolean isTicking();
  
-@@ -802,4 +819,42 @@ public interface Entity extends Metadatable, CommandSender, Nameable, Persistent
+@@ -822,4 +839,42 @@ public interface Entity extends Metadatable, CommandSender, Nameable, Persistent
       */
      boolean isInPowderedSnow();
      // Paper end

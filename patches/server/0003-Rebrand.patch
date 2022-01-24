@@ -35,7 +35,7 @@ index 1bdcca4d1a25f4292ab9421d44fa3018af263341..7d5089f58a126277cfafcb543e9943e8
              "Git-Commit" to gitHash, // Paper
          )
 diff --git a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
-index fba5dbdb7bcbb55400ef18342c9b54612972a718..0ba70db8fa910ecba576c858ee21a5038caab2a2 100644
+index fba5dbdb7bcbb55400ef18342c9b54612972a718..a9b95f09e4a65e75c066eea53b5d5dd5f94c9277 100644
 --- a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
 +++ b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
 @@ -20,7 +20,7 @@ import java.util.stream.StreamSupport;
@@ -215,10 +215,10 @@ index 99597258e8e88cd9e2c901c4ac3ff7faeeabee2b..9b59fe56110ee38ebab56509daec156e
          }
  
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurConfig.java b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
-index 672cdb5d3a48ca66fb62c49f7b5ce88dea781b97..5a6d0cd647466d581e9168e977d8620ec3312319 100644
+index b211c90a7e0a614760e2a6f7c27cbfd6fe1cf9bd..d910609675e57b71a8c46371ad8313a83534d2b3 100644
 --- a/src/main/java/org/purpurmc/purpur/PurpurConfig.java
 +++ b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
-@@ -227,7 +227,7 @@ public class PurpurConfig {
+@@ -233,7 +233,7 @@ public class PurpurConfig {
          if (!TimingsManager.hiddenConfigs.contains("settings.seed")) TimingsManager.hiddenConfigs.add("settings.seed");
      }
  
