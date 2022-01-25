@@ -16,7 +16,7 @@ env:
 
   jdk: '17.0.1'
   jvm: microsoft
-  os: ubuntu-20.04
+  os: ubuntu-20.08
 
 jobs:
   check:
