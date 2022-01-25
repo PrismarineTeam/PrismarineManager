@@ -111,7 +111,7 @@ jobs:
         run: |
           git clone --recursive -b ${{ env.pufb }} ${{ env.puff }}
           cd Pufferfish/
-          pufferfish=$(git log --pretty=oneline | cut -c 1-40) && echo "pufferfish=$pufferfish" > $GITHUB_ENV
+          pufferfish=$(git log -1 --pretty=oneline | cut -c 1-40) && echo "pufferfish=$pufferfish" > $GITHUB_ENV
           upstream=$(git ls-remote https://github.com/PaperMC/Paper | grep master | cut -f 1)
           sed -i 's/paperRef = .*/paperRef = '"$upstream"'/' gradle.properties
           ./gradlew applyPatches --stacktrace
@@ -145,7 +145,7 @@ jobs:
         run: |
           git clone --recursive -b ${{ env.purb }} ${{ env.purp }}
           cd Purpur/
-          purpur=$(git log --pretty=oneline | cut -c 1-40) && echo "purpur=$purpur" > $GITHUB_ENV
+          purpur=$(git log -1 --pretty=oneline | cut -c 1-40) && echo "purpur=$purpur" > $GITHUB_ENV
           upstream=$(git ls-remote https://github.com/PaperMC/Paper | grep master | cut -f 1)
           sed -i 's/paperCommit = .*/paperCommit = '"$upstream"'/' gradle.properties
           ./gradlew applyPatches
