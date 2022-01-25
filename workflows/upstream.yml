@@ -1,0 +1,201 @@
+name: Schedule Upstream
+
+on:
+  workflow_dispatch:
+
+env:
+  paper: https://github.com/PaperMC/Paper
+  puff: https://github.com/pufferfish-gg/Pufferfish
+  purp: https://github.com/PurpurMC/Purpur.git
+  pris: https://github.com/PrismarineTeam/Prismarine.git
+
+  papb: master
+  pufb: ver/1.18
+  purb: ver/1.18.1
+  prib: ver/1.18.1
+
+  jdk: [17.0.1]
+  jvm: ['microsoft']
+  os: ['ubuntu-20.04']
+
+jobs:
+  check:
+    name: Check Upstreams
+    runs-on: ${{env.os}}
+    outputs:
+      paper: ${{ steps.check-paper.outputs.paper }}
+      pufferfish: ${{ steps.check-pufferfish.outputs.pufferfish }}
+      purpur: ${{ steps.check-purpur.outputs.purpur }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Clone Repository
+        run: |
+          git clone --recursive -b ${{env.prib}} ${{env.pris}}
+      
+      - name: Check Paper Commit
+        id: check-paper
+        run: |
+          upstream=$(git ls-remote ${{env.paper}} | grep master | cut -f 1)
+          current=$(cat Prismarine/gradle.properties | grep paperCommit | sed 's/paperCommit = //')
+          if [ "$current" != "$upstream" ]; then paper=true fi
+          echo "::set-output name=paper::$paper"
+
+      - name: Check Pufferfish Commit
+        id: check-pufferfish
+        run: |
+          upstream=$(git ls-remote ${{env.puff}} | grep ver/1.18 | cut -f 1)
+          current=$(cat Prismarine/patches/api/0001-Pufferfish-API-Changes.patch | grep Pufferfish Commit | sed 's/Pufferfish Commit: //')
+          if [ "$current" != "$upstream" ]; then pufferfish=true fi
+          echo "::set-output name=pufferfish::$pufferfish"
+      
+      - name: Check Purpur Commit
+        id: check-purpur
+        run: |
+          upstream=$(git ls-remote ${{env.purp}} | grep ver/1.18.1 | cut -f 1)
+          current=$(cat Prismarine/patches/api/0002-Purpur-API-Changes.patch | grep Purpur Commit | sed 's/Purpur Commit: //')
+          if [ "$current" != "$upstream" ]; then purpur=true fi
+          echo "::set-output name=purpur::$purpur"
+
+  upstream-paper:
+    name: Upstream Paper
+    runs-on: ${{env.os}}
+    needs: check
+    if: needs.check.outputs.paper == 'true' && needs.check.outputs.pufferfish == 'false' && needs.check.outputs.purpur == 'false'
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-java@v2
+        with:
+          distribution: ${{env.jvm}}
+          java-version: ${{env.jdk}}
+
+      - name: Configure Git
+        run: git config --global user.email "no-reply@github.com" && git config --global user.name "Github Actions"
+
+      - name: Update Upstream
+        run: |
+          upstream=$(git ls-remote https://github.com/PaperMC/Paper | grep master | cut -f 1)
+          current=$(cat Prismarine/gradle.properties | grep paperCommit | sed 's/paperCommit = //') && echo "current=$current" >> $GITHUB_ENV
+          sed -i 's/paperCommit = .*/paperCommit = '"$upstream"'/' gradle.properties
+          ./gradlew applyPatches --stacktrace && ./gradlew build --stacktrace
+      
+      - name: Rebuild Patches
+        run: | 
+          ./gradlew rebuildPatches
+          paper=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/PaperMC/Paper/compare/${{env.current}}...HEAD | jq -r '.commits[] | "PaperMC/Paper@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+          logsuffix="\n\nPaper Changes:\n$paper"
+          log="Updated Upstream (Paper)\n\nUpstream has released updates that appear to apply and compile correctly\n\nPaper Changes:\n$paper"
+          echo -e "$log" | git commit -F -
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
+
+  upstream-all:
+    name: Upstream
+    runs-on: ${{env.os}}
+    needs: check
+    if: needs.check.outputs.pufferfish == 'true' || needs.check.outputs.purpur == 'true'
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-java@v2
+        with:
+          distribution: ${{env.jvm}}
+          java-version: ${{env.jdk}}
+
+      - name: Configure Git
+        run: |
+          git config --global user.email "no-reply@github.com" && git config --global user.name "Github Actions"
+
+      - name: Initial Pufferfish Sources
+        run: |
+          git clone --recursive -b ${{env.pufb}} ${{env.puff}}
+          cd Pufferfish/
+          pufferfish=$(git log --pretty=oneline | cut -c 1-40) && echo "pufferfish=$pufferfish" > $GITHUB_ENV
+          upstream=$(git ls-remote https://github.com/PaperMC/Paper | grep master | cut -f 1)
+          sed -i 's/paperRef = .*/paperRef = '"$upstream"'/' gradle.properties
+          ./gradlew applyPatches --stacktrace
+
+      - name: MC Dev Sources
+        run: |
+          cd Pufferfish/.gradle/caches/paperweight/upstreams/paper/Paper-Server
+          mv -f .gradle/caches/paperweight/mc-dev-sources/net/* src/main/java/net
+          git add .
+          git commit -m "Initial"
+      
+      - name: Pufferfish Server Changes
+        run: |
+          cd Pufferfish/pufferfish-server/
+          rm -rdf .git
+          mv -f .gradle/caches/paperweight/mc-dev-sources/net/* src/main/java/net
+          mv -f ../.gradle/caches/paperweight/upstreams/paper/Paper-Server/.git ./
+          git add .
+          git commit -m "Pufferfish Server Changes\n\nPufferfish Commit: ${{env.pufferfish}}"
+
+      - name: Pufferfish API Changes
+        run: |
+          cd Pufferfish/pufferfish-api
+          rm -rdf .git
+          mv -f ../.gradle/caches/paperweight/upstreams/paper/Paper-API/.git ./
+          git add .
+          git commit -m "Pufferfish API Changes\n\nPufferfish Commit: ${{env.pufferfish}}"
+
+      - name: Initial Purpur Sources
+        if: needs.check.outputs.purpur == 'true'
+        run: |
+          git clone --recursive -b ${{env.purb}} ${{env.purp}}
+          cd Purpur/
+          purpur=$(git log --pretty=oneline | cut -c 1-40) && echo "purpur=$purpur" > $GITHUB_ENV
+          upstream=$(git ls-remote https://github.com/PaperMC/Paper | grep master | cut -f 1)
+          sed -i 's/paperCommit = .*/paperCommit = '"$upstream"'/' gradle.properties
+          ./gradlew applyPatches
+
+      - name: Purpur Server Changes
+        if: needs.check.outputs.purpur == 'true'
+        run: |
+          cd Purpur/Purpur-Server/
+          rm -rdf .git
+          mv -f .gradle/caches/paperweight/mc-dev-sources/net/* src/main/java/net
+          mv -f ../../pufferfish/pufferfish-server/.git ./
+          git add .
+          git commit -m "Purpur Server Changes\n\nPurpur Commit: ${{env.purpur}}"
+
+      - name: Purpur API Changes
+        if: needs.check.outputs.purpur == 'true'
+        run: |
+          cd Purpur/Purpur-API/
+          rm -rdf .git
+          mv -f ../../pufferfish/pufferfish-api/.git ./
+          git add .
+          git commit -m "Purpur API Changes\n\nPurpur Commit: ${{env.purpur}}"
+
+      - name: Build Patches
+        run: |
+          git clone --recursive -b ${{env.prib}} ${{env.pris}}
+          cd Purpur/
+          ./gradlew rebuildPatches
+          mv -f patches/api/*-Pufferfish-API-Changes.patch ../Prismarine/patches/api/0001-Pufferfish-API-Changes.patch
+          mv -f patches/api/*-Purpur-API-Changes.patch ../Prismarine/patches/api/0002-Purpur-API-Changes.patch
+          mv -f patches/server/*-Pufferfish-Server-Changes.patch ../Prismarine/patches/server/0001-Pufferfish-Server-Changes.patch
+          mv -f patches/server/*-Purpur-Server-Changes.patch ../Prismarine/patches/server/0002-Purpur-Server-Changes.patch
+
+      - name: Upstream Paper
+        if: needs.check.outputs.paper == 'true'
+        run: |
+          cd Prismarine/
+          upstream=$(git ls-remote https://github.com/PaperMC/Paper | grep master | cut -f 1)
+          current=$(cat Prismarine/gradle.properties | grep paperCommit | sed 's/paperCommit = //') && echo "current=$current" >> $GITHUB_ENV
+          sed -i 's/paperCommit = .*/paperCommit = '"$upstream"'/' gradle.properties
+      
+      - name: Rebuild Patches
+        run: |
+          cd Prismarine/
+          ./gradlew applyPatches --stacktrace
+          ./gradlew build --stacktrace
+          ./gradlew rebuildPatches --stacktrace
+
+      - name: Commit Changes
