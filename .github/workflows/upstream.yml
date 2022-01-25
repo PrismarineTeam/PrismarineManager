@@ -153,7 +153,7 @@ jobs:
       - name: Purpur Server Changes
         if: needs.check.outputs.purpur == 'true'
         run: |
-          ls Pufferfish/
+          ls -a Pufferfish/pufferfish-server/
           cd Purpur/Purpur-Server/
           rm -rdf .git
           cp -rf .gradle/caches/paperweight/mc-dev-sources/net/* src/main/java/net
