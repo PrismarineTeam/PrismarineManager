@@ -14,14 +14,10 @@ env:
   purb: ver/1.18.1
   prib: ver/1.18.1
 
-  jdk: '17.0.1'
-  jvm: 'microsoft'
-  os: 'ubuntu-20.04'
-
 jobs:
   check:
     name: Check Upstreams
-    runs-on: $env.os
+    runs-on: ubuntu-20.04
     outputs:
       paper: ${{ steps.check-paper.outputs.paper }}
       pufferfish: ${{ steps.check-pufferfish.outputs.pufferfish }}
@@ -59,7 +55,7 @@ jobs:
 
   upstream-paper:
     name: Upstream Paper
-    runs-on: $env.os
+    runs-on: ubuntu-20.04
     needs: check
     if: needs.check.outputs.paper == 'true' && needs.check.outputs.pufferfish == 'false' && needs.check.outputs.purpur == 'false'
     steps:
@@ -67,8 +63,8 @@ jobs:
 
       - uses: actions/setup-java@v2
         with:
-          distribution: $env.jvm
-          java-version: $env.jdk
+          distribution: microsoft
+          java-version: 17.0.1
 
       - name: Configure Git
         run: git config --global user.email "no-reply@github.com" && git config --global user.name "Github Actions"
@@ -96,7 +92,7 @@ jobs:
 
   upstream-all:
     name: Upstream
-    runs-on: $env.os
+    runs-on: ubuntu-20.04
     needs: check
     if: needs.check.outputs.pufferfish == 'true' || needs.check.outputs.purpur == 'true'
     steps:
@@ -104,8 +100,8 @@ jobs:
 
       - uses: actions/setup-java@v2
         with:
-          distribution: $env.jvm
-          java-version: $env.jdk
+          distribution: microsoft
+          java-version: 17.0.1
 
       - name: Configure Git
         run: |
