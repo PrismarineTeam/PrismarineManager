@@ -187,6 +187,12 @@ jobs:
           upstream=$(git ls-remote https://github.com/PaperMC/Paper | grep master | cut -f 1)
           current=$(cat Prismarine/gradle.properties | grep paperCommit | sed 's/paperCommit = //') && echo "current=$current" >> $GITHUB_ENV
           sed -i 's/paperCommit = .*/paperCommit = '"$upstream"'/' gradle.properties
+          
+      - name: '[TEST] Upload Artifacts'
+        uses: actions/upload-artifact@v1
+        with:
+          name: Artifacts - ${{ runner.os }}
+          path: Purpur/patches
       
       - name: Rebuild Patches
         run: |
@@ -194,11 +200,5 @@ jobs:
           ./gradlew applyPatches --stacktrace
           ./gradlew build --stacktrace
           ./gradlew rebuildPatches --stacktrace
-          
-      - name: '[TEST] Upload Artifacts'
-        uses: actions/upload-artifact@v1
-        with:
-          name: Artifacts - ${{ runner.os }}
-          path: Prismarine/patches
 
       # - name: Commit Changes
