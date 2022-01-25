@@ -153,11 +153,10 @@ jobs:
       - name: Purpur Server Changes
         if: needs.check.outputs.purpur == 'true'
         run: |
-          ls -a Pufferfish/pufferfish-server/
           cd Purpur/Purpur-Server/
           rm -rdf .git
           cp -rf .gradle/caches/paperweight/mc-dev-sources/net/* src/main/java/net
-          cp -rf ../../pufferfish/pufferfish-server/.git ./
+          cp -rf ../../pufferfish/pufferfish-server/.git/* .git/
           git add .
           git commit -m "Purpur Server Changes\n\nPurpur Commit: ${{ env.purpur }}"
 
