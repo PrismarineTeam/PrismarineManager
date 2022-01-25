@@ -1,6 +1,7 @@
 name: Schedule Upstream
 
 on:
+  push:
   workflow_dispatch:
 
 env:
@@ -154,7 +155,7 @@ jobs:
         if: needs.check.outputs.purpur == 'true'
         run: |
           cd Purpur/Purpur-Server/
-          ls ../../pufferfish
+          ls ../../
           rm -rdf .git
           cp -rf .gradle/caches/paperweight/mc-dev-sources/net/* src/main/java/net
           cp -rf ../../pufferfish/pufferfish-server/.git/* .git/
