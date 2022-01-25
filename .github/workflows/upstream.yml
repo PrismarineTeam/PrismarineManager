@@ -175,6 +175,8 @@ jobs:
           git clone --recursive -b ${{ env.prib }} ${{ env.pris }}
           cd Purpur/
           ./gradlew rebuildPatches
+          ls patches/api
+          ls patches/server
           cp -rf patches/api/*-Pufferfish-API-Changes.patch ../Prismarine/patches/api/0001-Pufferfish-API-Changes.patch
           cp -rf patches/api/*-Purpur-API-Changes.patch ../Prismarine/patches/api/0002-Purpur-API-Changes.patch
           cp -rf patches/server/*-Pufferfish-Server-Changes.patch ../Prismarine/patches/server/0001-Pufferfish-Server-Changes.patch
