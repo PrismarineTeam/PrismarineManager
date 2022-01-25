@@ -14,14 +14,14 @@ env:
   purb: ver/1.18.1
   prib: ver/1.18.1
 
-  jdk: '17.0.1'
-  jvm: microsoft
-  os: ubuntu-20.08
+  jdk: [17.0.1]
+  jvm: ['microsoft']
+  os: ['ubuntu-20.04']
 
 jobs:
   check:
     name: Check Upstreams
-    runs-on: ${{env.os}}
+    runs-on: ${{ env.os }}
     outputs:
       paper: ${{ steps.check-paper.outputs.paper }}
       pufferfish: ${{ steps.check-pufferfish.outputs.pufferfish }}
@@ -31,12 +31,12 @@ jobs:
 
       - name: Clone Repository
         run: |
-          git clone --recursive -b ${{env.prib}} ${{env.pris}}
+          git clone --recursive -b ${{ env.prib }} ${{ env.pris }}
       
       - name: Check Paper Commit
         id: check-paper
         run: |
-          upstream=$(git ls-remote ${{env.paper}} | grep master | cut -f 1)
+          upstream=$(git ls-remote ${{ env.paper }} | grep master | cut -f 1)
           current=$(cat Prismarine/gradle.properties | grep paperCommit | sed 's/paperCommit = //')
           if [ "$current" != "$upstream" ]; then paper=true fi
           echo "::set-output name=paper::$paper"
@@ -44,7 +44,7 @@ jobs:
       - name: Check Pufferfish Commit
         id: check-pufferfish
         run: |
-          upstream=$(git ls-remote ${{env.puff}} | grep ver/1.18 | cut -f 1)
+          upstream=$(git ls-remote ${{ env.puff }} | grep ver/1.18 | cut -f 1)
           current=$(cat Prismarine/patches/api/0001-Pufferfish-API-Changes.patch | grep Pufferfish Commit | sed 's/Pufferfish Commit: //')
           if [ "$current" != "$upstream" ]; then pufferfish=true fi
           echo "::set-output name=pufferfish::$pufferfish"
@@ -52,14 +52,14 @@ jobs:
       - name: Check Purpur Commit
         id: check-purpur
         run: |
-          upstream=$(git ls-remote ${{env.purp}} | grep ver/1.18.1 | cut -f 1)
+          upstream=$(git ls-remote ${{ env.purp }} | grep ver/1.18.1 | cut -f 1)
           current=$(cat Prismarine/patches/api/0002-Purpur-API-Changes.patch | grep Purpur Commit | sed 's/Purpur Commit: //')
           if [ "$current" != "$upstream" ]; then purpur=true fi
           echo "::set-output name=purpur::$purpur"
 
   upstream-paper:
     name: Upstream Paper
-    runs-on: ${{env.os}}
+    runs-on: ${{ env.os }}
     needs: check
     if: needs.check.outputs.paper == 'true' && needs.check.outputs.pufferfish == 'false' && needs.check.outputs.purpur == 'false'
     steps:
@@ -67,8 +67,8 @@ jobs:
 
       - uses: actions/setup-java@v2
         with:
-          distribution: ${{env.jvm}}
-          java-version: ${{env.jdk}}
+          distribution: ${{ env.jvm }}
+          java-version: ${{ env.jdk }}
 
       - name: Configure Git
         run: git config --global user.email "no-reply@github.com" && git config --global user.name "Github Actions"
@@ -83,7 +83,7 @@ jobs:
       - name: Rebuild Patches
         run: | 
           ./gradlew rebuildPatches
-          paper=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/PaperMC/Paper/compare/${{env.current}}...HEAD | jq -r '.commits[] | "PaperMC/Paper@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+          paper=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/PaperMC/Paper/compare/${{ env.current }}...HEAD | jq -r '.commits[] | "PaperMC/Paper@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
           logsuffix="\n\nPaper Changes:\n$paper"
           log="Updated Upstream (Paper)\n\nUpstream has released updates that appear to apply and compile correctly\n\nPaper Changes:\n$paper"
           echo -e "$log" | git commit -F -
@@ -96,7 +96,7 @@ jobs:
 
   upstream-all:
     name: Upstream
-    runs-on: ${{env.os}}
+    runs-on: ${{ env.os }}
     needs: check
     if: needs.check.outputs.pufferfish == 'true' || needs.check.outputs.purpur == 'true'
     steps:
@@ -104,8 +104,8 @@ jobs:
 
       - uses: actions/setup-java@v2
         with:
-          distribution: ${{env.jvm}}
-          java-version: ${{env.jdk}}
+          distribution: ${{ env.jvm }}
+          java-version: ${{ env.jdk }}
 
       - name: Configure Git
         run: |
@@ -113,7 +113,7 @@ jobs:
 
       - name: Initial Pufferfish Sources
         run: |
-          git clone --recursive -b ${{env.pufb}} ${{env.puff}}
+          git clone --recursive -b ${{ env.pufb }} ${{ env.puff }}
           cd Pufferfish/
           pufferfish=$(git log --pretty=oneline | cut -c 1-40) && echo "pufferfish=$pufferfish" > $GITHUB_ENV
           upstream=$(git ls-remote https://github.com/PaperMC/Paper | grep master | cut -f 1)
@@ -134,7 +134,7 @@ jobs:
           mv -f .gradle/caches/paperweight/mc-dev-sources/net/* src/main/java/net
           mv -f ../.gradle/caches/paperweight/upstreams/paper/Paper-Server/.git ./
           git add .
-          git commit -m "Pufferfish Server Changes\n\nPufferfish Commit: ${{env.pufferfish}}"
+          git commit -m "Pufferfish Server Changes\n\nPufferfish Commit: ${{ env.pufferfish }}"
 
       - name: Pufferfish API Changes
         run: |
@@ -142,12 +142,12 @@ jobs:
           rm -rdf .git
           mv -f ../.gradle/caches/paperweight/upstreams/paper/Paper-API/.git ./
           git add .
-          git commit -m "Pufferfish API Changes\n\nPufferfish Commit: ${{env.pufferfish}}"
+          git commit -m "Pufferfish API Changes\n\nPufferfish Commit: ${{ env.pufferfish }}"
 
       - name: Initial Purpur Sources
         if: needs.check.outputs.purpur == 'true'
         run: |
-          git clone --recursive -b ${{env.purb}} ${{env.purp}}
+          git clone --recursive -b ${{ env.purb }} ${{ env.purp }}
           cd Purpur/
           purpur=$(git log --pretty=oneline | cut -c 1-40) && echo "purpur=$purpur" > $GITHUB_ENV
           upstream=$(git ls-remote https://github.com/PaperMC/Paper | grep master | cut -f 1)
@@ -162,7 +162,7 @@ jobs:
           mv -f .gradle/caches/paperweight/mc-dev-sources/net/* src/main/java/net
           mv -f ../../pufferfish/pufferfish-server/.git ./
           git add .
-          git commit -m "Purpur Server Changes\n\nPurpur Commit: ${{env.purpur}}"
+          git commit -m "Purpur Server Changes\n\nPurpur Commit: ${{ env.purpur }}"
 
       - name: Purpur API Changes
         if: needs.check.outputs.purpur == 'true'
@@ -171,11 +171,11 @@ jobs:
           rm -rdf .git
           mv -f ../../pufferfish/pufferfish-api/.git ./
           git add .
-          git commit -m "Purpur API Changes\n\nPurpur Commit: ${{env.purpur}}"
+          git commit -m "Purpur API Changes\n\nPurpur Commit: ${{ env.purpur }}"
 
       - name: Build Patches
         run: |
-          git clone --recursive -b ${{env.prib}} ${{env.pris}}
+          git clone --recursive -b ${{ env.prib }} ${{ env.pris }}
           cd Purpur/
           ./gradlew rebuildPatches
           mv -f patches/api/*-Pufferfish-API-Changes.patch ../Prismarine/patches/api/0001-Pufferfish-API-Changes.patch
@@ -198,4 +198,4 @@ jobs:
           ./gradlew build --stacktrace
           ./gradlew rebuildPatches --stacktrace
 
-#       - name: Commit Changes
+      # - name: Commit Changes
