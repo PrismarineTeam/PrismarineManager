@@ -131,7 +131,7 @@ jobs:
           cp -rf .gradle/caches/paperweight/mc-dev-sources/net/* src/main/java/net
           mv -f ../.gradle/caches/paperweight/upstreams/paper/Paper-Server/.git ./
           git add .
-          git commit -m "Pufferfish Server Changes\n\nPufferfish Commit: ${{ env.pufferfish }}"
+          git commit -m "Pufferfish Server Changes" -m "Pufferfish Commit: ${{ env.pufferfish }}"
 
       - name: Pufferfish API Changes
         run: |
@@ -139,7 +139,7 @@ jobs:
           rm -rdf .git
           mv -f ../.gradle/caches/paperweight/upstreams/paper/Paper-API/.git ./
           git add .
-          git commit -m "Pufferfish API Changes\n\nPufferfish Commit: ${{ env.pufferfish }}"
+          git commit -m "Pufferfish API Changes" -m "Pufferfish Commit: ${{ env.pufferfish }}"
 
       - name: Initial Purpur Sources
         if: needs.check.outputs.purpur == 'true'
@@ -159,7 +159,7 @@ jobs:
           cp -rf .gradle/caches/paperweight/mc-dev-sources/net/* src/main/java/net
           mv -f ../../Pufferfish/pufferfish-server/.git ./
           git add .
-          git commit -m "Purpur Server Changes\n\nPurpur Commit: ${{ env.purpur }}"
+          git commit -m "Purpur Server Changes" -m "Purpur Commit: ${{ env.purpur }}"
 
       - name: Purpur API Changes
         if: needs.check.outputs.purpur == 'true'
@@ -168,15 +168,13 @@ jobs:
           rm -rdf .git
           mv -f ../../Pufferfish/pufferfish-api/.git ./
           git add .
-          git commit -m "Purpur API Changes\n\nPurpur Commit: ${{ env.purpur }}"
+          git commit -m "Purpur API Changes" -m "Purpur Commit: ${{ env.purpur }}"
 
       - name: Build Patches
         run: |
           git clone --recursive -b ${{ env.prib }} ${{ env.pris }}
           cd Purpur/
           ./gradlew rebuildPatches
-          ls patches/api
-          ls patches/server
           cp -rf patches/api/*-Pufferfish-API-Changes.patch ../Prismarine/patches/api/0001-Pufferfish-API-Changes.patch
           cp -rf patches/api/*-Purpur-API-Changes.patch ../Prismarine/patches/api/0002-Purpur-API-Changes.patch
           cp -rf patches/server/*-Pufferfish-Server-Changes.patch ../Prismarine/patches/server/0001-Pufferfish-Server-Changes.patch
