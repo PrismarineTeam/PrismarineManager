@@ -129,7 +129,7 @@ jobs:
           cd Pufferfish/pufferfish-server/
           rm -rdf .git
           cp -rf .gradle/caches/paperweight/mc-dev-sources/net/* src/main/java/net
-          cp -rf ../.gradle/caches/paperweight/upstreams/paper/Paper-Server/.git ./
+          mv -f ../.gradle/caches/paperweight/upstreams/paper/Paper-Server/.git ./
           git add .
           git commit -m "Pufferfish Server Changes\n\nPufferfish Commit: ${{ env.pufferfish }}"
 
@@ -137,7 +137,7 @@ jobs:
         run: |
           cd Pufferfish/pufferfish-api
           rm -rdf .git
-          cp -rf ../.gradle/caches/paperweight/upstreams/paper/Paper-API/.git ./
+          mv -f ../.gradle/caches/paperweight/upstreams/paper/Paper-API/.git ./
           git add .
           git commit -m "Pufferfish API Changes\n\nPufferfish Commit: ${{ env.pufferfish }}"
 
@@ -155,10 +155,9 @@ jobs:
         if: needs.check.outputs.purpur == 'true'
         run: |
           cd Purpur/Purpur-Server/
-          ls -a ../../Pufferfish/pufferfish-server
           rm -rdf .git
           cp -rf .gradle/caches/paperweight/mc-dev-sources/net/* src/main/java/net
-          cp -rf ../../Pufferfish/pufferfish-server/.git ./
+          mv -f ../../Pufferfish/pufferfish-server/.git ./
           git add .
           git commit -m "Purpur Server Changes\n\nPurpur Commit: ${{ env.purpur }}"
 
@@ -167,7 +166,7 @@ jobs:
         run: |
           cd Purpur/Purpur-API/
           rm -rdf .git
-          cp -rf ../../pufferfish/pufferfish-api/.git ./
+          mv -f ../../Pufferfish/pufferfish-api/.git ./
           git add .
           git commit -m "Purpur API Changes\n\nPurpur Commit: ${{ env.purpur }}"
 
@@ -176,10 +175,10 @@ jobs:
           git clone --recursive -b ${{ env.prib }} ${{ env.pris }}
           cd Purpur/
           ./gradlew rebuildPatches
-          cp -rf patches/api/*-Pufferfish-API-Changes.patch ../Prismarine/patches/api/0001-Pufferfish-API-Changes.patch
-          cp -rf patches/api/*-Purpur-API-Changes.patch ../Prismarine/patches/api/0002-Purpur-API-Changes.patch
-          cp -rf patches/server/*-Pufferfish-Server-Changes.patch ../Prismarine/patches/server/0001-Pufferfish-Server-Changes.patch
-          cp -rf patches/server/*-Purpur-Server-Changes.patch ../Prismarine/patches/server/0002-Purpur-Server-Changes.patch
+          mv -f patches/api/*-Pufferfish-API-Changes.patch ../Prismarine/patches/api/0001-Pufferfish-API-Changes.patch
+          mv -f patches/api/*-Purpur-API-Changes.patch ../Prismarine/patches/api/0002-Purpur-API-Changes.patch
+          mv -f patches/server/*-Pufferfish-Server-Changes.patch ../Prismarine/patches/server/0001-Pufferfish-Server-Changes.patch
+          mv -f patches/server/*-Purpur-Server-Changes.patch ../Prismarine/patches/server/0002-Purpur-Server-Changes.patch
 
       - name: Upstream Paper
         if: needs.check.outputs.paper == 'true'
@@ -195,5 +194,11 @@ jobs:
           ./gradlew applyPatches --stacktrace
           ./gradlew build --stacktrace
           ./gradlew rebuildPatches --stacktrace
+          
+      - name: '[TEST] Upload Artifacts'
+        uses: actions/upload-artifact@v1
+        with:
+          name: Artifacts - ${{ runner.os }}
+          path: Prismarine/patches
 
       # - name: Commit Changes
