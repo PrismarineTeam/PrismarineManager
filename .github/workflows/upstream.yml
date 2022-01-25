@@ -34,7 +34,7 @@ jobs:
         run: |
           upstream=$(git ls-remote ${{ env.paper }} | grep master | cut -f 1)
           current=$(cat Prismarine/gradle.properties | grep paperCommit | sed 's/paperCommit = //')
-          if [ "$current" != "$upstream" ]; then paper=true fi
+          if [ "$current" != "$upstream" ]; then paper=true; fi
           echo "::set-output name=paper::$paper"
 
       - name: Check Pufferfish Commit
@@ -42,7 +42,7 @@ jobs:
         run: |
           upstream=$(git ls-remote ${{ env.puff }} | grep ver/1.18 | cut -f 1)
           current=$(cat Prismarine/patches/api/0001-Pufferfish-API-Changes.patch | grep Pufferfish Commit | sed 's/Pufferfish Commit: //')
-          if [ "$current" != "$upstream" ]; then pufferfish=true fi
+          if [ "$current" != "$upstream" ]; then pufferfish=true; fi
           echo "::set-output name=pufferfish::$pufferfish"
       
       - name: Check Purpur Commit
@@ -50,7 +50,7 @@ jobs:
         run: |
           upstream=$(git ls-remote ${{ env.purp }} | grep ver/1.18.1 | cut -f 1)
           current=$(cat Prismarine/patches/api/0002-Purpur-API-Changes.patch | grep Purpur Commit | sed 's/Purpur Commit: //')
-          if [ "$current" != "$upstream" ]; then purpur=true fi
+          if [ "$current" != "$upstream" ]; then purpur=true; fi
           echo "::set-output name=purpur::$purpur"
 
   upstream-paper:
