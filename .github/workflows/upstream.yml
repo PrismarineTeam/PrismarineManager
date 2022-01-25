@@ -14,9 +14,9 @@ env:
   purb: ver/1.18.1
   prib: ver/1.18.1
 
-  jdk: [17.0.1]
-  jvm: ['microsoft']
-  os: ['ubuntu-20.04']
+  jdk: '17.0.1'
+  jvm: 'microsoft'
+  os: 'ubuntu-20.04'
 
 jobs:
   check:
