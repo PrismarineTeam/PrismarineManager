@@ -29,7 +29,7 @@ jobs:
       - name: Configure Git
         run: |
           git config --global user.email "no-reply@github.com" && git config --global user.name "Github Actions"
-          echo "test=$GITHUB_RUN_NUMBER" >> $GITHUB_ENV
+          echo "workflow=$GITHUB_RUN_NUMBER" >> $GITHUB_ENV
 
       - name: Apply Patches
         run: ./gradlew applyPatches --stacktrace
@@ -50,8 +50,8 @@ jobs:
         if: ${{ runner.os == 'Linux' }}
         uses: marvinpinto/action-automatic-releases@latest
         with:
-          title: "Release #${{ env.test }}"
-          automatic_release_tag: release-${{ env.test }}
+          title: "Release #${{ env.workflow }}"
+          automatic_release_tag: release-${{ env.workflow }}
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           files: build/libs/*.jar
           prerelease: false
