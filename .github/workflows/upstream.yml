@@ -23,6 +23,7 @@ jobs:
       paper: ${{ steps.check-paper.outputs.paper }}
       pufferfish: ${{ steps.check-pufferfish.outputs.pufferfish }}
       purpur: ${{ steps.check-purpur.outputs.purpur }}
+      upstream: ${{ steps.check-paper.outputs.upstream }}
     steps:
       - uses: actions/checkout@v2
 
@@ -37,6 +38,7 @@ jobs:
           current=$(cat Prismarine/gradle.properties | grep paperCommit | sed 's/paperCommit = //')
           if [ "$current" != "$upstream" ]; then paper=true; fi
           echo "::set-output name=paper::$paper"
+          echo "::set-output name=upstream::$upstream"
 
       - name: Check Pufferfish Commit
         id: check-pufferfish
@@ -72,7 +74,7 @@ jobs:
 
       - name: Update Upstream
         run: |
-          upstream=$(git ls-remote https://github.com/PaperMC/Paper | grep master | cut -f 1)
+          upstream=${{ check.outputs.paper }}
           current=$(cat Prismarine/gradle.properties | grep paperCommit | sed 's/paperCommit = //') && echo "current=$current" >> $GITHUB_ENV
           sed -i 's/paperCommit = .*/paperCommit = '"$upstream"'/' gradle.properties
           ./gradlew applyPatches --stacktrace && ./gradlew build --stacktrace
@@ -113,7 +115,7 @@ jobs:
           git clone --recursive -b ${{ env.pufb }} ${{ env.puff }}
           cd Pufferfish/
           pufferfish=$(git log -1 --pretty=oneline | cut -c 1-40) && echo "pufferfish=$pufferfish" > $GITHUB_ENV
-          upstream=$(git ls-remote https://github.com/PaperMC/Paper | grep master | cut -f 1)
+          upstream=${{ check.outputs.paper }}
           sed -i 's/paperRef=.*/paperRef='"$upstream"'/' gradle.properties
           ./gradlew applyPatches --stacktrace
 
@@ -147,7 +149,7 @@ jobs:
           git clone --recursive -b ${{ env.purb }} ${{ env.purp }}
           cd Purpur/
           purpur=$(git log -1 --pretty=oneline | cut -c 1-40) && echo "purpur=$purpur" > $GITHUB_ENV
-          upstream=$(git ls-remote https://github.com/PaperMC/Paper | grep master | cut -f 1)
+          upstream=${{ check.outputs.paper }}
           sed -i 's/paperCommit = .*/paperCommit = '"$upstream"'/' gradle.properties
           ./gradlew applyPatches
 
@@ -184,7 +186,7 @@ jobs:
         if: needs.check.outputs.paper == 'true'
         run: |
           cd Prismarine/
-          upstream=$(git ls-remote https://github.com/PaperMC/Paper | grep master | cut -f 1)
+          upstream=${{ check.outputs.paper }}
           current=$(cat Prismarine/gradle.properties | grep paperCommit | sed 's/paperCommit = //') && echo "current=$current" >> $GITHUB_ENV
           sed -i 's/paperCommit = .*/paperCommit = '"$upstream"'/' gradle.properties
           
