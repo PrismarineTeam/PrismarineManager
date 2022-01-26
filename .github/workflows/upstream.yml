@@ -69,10 +69,13 @@ jobs:
           java-version: 17.0.1
 
       - name: Configure Git
-        run: git config --global user.email "no-reply@github.com" && git config --global user.name "Github Actions"
+        run: |
+          git config --global user.email "no-reply@github.com" && git config --global user.name "Github Actions"
+          git clone --recursive -b ${{ env.prib }} ${{ env.pris }}
 
       - name: Update Upstream
         run: |
+          cd Prismarine
           upstream=${{ env.upstream }}
           current=$(cat Prismarine/gradle.properties | grep paperCommit | sed 's/paperCommit = //') && echo "current=$current" >> $GITHUB_ENV
           sed -i 's/paperCommit = .*/paperCommit = '"$upstream"'/' gradle.properties
@@ -80,6 +83,7 @@ jobs:
       
       - name: Rebuild Patches
         run: | 
+          cd Prismarine
           ./gradlew rebuildPatches
           paper=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/PaperMC/Paper/compare/${{ env.current }}...HEAD | jq -r '.commits[] | "PaperMC/Paper@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
           logsuffix="\n\nPaper Changes:\n$paper"
@@ -89,8 +93,9 @@ jobs:
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref }}
+          github_token: ${{ secrets.PUSH_TOKEN }}
+          directory: ./Prismarine
+          repository: PrismarineTeam/Prismarine
 
   upstream-all:
     name: Upstream
@@ -189,11 +194,13 @@ jobs:
           current=$(cat Prismarine/gradle.properties | grep paperCommit | sed 's/paperCommit = //') && echo "current=$current" >> $GITHUB_ENV
           sed -i 's/paperCommit = .*/paperCommit = '"$upstream"'/' gradle.properties
           
-      - name: '[TEST] Upload Artifacts'
+      - name: 'Upload Initial Artifact'
         uses: actions/upload-artifact@v1
         with:
-          name: Artifacts - ${{ runner.os }}
-          path: Purpur/patches
+          name: Artifacts - Initial
+          path: |
+            Purpur/patches
+            Prismarine/patches
       
       - name: Rebuild Patches
         run: |
@@ -202,10 +209,26 @@ jobs:
           ./gradlew build --stacktrace
           ./gradlew rebuildPatches --stacktrace
           
-      - name: '[TEST] Upload Artifacts'
+      - name: 'Upload Final Artifacts'
         uses: actions/upload-artifact@v1
         with:
-          name: Artifacts - ${{ runner.os }} - FINAL
-          path: Prismarine/patches
+          name: Artifacts - Final
+          path: |
+            Purpur/patches
+            Prismarine/patches
 
-      # - name: Commit Changes
+      - name: Commit changes
+        run: |
+          if [ "${{ needs.check.outputs.paper }}" == true ]; then upstream="Paper"; fi
+          if [ "${{ needs.check.outputs.pufferfish }}" == true ]; then (if [ "$upstream" != "" ]; then upstream="$upstream & Pufferfish"; else upstream="Pufferfish"; fi); fi
+          if [ "${{ needs.check.outputs.purpur }}" == true ]; then (if [ "$upstream" != "" ]; then upstream="$upstream & Purpur"; else upstream="Purpur"; fi); fi
+          cd Prismarine/
+          git add .
+          git commit -m "Update Upstream ($upstream)" -m "" #TODO
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.PUSH_TOKEN }}
+          directory: ./Prismarine
+          repository: PrismarineTeam/Prismarine
