@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alpha <alphakr93@outlook.com>
-Date: Mon, 24 Jan 2022 10:49:44 +0900
+Date: Wed, 26 Jan 2022 12:57:51 +0900
 Subject: [PATCH] Pufferfish Server Changes
 
 
@@ -2172,7 +2172,7 @@ index 38a0fb9a7c4ade9cacfd30dffabfea7e6b773981..aae2dadabedb075fd1bc712f0226882b
          }
      }
 diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
-index 0a04980a8015fe08907a040f0f3ff537267bd462..e8d9a4fc14e38d40b8a1d02752447fb98cfb4e72 100644
+index 2e6e86439173ebdb13b9cebd1e266e91335c1e2d..cf6ec0cf43d680f3cc1b8b7006d582c41cb072bc 100644
 --- a/src/main/java/net/minecraft/server/level/ChunkMap.java
 +++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
 @@ -447,7 +447,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
@@ -2224,7 +2224,7 @@ index 0a04980a8015fe08907a040f0f3ff537267bd462..e8d9a4fc14e38d40b8a1d02752447fb9
              return this.scaledRange(i);
          }
 diff --git a/src/main/java/net/minecraft/server/level/ServerChunkCache.java b/src/main/java/net/minecraft/server/level/ServerChunkCache.java
-index 9a07ccbd12675e501a9aebf89ab85adf6fb658ba..f51fcaba69c9ddc27130ab615526e05b1b4f0e07 100644
+index 099b9f57c710ee378307dc8edc942f7049703bee..91e5784cf6552fc9cfab371756751ea73e206ec1 100644
 --- a/src/main/java/net/minecraft/server/level/ServerChunkCache.java
 +++ b/src/main/java/net/minecraft/server/level/ServerChunkCache.java
 @@ -77,6 +77,9 @@ public class ServerChunkCache extends ChunkSource {
