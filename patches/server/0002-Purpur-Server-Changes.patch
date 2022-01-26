@@ -11881,24 +11881,32 @@ index 436f9cb45ff5b83f55b12f291bed355fa12a0655..590915d1c6eacc296be4880e6712b100
              return 1;
          }
 diff --git a/src/main/java/net/minecraft/world/entity/npc/Villager.java b/src/main/java/net/minecraft/world/entity/npc/Villager.java
-index 7d6bc3c253a77adfc7c35383caadb37154dc5c0f..b9f228d660b2279284e64fc3bbfa90fc7d2d20b0 100644
+index 7d6bc3c253a77adfc7c35383caadb37154dc5c0f..d77931f128c370286639c2443ac79ac87f318fb7 100644
 --- a/src/main/java/net/minecraft/world/entity/npc/Villager.java
 +++ b/src/main/java/net/minecraft/world/entity/npc/Villager.java
-@@ -137,6 +137,7 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+@@ -137,6 +137,15 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
      }, MemoryModuleType.MEETING_POINT, (entityvillager, villageplacetype) -> {
          return villageplacetype == PoiType.MEETING;
      });
-+    private final int brainTickOffset; // Purpur
++    // Purpur start
++    private final int brainTickOffset;
++    private boolean isLobotomized = false;
++    private int notLobotomizedCount = 0;
++
++    public boolean isLobotomized() {
++        return this.isLobotomized;
++    }
++    // Purpur end
  
      public long nextGolemPanic = -1; // Pufferfish
  
-@@ -151,8 +152,52 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+@@ -151,8 +160,90 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
          this.getNavigation().setCanFloat(true);
          this.setCanPickUpLoot(true);
          this.setVillagerData(this.getVillagerData().setType(type).setProfession(VillagerProfession.NONE));
 +        this.brainTickOffset = getRandom().nextInt(100); // Purpur
-     }
- 
++    }
++
 +    // Purpur start
 +    @Override
 +    public boolean isRidable() {
@@ -11934,18 +11942,56 @@ index 7d6bc3c253a77adfc7c35383caadb37154dc5c0f..b9f228d660b2279284e64fc3bbfa90fc
 +    @Override
 +    public boolean isSensitiveToWater() {
 +        return this.level.purpurConfig.villagerTakeDamageFromWater;
-+    }
-+
+     }
+ 
 +    @Override
 +    protected boolean isAlwaysExperienceDropper() {
 +        return this.level.purpurConfig.villagerAlwaysDropExp;
++    }
++
++    private boolean canTravelTo(BlockPos pos) {
++        BlockState state = this.level.getBlockStateIfLoaded(pos);
++        if (state == null) {
++            // chunk not loaded
++            return false;
++        }
++        net.minecraft.world.level.block.Block bottom = state.getBlock();
++        if (bottom instanceof net.minecraft.world.level.block.FenceBlock || bottom instanceof net.minecraft.world.level.block.FenceGateBlock || bottom instanceof net.minecraft.world.level.block.WallBlock) {
++            //bottom block is too tall to get over
++            return false;
++        }
++        // only if both blocks have no collision
++        return !bottom.hasCollision && !level.getBlockState(pos.above()).getBlock().hasCollision;
++    }
++
++    private boolean canTravelFrom(BlockPos pos) {
++        return canTravelTo(pos.east()) || canTravelTo(pos.west()) || canTravelTo(pos.north()) || canTravelTo(pos.south());
++    }
++
++    private boolean checkLobotomized() {
++        int interval = this.level.purpurConfig.villagerLobotomizeCheckInterval;
++        if (this.notLobotomizedCount > 3) {
++            // check half as often if not lobotomized for the last 3+ consecutive checks
++            interval *= 2;
++        }
++        if ((this.level.getGameTime() + brainTickOffset) % interval == 0) {
++            // offset Y for short blocks like dirt_path/farmland
++            this.isLobotomized = !canTravelFrom(new BlockPos(getX(), getY() + 0.0625D, getZ()));
++
++            if (this.isLobotomized) {
++                this.notLobotomizedCount = 0;
++            } else {
++                this.notLobotomizedCount++;
++            }
++        }
++        return this.isLobotomized;
 +    }
 +    // Purpur end
 +
      @Override
      public Brain<Villager> getBrain() {
          return (Brain<Villager>) super.getBrain(); // CraftBukkit - decompile error
-@@ -187,7 +232,7 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+@@ -187,7 +278,7 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
              brain.addActivity(Activity.PLAY, VillagerGoalPackages.getPlayPackage(0.5F));
          } else {
              brain.setSchedule(Schedule.VILLAGER_DEFAULT);
@@ -11954,20 +12000,38 @@ index 7d6bc3c253a77adfc7c35383caadb37154dc5c0f..b9f228d660b2279284e64fc3bbfa90fc
          }
  
          brain.addActivity(Activity.CORE, VillagerGoalPackages.getCorePackage(villagerprofession, 0.5F));
-@@ -250,7 +295,11 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+@@ -248,12 +339,29 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+     protected void customServerAiStep() { mobTick(false); }
+     protected void mobTick(boolean inactive) {
          this.level.getProfiler().push("villagerBrain");
++        // Purpur start
++        if (this.level.purpurConfig.villagerLobotomizeEnabled) {
++            // treat as inactive if lobotomized
++            inactive = inactive || checkLobotomized();
++        } else {
++            // clean up state for API
++            this.isLobotomized = false;
++        }
++        // Purpur end
          // Pufferfish start
          if (!inactive) {
 -            if (this.behaviorTick++ % this.activatedPriority == 0) // Pufferfish
-+            // Purpur start
-+            boolean tick = (level.getGameTime() + brainTickOffset) % level.purpurConfig.villagerBrainTicks == 0;
-+            if (((ServerLevel) level).getServer().lagging ? tick : level.purpurConfig.villagerUseBrainTicksOnlyWhenLagging || tick)
-+            // Purpur end
++            boolean tick = (level.getGameTime() + brainTickOffset) % level.purpurConfig.villagerBrainTicks == 0; // Purpur
++            if (((ServerLevel) level).getServer().lagging ? tick : level.purpurConfig.villagerUseBrainTicksOnlyWhenLagging || tick) // Purpur
 +            if ((getRider() == null || !this.isControllable()) && this.behaviorTick++ % this.activatedPriority == 0) // Pufferfish // Purpur - only use brain if no rider
              this.getBrain().tick((ServerLevel) this.level, this); // Paper
           }
          // Pufferfish end
-@@ -310,7 +359,7 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
++        // Purpur start
++        else if (this.isLobotomized && shouldRestock()) {
++            // make sure we restock if needed when lobotomized
++            restock();
++        }
++        // Purpur end
+         this.level.getProfiler().pop();
+         if (this.assignProfessionWhenSpawned) {
+             this.assignProfessionWhenSpawned = false;
+@@ -310,7 +418,7 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
          if (!itemstack.is(Items.VILLAGER_SPAWN_EGG) && this.isAlive() && !this.isTrading() && !this.isSleeping()) {
              if (this.isBaby()) {
                  this.setUnhappy();
@@ -11976,7 +12040,7 @@ index 7d6bc3c253a77adfc7c35383caadb37154dc5c0f..b9f228d660b2279284e64fc3bbfa90fc
              } else {
                  boolean flag = this.getOffers().isEmpty();
  
-@@ -323,9 +372,10 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+@@ -323,9 +431,10 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
                  }
  
                  if (flag) {
@@ -11989,7 +12053,7 @@ index 7d6bc3c253a77adfc7c35383caadb37154dc5c0f..b9f228d660b2279284e64fc3bbfa90fc
                          this.startTrading(player);
                      }
  
-@@ -482,7 +532,7 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+@@ -482,7 +591,7 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
          while (iterator.hasNext()) {
              MerchantOffer merchantrecipe = (MerchantOffer) iterator.next();
  
@@ -11998,7 +12062,7 @@ index 7d6bc3c253a77adfc7c35383caadb37154dc5c0f..b9f228d660b2279284e64fc3bbfa90fc
          }
  
      }
-@@ -732,7 +782,7 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+@@ -732,7 +841,7 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
  
      @Override
      public boolean canBreed() {
@@ -12007,7 +12071,7 @@ index 7d6bc3c253a77adfc7c35383caadb37154dc5c0f..b9f228d660b2279284e64fc3bbfa90fc
      }
  
      private boolean hungry() {
-@@ -947,6 +997,11 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+@@ -947,6 +1056,11 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
      }
  
      public boolean hasFarmSeeds() {
@@ -12019,7 +12083,7 @@ index 7d6bc3c253a77adfc7c35383caadb37154dc5c0f..b9f228d660b2279284e64fc3bbfa90fc
          return this.getInventory().hasAnyOf(ImmutableSet.of(Items.WHEAT_SEEDS, Items.POTATO, Items.CARROT, Items.BEETROOT_SEEDS));
      }
  
-@@ -1010,6 +1065,7 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+@@ -1010,6 +1124,7 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
  
      @Nullable
      private IronGolem trySpawnGolem(ServerLevel world) {
@@ -12027,7 +12091,7 @@ index 7d6bc3c253a77adfc7c35383caadb37154dc5c0f..b9f228d660b2279284e64fc3bbfa90fc
          BlockPos blockposition = this.blockPosition();
  
          for (int i = 0; i < 10; ++i) {
-@@ -1123,6 +1179,12 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+@@ -1123,6 +1238,12 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
  
      @Override
      public void startSleeping(BlockPos pos) {
@@ -16985,6 +17049,22 @@ index 659e2959c5330e4764ea1edc7f8de9f464f9ff52..c2bac8ae958630acaaa8d758e31428d2
 +    }
 +    // Purpur end
  }
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftVillager.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftVillager.java
+index dbc1ea96223675fbe03585598a9c7f51acc61d2e..dde09a8495270d9038f55974e252576095259ca9 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftVillager.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftVillager.java
+@@ -187,4 +187,11 @@ public class CraftVillager extends CraftAbstractVillager implements Villager {
+         getHandle().getGossips().getReputations().clear();
+     }
+     // Paper end
++
++    // Purpur start
++    @Override
++    public boolean isLobotomized() {
++        return getHandle().isLobotomized();
++    }
++    // Purpur end
+ }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftWither.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftWither.java
 index 299d5e47489cfe489ac130a33a08cdb29ba76d72..6b4a9b706142866d5e712d1ed49ae7220e471c91 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftWither.java
@@ -17336,7 +17416,7 @@ index 6cc517b394bafefce50d877761e5b2eee8e14c78..46ca899a7abddea108f6ff1b4ca14ca5
          DefaultPermissions.registerPermission(CommandPermissions.PREFIX + "defaultgamemode", "Allows the user to change the default gamemode of the server", PermissionDefault.OP, commands);
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurConfig.java b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..b211c90a7e0a614760e2a6f7c27cbfd6fe1cf9bd
+index 0000000000000000000000000000000000000000..7cdcc3e266a37c8e430de1dd508b29a58422c6a3
 --- /dev/null
 +++ b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
 @@ -0,0 +1,488 @@
@@ -17414,8 +17494,8 @@ index 0000000000000000000000000000000000000000..b211c90a7e0a614760e2a6f7c27cbfd6
 +        commands = new HashMap<>();
 +        commands.put("purpur", new PurpurCommand("purpur"));
 +
-+        version = getInt("config-version", 26);
-+        set("config-version", 26);
++        version = getInt("config-version", 27);
++        set("config-version", 27);
 +
 +        readConfig(PurpurConfig.class, null);
 +    }
@@ -17830,10 +17910,10 @@ index 0000000000000000000000000000000000000000..b211c90a7e0a614760e2a6f7c27cbfd6
 +}
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..7580ab1f6bf38a784bcf91ef594d068de6b5d10d
+index 0000000000000000000000000000000000000000..25c4640b7f1f583eff5b0a55b42499d482846744
 --- /dev/null
 +++ b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
-@@ -0,0 +1,3040 @@
+@@ -0,0 +1,3052 @@
 +package org.purpurmc.purpur;
 +
 +import net.minecraft.core.Registry;
@@ -20503,6 +20583,8 @@ index 0000000000000000000000000000000000000000..7580ab1f6bf38a784bcf91ef594d068d
 +    public boolean villagerAlwaysDropExp = false;
 +    public int villagerMinimumDemand = 0;
 +    public boolean villagerDisplayTradeItem = true;
++    public boolean villagerLobotomizeEnabled = false;
++    public int villagerLobotomizeCheckInterval = 100;
 +    private void villagerSettings() {
 +        villagerRidable = getBoolean("mobs.villager.ridable", villagerRidable);
 +        villagerRidableInWater = getBoolean("mobs.villager.ridable-in-water", villagerRidableInWater);
@@ -20529,6 +20611,16 @@ index 0000000000000000000000000000000000000000..7580ab1f6bf38a784bcf91ef594d068d
 +        villagerAlwaysDropExp = getBoolean("mobs.villager.always-drop-exp", villagerAlwaysDropExp);
 +        villagerMinimumDemand = getInt("mobs.villager.minimum-demand", villagerMinimumDemand);
 +        villagerDisplayTradeItem = getBoolean("mobs.villager.display-trade-item", villagerDisplayTradeItem);
++        if (PurpurConfig.version < 9) {
++            boolean oldValue = getBoolean("mobs.villager.lobotomize-1x1", villagerLobotomizeEnabled);
++            set("mobs.villager.lobotomize.enabled", oldValue);
++            set("mobs.villager.lobotomize-1x1", null);
++        } else if (PurpurConfig.version < 27) {
++            int oldValue = getInt("mobs.villager.lobotomize.check-interval", villagerLobotomizeCheckInterval);
++            set("mobs.villager.lobotomize.check-interval", oldValue == 60 ? 100 : oldValue);
++        }
++        villagerLobotomizeEnabled = getBoolean("mobs.villager.lobotomize.enabled", villagerLobotomizeEnabled);
++        villagerLobotomizeCheckInterval = getInt("mobs.villager.lobotomize.check-interval", villagerLobotomizeCheckInterval);
 +    }
 +
 +    public boolean vindicatorRidable = false;

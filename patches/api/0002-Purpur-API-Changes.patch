@@ -2277,6 +2277,24 @@ index ceb3e2c5117740ce284e893fff8e41a002d78649..fab5c3c90f55c113cae2bca2354a94e8
  public interface ThrowableProjectile extends Projectile {
  
      /**
+diff --git a/src/main/java/org/bukkit/entity/Villager.java b/src/main/java/org/bukkit/entity/Villager.java
+index 02ecc87a90bbd81e7d21279fac701ba41c74fd9f..89e8e28f78301bb062a394eae9e23e5a82511e28 100644
+--- a/src/main/java/org/bukkit/entity/Villager.java
++++ b/src/main/java/org/bukkit/entity/Villager.java
+@@ -285,4 +285,13 @@ public interface Villager extends AbstractVillager {
+      */
+     public void clearReputations();
+     // Paper end
++
++    // Purpur start
++    /**
++     * Check if villager is currently lobotomized
++     *
++     * @return True if lobotomized
++     */
++    boolean isLobotomized();
++    // Purpur end
+ }
 diff --git a/src/main/java/org/bukkit/entity/Wither.java b/src/main/java/org/bukkit/entity/Wither.java
 index 8c95cd6933f11076de936854f379e6fc8600b525..86907637ed0a53d4967606dbba3ea20320b528f8 100644
 --- a/src/main/java/org/bukkit/entity/Wither.java
