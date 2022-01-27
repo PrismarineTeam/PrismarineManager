@@ -188,8 +188,16 @@ jobs:
           
       - name: Test
         run: |
-          ls
-          pwd
+          ls Prismarine/
+          ls Purpur/
+          
+      - name: 'Upload Initial Artifact'
+        uses: actions/upload-artifact@v1
+        with:
+          name: Artifacts - Initial
+          path: |
+            Prismarine/patches/
+            Purpur/patches/
           
       - name: Upstream Paper
         if: needs.check.outputs.paper == 'true'
@@ -232,6 +240,14 @@ jobs:
           log="Update Upstream ($upstream)\n\nUpstream has released updates that appear to apply and compile correctly$log"
           
           echo -e $log | git commit -F -
+          
+      - name: 'Upload Initial Artifact'
+        uses: actions/upload-artifact@v1
+        with:
+          name: Artifacts - Final
+          path: |
+            Prismarine/patches/
+            Purpur/patches/
 
       - name: Push changes
         uses: ad-m/github-push-action@master
