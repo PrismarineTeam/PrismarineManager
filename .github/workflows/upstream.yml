@@ -178,7 +178,6 @@ jobs:
 
       - name: Build Patches
         run: |
-          ls
           git clone --recursive -b ${{ env.prib }} ${{ env.pris }}
           cd Purpur/
           ./gradlew rebuildPatches
@@ -186,6 +185,7 @@ jobs:
           cp -rf patches/api/*-Purpur-API-Changes.patch ../Prismarine/patches/api/0002-Purpur-API-Changes.patch
           cp -rf patches/server/*-Pufferfish-Server-Changes.patch ../Prismarine/patches/server/0001-Pufferfish-Server-Changes.patch
           cp -rf patches/server/*-Purpur-Server-Changes.patch ../Prismarine/patches/server/0002-Purpur-Server-Changes.patch
+          ls ../
           
       - name: Upstream Paper
         if: needs.check.outputs.paper == 'true'
@@ -200,7 +200,6 @@ jobs:
         with:
           name: Artifacts - Initial
           path: |
-            Purpur/patches
             Prismarine/patches
       
       - name: Rebuild Patches
@@ -215,7 +214,6 @@ jobs:
         with:
           name: Artifacts - Final
           path: |
-            Purpur/patches
             Prismarine/patches
 
       - name: Commit changes
