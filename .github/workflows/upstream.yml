@@ -185,7 +185,7 @@ jobs:
           cp -rf patches/api/*-Purpur-API-Changes.patch ../Prismarine/patches/api/0002-Purpur-API-Changes.patch
           cp -rf patches/server/*-Pufferfish-Server-Changes.patch ../Prismarine/patches/server/0001-Pufferfish-Server-Changes.patch
           cp -rf patches/server/*-Purpur-Server-Changes.patch ../Prismarine/patches/server/0002-Purpur-Server-Changes.patch
-          ls ../
+          ls ../../
           
       - name: Upstream Paper
         if: needs.check.outputs.paper == 'true'
@@ -194,13 +194,6 @@ jobs:
           upstream=${{ env.upstream }}
           current=$(cat Prismarine/gradle.properties | grep paperCommit | sed 's/paperCommit = //') && echo "current=$current" >> $GITHUB_ENV
           sed -i 's/paperCommit = .*/paperCommit = '"$upstream"'/' gradle.properties
-          
-      - name: 'Upload Initial Artifact'
-        uses: actions/upload-artifact@v1
-        with:
-          name: Artifacts - Initial
-          path: |
-            Prismarine/patches
       
       - name: Rebuild Patches
         run: |
@@ -208,13 +201,6 @@ jobs:
           ./gradlew applyPatches --stacktrace
           ./gradlew build --stacktrace
           ./gradlew rebuildPatches --stacktrace
-          
-      - name: 'Upload Final Artifacts'
-        uses: actions/upload-artifact@v1
-        with:
-          name: Artifacts - Final
-          path: |
-            Prismarine/patches
 
       - name: Commit changes
         run: |
