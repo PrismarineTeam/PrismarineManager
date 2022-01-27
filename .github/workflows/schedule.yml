@@ -215,19 +215,19 @@ jobs:
       - name: Commit changes
         run: |
           git config --global user.email "actions@github.com" && git config --global user.name "Github Actions"
-          if [ "${{ needs.check.outputs.paper }}" == true ]; then
+          if [ "${{ needs.check.outputs.paper }}" == "true" ]; then
             upstream="Paper"
             commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/PaperMC/Paper/compare/${{ env.current }}...HEAD | jq -r '.commits[] | "PaperMC/Paper@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
             log="$log\n\nPaper Changes:\n$commit"
           fi
           
-          if [ "${{ needs.check.outputs.pufferfish }}" == true ]; then
+          if [ "${{ needs.check.outputs.pufferfish }}" == "true" ]; then
             if [ "$upstream" != "" ]; then upstream="$upstream & Pufferfish"; else upstream="Pufferfish"; fi
             commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/pufferfish-gg/Pufferfish/compare/${{ env.pufferfish }}...HEAD | jq -r '.commits[] | "Ppufferfish-gg/Pufferfish@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
             log="$log\n\nPufferfish Changes:\n$commit"
           fi
           
-          if [ "${{ needs.check.outputs.purpur }}" == true ]; then
+          if [ "${{ needs.check.outputs.purpur }}" == "true" ]; then
             if [ "$upstream" != "" ]; then upstream="$upstream & Purpur"; else upstream="Purpur"; fi
             commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/PurpurMC/Purpur/compare/${{ env.purpur }}...HEAD | jq -r '.commits[] | "PurpurMC/Purpur@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
             log="$log\n\nPurpur Changes:\n$commit"
