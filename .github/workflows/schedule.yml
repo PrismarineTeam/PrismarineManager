@@ -80,7 +80,7 @@ jobs:
         run: |
           cd Prismarine
           upstream=${{ env.upstream }}
-          current=$(cat Prismarine/gradle.properties | grep paperCommit | sed 's/paperCommit = //') && echo "current=$current" >> $GITHUB_ENV
+          current=$(cat gradle.properties | grep paperCommit | sed 's/paperCommit = //') && echo "current=$current" >> $GITHUB_ENV
           sed -i 's/paperCommit = .*/paperCommit = '"$upstream"'/' gradle.properties
           ./gradlew applyPatches --stacktrace && ./gradlew build --stacktrace
       
@@ -202,7 +202,7 @@ jobs:
         run: |
           cd Prismarine/
           upstream=${{ env.upstream }}
-          current=$(cat Prismarine/gradle.properties | grep paperCommit | sed 's/paperCommit = //') && echo "current=$current" >> $GITHUB_ENV
+          current=$(cat gradle.properties | grep paperCommit | sed 's/paperCommit = //') && echo "current=$current" >> $GITHUB_ENV
           sed -i 's/paperCommit = .*/paperCommit = '"$upstream"'/' gradle.properties
       
       - name: Rebuild Patches
