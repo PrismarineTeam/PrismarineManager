@@ -191,7 +191,7 @@ jobs:
           echo Prismarine
           ls Prismarine/patches/
           echo Purpur
-          ls Purpur/
+          ls Purpur/patches/
           
       - name: 'Upload Initial Artifact'
         uses: actions/upload-artifact@v1
