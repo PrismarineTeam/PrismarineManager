@@ -188,7 +188,9 @@ jobs:
           
       - name: Test
         run: |
-          ls Prismarine/
+          echo Prismarine
+          ls Prismarine/patches/
+          echo Purpur
           ls Purpur/
           
       - name: 'Upload Initial Artifact'
