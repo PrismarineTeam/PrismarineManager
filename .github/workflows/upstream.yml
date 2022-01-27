@@ -197,9 +197,7 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: Artifacts - Initial
-          path: |
-            Prismarine/patches/*
-            # Purpur/patches/*
+          path: Purpur/patches
           
       - name: Upstream Paper
         if: needs.check.outputs.paper == 'true'
@@ -243,13 +241,11 @@ jobs:
           
           echo -e $log | git commit -F -
           
-      - name: 'Upload Initial Artifact'
+      - name: 'Upload Final Artifact'
         uses: actions/upload-artifact@v1
         with:
           name: Artifacts - Final
-          path: |
-            Prismarine/patches/*
-            # Purpur/patches/*
+          path: Prismarine/patches/*
 
       - name: Push changes
         uses: ad-m/github-push-action@master
