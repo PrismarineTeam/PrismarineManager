@@ -186,13 +186,6 @@ jobs:
           cp -rf patches/server/*-Pufferfish-Server-Changes.patch ../Prismarine/patches/server/0001-Pufferfish-Server-Changes.patch
           cp -rf patches/server/*-Purpur-Server-Changes.patch ../Prismarine/patches/server/0002-Purpur-Server-Changes.patch
           
-      - name: Test
-        run: |
-          echo Prismarine
-          ls Prismarine/patches/
-          echo Purpur
-          ls Purpur/patches/
-          
       - name: 'Upload Initial Artifact'
         uses: actions/upload-artifact@v2
         with:
