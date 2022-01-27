@@ -188,7 +188,7 @@ jobs:
           
       - name: Test
         run: |
-          ls ../../
+          pwd
           
       - name: Upstream Paper
         if: needs.check.outputs.paper == 'true'
