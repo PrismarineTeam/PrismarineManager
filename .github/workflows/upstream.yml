@@ -188,6 +188,7 @@ jobs:
           
       - name: Test
         run: |
+          ls
           pwd
           
       - name: Upstream Paper
