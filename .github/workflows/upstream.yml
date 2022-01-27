@@ -224,7 +224,19 @@ jobs:
           if [ "${{ needs.check.outputs.purpur }}" == true ]; then (if [ "$upstream" != "" ]; then upstream="$upstream & Purpur"; else upstream="Purpur"; fi); fi
           cd Prismarine/
           git add .
-          git commit -m "Update Upstream ($upstream)" -m "" #TODO
+          
+          log=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/PaperMC/Paper/compare/${{ env.current }}...HEAD | jq -r '.commits[] | "PaperMC/Paper@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+          log="$log\n\nPaper Changes:\n$log"
+          
+          log=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/pufferfish-gg/Pufferfish/compare/${{ env.pufferfish }}...HEAD | jq -r '.commits[] | "Ppufferfish-gg/Pufferfish@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+          log="$log\n\nPufferfish Changes:\n$log"
+          
+          log=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/PurpurMC/Purpur/compare/${{ env.purpur }}...HEAD | jq -r '.commits[] | "PurpurMC/Purpur@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+          log="$log\n\nPurpur Changes:\n$log"
+          
+          log="Updated Upstream ($upstream)\n\nUpstream has released updates that appear to apply and compile correctly$log"
+          
+          echo -e $log | git commit -F -
 
       - name: Push changes
         uses: ad-m/github-push-action@master
