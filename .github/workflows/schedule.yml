@@ -190,7 +190,7 @@ jobs:
           cp -rf patches/server/*-Purpur-Server-Changes.patch ../Prismarine/patches/server/0002-Purpur-Server-Changes.patch
           
       - name: 'Upload Initial Artifact'
-        uses: actions/upload-artifact@latest
+        uses: actions/upload-artifact@v2
         with:
           name: Artifacts - Initial
           path: |
@@ -239,7 +239,7 @@ jobs:
           echo -e $log | git commit -F -
           
       - name: 'Upload Final Artifact'
-        uses: actions/upload-artifact@latest
+        uses: actions/upload-artifact@v2
         with:
           name: Artifacts - Final
           path: |
