@@ -204,6 +204,7 @@ jobs:
       
       - name: Rebuild Patches
         run: |
+          ls
           cd Prismarine/
           ./gradlew applyPatches --stacktrace
           ./gradlew build --stacktrace
