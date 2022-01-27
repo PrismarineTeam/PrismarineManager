@@ -198,8 +198,8 @@ jobs:
         with:
           name: Artifacts - Initial
           path: |
-            Prismarine/patches/
-            Purpur/patches/
+            Prismarine/patches/*
+            # Purpur/patches/*
           
       - name: Upstream Paper
         if: needs.check.outputs.paper == 'true'
@@ -248,8 +248,8 @@ jobs:
         with:
           name: Artifacts - Final
           path: |
-            Prismarine/patches/
-            Purpur/patches/
+            Prismarine/patches/*
+            # Purpur/patches/*
 
       - name: Push changes
         uses: ad-m/github-push-action@master
