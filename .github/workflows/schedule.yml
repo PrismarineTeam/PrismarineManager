@@ -115,7 +115,7 @@ jobs:
 
       - name: Configure Git
         run: |
-          git config --global user.email "no-reply@github.com" && git config --global user.name "Github Actions"
+          git config --global user.email "actions@github.com" && git config --global user.name "Github Actions"
 
       - name: Initial Pufferfish Sources
         run: |
