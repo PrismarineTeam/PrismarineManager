@@ -245,7 +245,7 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: Artifacts - Final
-          path: Prismarine/patches/*
+          path: Prismarine/patches
 
       - name: Push changes
         uses: ad-m/github-push-action@master
