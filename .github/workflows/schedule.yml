@@ -51,7 +51,7 @@ jobs:
           if [ "$current" != "$upstream" ]; then pufferfish=true; fi
           echo "::set-output name=pufferfish::$pufferfish"
           echo "$pufferfish"
-          echo "$current"
+          echo "${{ env.oldpuf }}"
       
       - name: Check Purpur Commit
         id: check-purpur
@@ -199,7 +199,7 @@ jobs:
           if [ "${{ needs.check.outputs.pufferfish }}" == "true" ]; then
             echo "Pufferfish"
             if [ "$upstream" != "" ]; then upstream="$upstream & Pufferfish"; else upstream="Pufferfish"; fi
-            commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/pufferfish-gg/Pufferfish/compare/${{ env.oldpuf }}...HEAD | jq -r '.commits[] | "Ppufferfish-gg/Pufferfish@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+            commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/pufferfish-gg/Pufferfish/compare/${{ env.oldpuf }}...HEAD | jq -r '.commits[] | "pufferfish-gg/Pufferfish@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
             log="$log\n\nPufferfish Changes:\n$commit"
           fi
           
