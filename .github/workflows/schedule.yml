@@ -41,6 +41,7 @@ jobs:
           if [ "$current" != "$upstream" ]; then paper=true; fi
           echo "::set-output name=paper::$paper"
           echo "::set-output name=upstream::$upstream"
+          echo "$paper"
 
       - name: Check Pufferfish Commit
         id: check-pufferfish
@@ -49,6 +50,7 @@ jobs:
           current=$(cat Prismarine/patches/api/0001-Pufferfish-API-Changes.patch | grep "Pufferfish Commit" | sed 's/Pufferfish Commit: //') && echo "oldpuf=$current" >> $GITHUB_ENV
           if [ "$current" != "$upstream" ]; then pufferfish=true; fi
           echo "::set-output name=pufferfish::$pufferfish"
+          echo "$pufferfish"
       
       - name: Check Purpur Commit
         id: check-purpur
@@ -57,6 +59,7 @@ jobs:
           current=$(cat Prismarine/patches/api/0002-Purpur-API-Changes.patch | grep "Purpur Commit" | sed 's/Purpur Commit: //') && echo "oldpur==$current" >> $GITHUB_ENV
           if [ "$current" != "$upstream" ]; then purpur=true; fi
           echo "::set-output name=purpur::$purpur"
+          echo "$purpur"
 
   upstream-paper:
     name: Upstream Paper
