@@ -102,11 +102,127 @@ jobs:
           directory: ./Prismarine
           repository: PrismarineTeam/Prismarine
 
-  upstream-all:
+  upstream-pufferfish:
     name: Upstream
     runs-on: ubuntu-20.04
     needs: check
-    if: needs.check.outputs.pufferfish == 'true' || needs.check.outputs.purpur == 'true'
+    if: needs.check.outputs.pufferfish == 'true' && needs.check.outputs.purpur == 'false'
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-java@v2
+        with:
+          distribution: microsoft
+          java-version: 17.0.1
+
+      - name: Configure Git
+        run: |
+          git config --global user.email "alphakr93@outlook.com" && git config --global user.name "AlphaKR93"
+
+      - name: Initial Pufferfish Sources
+        run: |
+          git clone --recursive -b ${{ env.pufb }} ${{ env.puff }}
+          cd Pufferfish/
+          pufferfish=$(git log -1 --pretty=oneline | cut -c 1-40) && echo "pufferfish=$pufferfish" > $GITHUB_ENV
+          upstream=${{ env.upstream }}
+          sed -i 's/paperRef=.*/paperRef='"$upstream"'/' gradle.properties
+          ./gradlew applyPatches --stacktrace
+
+      - name: MC Dev Sources
+        run: |
+          cd Pufferfish/.gradle/caches/paperweight/upstreams/paper/Paper-Server
+          cp -rf .gradle/caches/paperweight/mc-dev-sources/net/* src/main/java/net
+          git add .
+          git commit -m "Initial"
+      
+      - name: Pufferfish Server Changes
+        run: |
+          cd Pufferfish/pufferfish-server/
+          rm -rdf .git
+          cp -rf .gradle/caches/paperweight/mc-dev-sources/net/* src/main/java/net
+          mv -f ../.gradle/caches/paperweight/upstreams/paper/Paper-Server/.git ./
+          git add .
+          git commit -m "Pufferfish Server Changes" -m "Pufferfish Commit: ${{ env.pufferfish }}"
+
+      - name: Pufferfish API Changes
+        run: |
+          cd Pufferfish/pufferfish-api
+          rm -rdf .git
+          mv -f ../.gradle/caches/paperweight/upstreams/paper/Paper-API/.git ./
+          git add .
+          git commit -m "Pufferfish API Changes" -m "Pufferfish Commit: ${{ env.pufferfish }}"
+
+      - name: Build Patches
+        run: |
+          git clone --recursive -b ${{ env.prib }} ${{ env.pris }}
+          cd Pufferfish/
+          ./gradlew rebuildPatches
+          cp -rf patches/api/*-Pufferfish-API-Changes.patch ../Prismarine/patches/api/0001-Pufferfish-API-Changes.patch
+          cp -rf patches/server/*-Pufferfish-Server-Changes.patch ../Prismarine/patches/server/0001-Pufferfish-Server-Changes.patch
+          
+      - name: 'Upload Initial Artifact'
+        uses: actions/upload-artifact@v2
+        with:
+          name: Artifacts - Initial
+          path: |
+            Pufferfish/patches
+            Prismarine/patches
+          
+      - name: Upstream Paper
+        if: needs.check.outputs.paper == 'true'
+        run: |
+          cd Prismarine/
+          upstream=${{ env.upstream }}
+          sed -i 's/paperCommit = .*/paperCommit = '"$upstream"'/' gradle.properties
+      
+      - name: Rebuild Patches
+        run: |
+          cd Prismarine/
+          ./gradlew applyPatches --stacktrace
+          ./gradlew build --stacktrace
+          ./gradlew rebuildPatches --stacktrace
+
+      - name: Commit changes
+        run: |
+          git config --global user.email "actions@github.com" && git config --global user.name "Github Actions"
+          if [ "${{ needs.check.outputs.paper }}" == "true" ]; then
+            upstream="Paper"
+            commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/PaperMC/Paper/compare/${{ env.oldpap }}...HEAD | jq -r '.commits[] | "PaperMC/Paper@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+            log="$log\n\nPaper Changes:\n$commit"
+          fi
+          
+          if [ "${{ needs.check.outputs.pufferfish }}" == "true" ]; then
+            if [ "$upstream" != "" ]; then upstream="$upstream & Pufferfish"; else upstream="Pufferfish"; fi
+            commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/pufferfish-gg/Pufferfish/compare/${{ env.oldpuf }}...HEAD | jq -r '.commits[] | "Ppufferfish-gg/Pufferfish@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+            log="$log\n\nPufferfish Changes:\n$commit"
+          fi
+          
+          cd Prismarine/
+          git add .
+          log="Update Upstream ($upstream)\n\nUpstream has released updates that appear to apply and compile correctly$log"
+          
+          echo -e $log | git commit -F -
+          
+      - name: 'Upload Final Artifact'
+        uses: actions/upload-artifact@v2
+        with:
+          name: Artifacts - Final
+          path: |
+            Pufferfish/patches
+            Prismarine/patches
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.PUSH_TOKEN }}
+          directory: ./Prismarine
+          repository: PrismarineTeam/Prismarine
+
+  upstream-purpur:
+    name: Upstream
+    runs-on: ubuntu-20.04
+    needs: check
+    if: needs.check.outputs.pufferfish == 'false' && needs.check.outputs.purpur == 'true'
     steps:
       - uses: actions/checkout@v2
 
@@ -153,7 +269,6 @@ jobs:
           git commit -m "Pufferfish API Changes" -m "Pufferfish Commit: ${{ env.pufferfish }}"
 
       - name: Initial Purpur Sources
-        if: needs.check.outputs.purpur == 'true'
         run: |
           git clone --recursive -b ${{ env.purb }} ${{ env.purp }}
           cd Purpur/
@@ -163,7 +278,6 @@ jobs:
           ./gradlew applyPatches
 
       - name: Purpur Server Changes
-        if: needs.check.outputs.purpur == 'true'
         run: |
           cd Purpur/Purpur-Server/
           rm -rdf .git
@@ -173,7 +287,6 @@ jobs:
           git commit -m "Purpur Server Changes" -m "Purpur Commit: ${{ env.purpur }}"
 
       - name: Purpur API Changes
-        if: needs.check.outputs.purpur == 'true'
         run: |
           cd Purpur/Purpur-API/
           rm -rdf .git
