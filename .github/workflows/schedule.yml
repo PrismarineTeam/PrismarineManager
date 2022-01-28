@@ -65,7 +65,7 @@ jobs:
     name: Upstream Paper
     runs-on: ubuntu-20.04
     needs: check
-    if: needs.check.outputs.paper == 'true' && needs.check.outputs.pufferfish == 'false' && needs.check.outputs.purpur == 'false'
+    if: needs.check.outputs.paper == 'true' && !(needs.check.outputs.pufferfish == 'true') && !(needs.check.outputs.purpur == 'true')
     steps:
       - uses: actions/checkout@v2
 
@@ -109,7 +109,7 @@ jobs:
     name: Upstream Pufferfish
     runs-on: ubuntu-20.04
     needs: check
-    if: needs.check.outputs.pufferfish == 'true' && needs.check.outputs.purpur == 'false'
+    if: needs.check.outputs.pufferfish == 'true' && !(needs.check.outputs.purpur == 'true')
     steps:
       - uses: actions/checkout@v2
 
@@ -225,7 +225,7 @@ jobs:
     name: Upstream Purpur
     runs-on: ubuntu-20.04
     needs: check
-    if: needs.check.outputs.pufferfish == 'false' && needs.check.outputs.purpur == 'true'
+    if: needs.check.outputs.purpur == 'true' && !(needs.check.outputs.pufferfish == 'true')
     steps:
       - uses: actions/checkout@v2
 
