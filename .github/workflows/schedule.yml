@@ -103,7 +103,7 @@ jobs:
           repository: PrismarineTeam/Prismarine
 
   upstream-pufferfish:
-    name: Upstream
+    name: Upstream Pufferfish
     runs-on: ubuntu-20.04
     needs: check
     if: needs.check.outputs.pufferfish == 'true' && needs.check.outputs.purpur == 'false'
@@ -219,7 +219,7 @@ jobs:
           repository: PrismarineTeam/Prismarine
 
   upstream-purpur:
-    name: Upstream
+    name: Upstream Purpur
     runs-on: ubuntu-20.04
     needs: check
     if: needs.check.outputs.pufferfish == 'false' && needs.check.outputs.purpur == 'true'
