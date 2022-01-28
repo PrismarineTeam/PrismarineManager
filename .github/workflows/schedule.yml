@@ -51,6 +51,7 @@ jobs:
           if [ "$current" != "$upstream" ]; then pufferfish=true; fi
           echo "::set-output name=pufferfish::$pufferfish"
           echo "$pufferfish"
+          echo "$current"
       
       - name: Check Purpur Commit
         id: check-purpur
