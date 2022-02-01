@@ -46,6 +46,7 @@ jobs:
           echo "::set-output name=paper::$paper"
           echo "::set-output name=upstream::$upstream"
           echo "::set-output name=before::$current"
+          echo $paper
 
       - name: Check Pufferfish Commit
         id: check-pufferfish
