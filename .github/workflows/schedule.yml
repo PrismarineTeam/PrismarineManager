@@ -70,7 +70,7 @@ jobs:
     name: Upstream Paper
     runs-on: ubuntu-20.04
     needs: check
-    if: needs.check.outputs.paper == 'true' && !(needs.check.outputs.pufferfish == 'true') && !(needs.check.outputs.purpur == 'true')
+    if: needs.check.outputs.paper == 'true'
     steps:
       - uses: actions/checkout@v2
 
