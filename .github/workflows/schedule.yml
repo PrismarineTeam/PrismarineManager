@@ -44,7 +44,7 @@ jobs:
           current=$(cat Prismarine/gradle.properties | grep paperCommit | sed 's/paperCommit = //')
           if [ "$current" != "$upstream" ]; then paper=true; fi
           echo "::set-output name=paper::$paper"
-          echo "::set-output name=upstream::$upstream
+          echo "::set-output name=upstream::$upstream"
           echo "::set-output name=before::$current"
 
       - name: Check Pufferfish Commit
