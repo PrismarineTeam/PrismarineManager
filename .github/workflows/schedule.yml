@@ -99,7 +99,7 @@ jobs:
       - name: Commit Changes
         run: |
           git config --global user.email "actions@github.com" && git config --global user.name "Github Actions"
-          paper=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/PaperMC/Paper/compare/${{ needs.check.output.beforepaper }}...HEAD | jq -r '.commits[] | "PaperMC/Paper@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+          paper=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/PaperMC/Paper/compare/${{ needs.check.outputs.beforepaper }}...HEAD | jq -r '.commits[] | "PaperMC/Paper@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
           log="Updated Upstream (Paper)\n\nUpstream has released updates that appear to apply and compile correctly\n\nPaper Changes:\n$paper"
           echo -e "$log" | git commit -F -
 
