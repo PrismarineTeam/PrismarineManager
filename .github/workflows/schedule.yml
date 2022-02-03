@@ -87,7 +87,7 @@ jobs:
       - name: Update Upstream
         run: |
           cd Prismarine
-          upstream=${{ env.upstream }}
+          upstream=${{ needs.check.outputs.upstream }}
           sed -i 's/paperCommit = .*/paperCommit = '"$upstream"'/' gradle.properties
           ./gradlew applyPatches --stacktrace && ./gradlew build --stacktrace
       
