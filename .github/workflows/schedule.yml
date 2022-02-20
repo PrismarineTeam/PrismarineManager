@@ -3,8 +3,8 @@ name: Scheduled Upstream
 on:
   push:
   workflow_dispatch:
-   schedule:
-     - cron: "*/15 * * * *"
+  schedule:
+    - cron: "*/15 * * * *"
 
 env:
   paper: https://github.com/PaperMC/Paper
