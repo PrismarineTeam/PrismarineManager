@@ -4,7 +4,7 @@ on:
   push:
   workflow_dispatch:
   schedule:
-    - cron: "*/15 * * * *"
+    - cron: "*/10 * * * *"
 
 env:
   paper: https://github.com/PaperMC/Paper
