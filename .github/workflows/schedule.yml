@@ -4,7 +4,7 @@ on:
   push:
   workflow_dispatch:
   schedule:
-    - cron: "*/10 * * * *"
+    - cron: "*/20 * * * *"
 
 env:
   paper: https://github.com/PaperMC/Paper
@@ -335,7 +335,7 @@ jobs:
           
           if [ "${{ needs.check.outputs.purpur }}" == "true" ]; then
             if [ "$upstream" != "" ]; then upstream="$upstream & Purpur"; else upstream="Purpur"; fi
-            commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/PurpurMC/Purpur/compare/${{ needs.check.outputs.beforepurpur }}...HEAD | jq -r '.commits[] | \n"PurpurMC/Purpur@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+            commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/PurpurMC/Purpur/compare/${{ needs.check.outputs.beforepurpur }}...HEAD | jq -r '.commits[] | "\nPurpurMC/Purpur@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
             log="$log\n\nPurpur Changes:\n$commit"
           fi
           
