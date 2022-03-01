@@ -135,7 +135,8 @@ jobs:
           git clone --recursive -b ${{ env.pufb }} ${{ env.puff }}
           cd Pufferfish
           pufferfish=$(git log -1 --pretty=oneline | cut -c 1-40) && echo "pufferfish=$pufferfish" > $GITHUB_ENV
-          sed -i 's/paperRef=.*/paperRef='"${{ env.upstream }}"'/' gradle.properties
+          upstream=${{ env.upstream }}
+          sed -i 's/paperRef=.*/paperRef='"$upstream"'/' gradle.properties
           ./gradlew applyPatches --stacktrace
           cd .gradle/caches/paperweight/upstreams/paper/Paper-Server
           cp -rf .gradle/caches/paperweight/mc-dev-sources/net/* src/main/java/net
@@ -171,7 +172,8 @@ jobs:
         if: needs.check.outputs.paper == 'true'
         run: |
           cd Prismarine/
-          sed -i 's/paperCommit = .*/paperCommit = '"${{ env.upstream }}"'/' gradle.properties
+          upstream=${{ env.upstream }}
+          sed -i 's/paperCommit = .*/paperCommit = '"$upstream"'/' gradle.properties
       
       - name: Rebuild Patches
         run: |
@@ -314,7 +316,8 @@ jobs:
       - name: Rebuild Patches
         run: |
           cd Prismarine/
-          sed -i 's/paperCommit = .*/paperCommit = '"${{ env.upstream }}"'/' gradle.properties
+          upstream=${{ env.upstream }}
+          sed -i 's/paperCommit = .*/paperCommit = '"$upstream"'/' gradle.properties
           ./gradlew applyPatches --stacktrace && ./gradlew rebuildPatches --stacktrace
 
       - name: Commit changes
