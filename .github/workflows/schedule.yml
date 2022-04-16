@@ -8,7 +8,7 @@ on:
 
 env:
   paper: https://github.com/PaperMC/Paper
-  puff: https://github.com/pufferfish-gg/Pufferfish
+  puff: https://github.com/AlphaKR93/Pufferfish
   purp: https://github.com/PurpurMC/Purpur.git
   pris: https://github.com/PrismarineTeam/Prismarine.git
 
