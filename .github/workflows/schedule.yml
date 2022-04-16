@@ -174,6 +174,7 @@ jobs:
           echo -e "Pufferfish Server Changes\n\nOriginal by Kevin Raneri <kevin.raneri@gmail.com>\n\nCopyright (C) 2022 Pufferfish Studios LLC\n\nThis program is free software: you can redistribute it and/or modify it\nunder the terms of the GNU General Public License as published by the\nFree Software Foundation, either version 3 of the License, or (at your\noption) any later version.\n\nThis program is distributed in the hope that it will be useful, but\nWITHOUT ANY WARRANTY; without even the implied warranty of\nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU\nGeneral Public License for more details.\n\nYou should have received a copy of the GNU General Public License along\nwith this program.  If not, see <http://www.gnu.org/licenses/>." | git commit -F -
           
       - name: Build Patches
+        run: |
           git clone --recursive -b ${{ env.prib }} ${{ env.pris }}
           cd Pufferfish/
           ./gradlew rebuildPatches
