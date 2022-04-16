@@ -292,6 +292,13 @@ jobs:
         run: |
           cd Pufferfish/
           ./gradlew rebuildPatches
+          
+      - name: Upload Artifact (Temp)
+        uses: actions/upload-artifact@v2
+        with:
+          name: Artifacts - Temp
+          path: |
+            pufferfish/patches
 
       - name: Initial Purpur Sources
         run: |
@@ -370,14 +377,6 @@ jobs:
           log="Update Upstream ($upstream)\n\nUpstream has released updates that appear to apply and compile correctly$log"
           
           echo -e $log | git commit -F -
-          
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: Artifacts - Final
-          path: |
-            Purpur/patches
-            Prismarine/patches
 
       - name: Push new commit
         uses: ad-m/github-push-action@master
