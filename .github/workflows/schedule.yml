@@ -171,7 +171,7 @@ jobs:
           rm -rdf .git
           mv -f ../.gradle/caches/paperweight/upstreams/paper/Paper-API/.git ./
           git add .
-          echo -e "Pufferfish Server Changes\n\nOriginal by Kevin Raneri <kevin.raneri@gmail.com>\n\nCopyright (C) 2022 Pufferfish Studios LLC\n\nThis program is free software: you can redistribute it and/or modify it\nunder the terms of the GNU General Public License as published by the\nFree Software Foundation, either version 3 of the License, or (at your\noption) any later version.\n\nThis program is distributed in the hope that it will be useful, but\nWITHOUT ANY WARRANTY; without even the implied warranty of\nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU\nGeneral Public License for more details.\n\nYou should have received a copy of the GNU General Public License along\nwith this program.  If not, see <http://www.gnu.org/licenses/>." | git commit -F -
+          echo -e "Pufferfish API Changes\n\nOriginal by Kevin Raneri <kevin.raneri@gmail.com>\n\nCopyright (C) 2022 Pufferfish Studios LLC\n\nThis program is free software: you can redistribute it and/or modify it\nunder the terms of the GNU General Public License as published by the\nFree Software Foundation, either version 3 of the License, or (at your\noption) any later version.\n\nThis program is distributed in the hope that it will be useful, but\nWITHOUT ANY WARRANTY; without even the implied warranty of\nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU\nGeneral Public License for more details.\n\nYou should have received a copy of the GNU General Public License along\nwith this program.  If not, see <http://www.gnu.org/licenses/>." | git commit -F -
           
       - name: Build Patches
         run: |
@@ -213,14 +213,6 @@ jobs:
           log="Update Upstream ($upstream)\n\nUpstream has released updates that appear to apply and compile correctly$log"
           
           echo -e $log | git commit -F -
-          
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: Artifacts - Final
-          path: |
-            Pufferfish/patches
-            Prismarine/patches
 
       - name: Push new commit
         uses: ad-m/github-push-action@master
@@ -286,7 +278,7 @@ jobs:
           rm -rdf .git
           mv -f ../.gradle/caches/paperweight/upstreams/paper/Paper-API/.git ./
           git add .
-          echo -e "Pufferfish Server Changes\n\nOriginal by Kevin Raneri <kevin.raneri@gmail.com>\n\nCopyright (C) 2022 Pufferfish Studios LLC\n\nThis program is free software: you can redistribute it and/or modify it\nunder the terms of the GNU General Public License as published by the\nFree Software Foundation, either version 3 of the License, or (at your\noption) any later version.\n\nThis program is distributed in the hope that it will be useful, but\nWITHOUT ANY WARRANTY; without even the implied warranty of\nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU\nGeneral Public License for more details.\n\nYou should have received a copy of the GNU General Public License along\nwith this program.  If not, see <http://www.gnu.org/licenses/>." | git commit -F -
+          echo -e "Pufferfish API Changes\n\nOriginal by Kevin Raneri <kevin.raneri@gmail.com>\n\nCopyright (C) 2022 Pufferfish Studios LLC\n\nThis program is free software: you can redistribute it and/or modify it\nunder the terms of the GNU General Public License as published by the\nFree Software Foundation, either version 3 of the License, or (at your\noption) any later version.\n\nThis program is distributed in the hope that it will be useful, but\nWITHOUT ANY WARRANTY; without even the implied warranty of\nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU\nGeneral Public License for more details.\n\nYou should have received a copy of the GNU General Public License along\nwith this program.  If not, see <http://www.gnu.org/licenses/>." | git commit -F -
           
       - name: Build Pufferfish Patches
         run: |
@@ -327,7 +319,7 @@ jobs:
           rm -rdf .git
           mv -f ../../Pufferfish/pufferfish-api/.git ./
           git add .
-          echo -e "Purpur Server Changes\n\nOriginal by PurpurMC Team\n\nCopyright (C) 2022 PurpurMC LLC\n\nPermission is hereby granted, free of charge, to any person obtaining a\ncopy of this software and associated documentation files (the\n"Software"), to deal in the Software without restriction, including\nwithout limitation the rights to use, copy, modify, merge, publish,\ndistribute, sublicense, and/or sell copies of the Software, and to\npermit persons to whom the Software is furnished to do so, subject to\nthe following conditions:\n\nThe above copyright notice and this permission notice shall be included\nin all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS\nOR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF\nMERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.\nIN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY\nCLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,\nTORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE\nSOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE." | git commit -F -
+          echo -e "Purpur API Changes\n\nOriginal by PurpurMC Team\n\nCopyright (C) 2022 PurpurMC LLC\n\nPermission is hereby granted, free of charge, to any person obtaining a\ncopy of this software and associated documentation files (the\n"Software"), to deal in the Software without restriction, including\nwithout limitation the rights to use, copy, modify, merge, publish,\ndistribute, sublicense, and/or sell copies of the Software, and to\npermit persons to whom the Software is furnished to do so, subject to\nthe following conditions:\n\nThe above copyright notice and this permission notice shall be included\nin all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS\nOR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF\nMERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.\nIN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY\nCLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,\nTORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE\nSOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE." | git commit -F -
 
       - name: Build Patches
         run: |
