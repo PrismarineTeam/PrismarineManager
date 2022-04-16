@@ -298,7 +298,7 @@ jobs:
         with:
           name: Artifacts - Temp
           path: |
-            pufferfish/patches
+            Pufferfish/patches
 
       - name: Initial Purpur Sources
         run: |
