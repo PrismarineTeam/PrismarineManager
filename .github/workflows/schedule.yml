@@ -284,13 +284,6 @@ jobs:
         run: |
           cd Pufferfish/
           ./gradlew rebuildPatches
-          
-      - name: Upload Artifact (Temp)
-        uses: actions/upload-artifact@v2
-        with:
-          name: Artifacts - Temp
-          path: |
-            Pufferfish/patches
 
       - name: Initial Purpur Sources
         run: |
@@ -351,13 +344,13 @@ jobs:
           if [ "${{ needs.check.outputs.pufferfish }}" == "true" ]; then
             echo "Pufferfish"
             if [ "$upstream" != "" ]; then upstream="$upstream & Pufferfish"; else upstream="Pufferfish"; fi
-            commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.puff }}/compare/${{ needs.check.outputs.before }}...HEAD | jq -r '.commits[] | "${{ env.puff }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+            commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.puff }}/compare/${{ needs.check.outputs.beforepufferfish }}...${{ env.pufferfish }} | jq -r '.commits[] | "${{ env.puff }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
             log="$log\n\nPufferfish Changes:\n$commit"
           fi
 
           if [ "${{ needs.check.outputs.purpur }}" == "true" ]; then
             if [ "$upstream" != "" ]; then upstream="$upstream & Purpur"; else upstream="Purpur"; fi
-            commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.purp }}/compare/${{ needs.check.outputs.before }}...HEAD | jq -r '.commits[] | "${{ env.purp }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+            commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.purp }}/compare/${{ needs.check.outputs.beforepurpur }}...${{ env.purpur }} | jq -r '.commits[] | "${{ env.purp }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
             log="$log\n\nPurpur Changes:\n$commit"
           fi
 
