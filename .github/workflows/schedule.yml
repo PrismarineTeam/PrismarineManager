@@ -37,7 +37,7 @@ jobs:
 
       - name: Clone Repository
         run: |
-          git clone --recursive -b ${{ env.prib }} ${{ env.pris }}.git
+          git clone --recursive -b ${{ env.prib }} https://github.com/${{ env.pris }}.git
       
       - name: Check Paper Commit
         id: check-paper
@@ -91,7 +91,7 @@ jobs:
         run: git config --global user.email "alphakr93@outlook.com" && git config --global user.name "AlphaKR93"
         
       - name: Clone Repository
-        run: git clone --recursive -b ${{ env.prib }} ${{ env.pris }}.git
+        run: git clone --recursive -b ${{ env.prib }} https://github.com/${{ env.pris }}.git
 
       - name: Update Upstream
         run: |
@@ -175,7 +175,7 @@ jobs:
           
       - name: Build Patches
         run: |
-          git clone --recursive -b ${{ env.prib }} ${{ env.pris }}.git
+          git clone --recursive -b ${{ env.prib }} https://github.com/${{ env.pris }}.git
           cd Pufferfish/
           ./gradlew rebuildPatches
           cp -rf patches/api/*-Pufferfish-API-Changes.patch ../Prismarine/patches/api/0001-Pufferfish-API-Changes.patch
@@ -323,7 +323,7 @@ jobs:
 
       - name: Build Patches
         run: |
-          git clone --recursive -b ${{ env.prib }} ${{ env.pris }}.git
+          git clone --recursive -b ${{ env.prib }} https://github.com/${{ env.pris }}.git
           cd Purpur/
           ./gradlew rebuildPatches
           cp -rf patches/api/*-Pufferfish-API-Changes.patch ../Prismarine/patches/api/0001-Pufferfish-API-Changes.patch
