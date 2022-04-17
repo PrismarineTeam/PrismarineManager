@@ -96,8 +96,7 @@ jobs:
       - name: Update Upstream
         run: |
           cd Prismarine
-          upstream=${{ needs.check.outputs.upstream }}
-          sed -i 's/paperCommit = .*/paperCommit = '"$upstream"'/' gradle.properties
+          sed -i 's/paperCommit = .*/paperCommit = '"${{ needs.check.outputs.upstream }}"'/' gradle.properties
           ./gradlew applyPatches --stacktrace
       
       - name: Rebuild Patches
@@ -144,8 +143,7 @@ jobs:
           git clone --recursive -b ${{ env.pufb }} https://github.com/${{ env.puff }}.git
           cd Pufferfish/
           pufferfish=$(git log -1 --pretty=oneline | cut -c 1-40) && echo "pufferfish=$pufferfish" > $GITHUB_ENV
-          upstream=${{ env.upstream }}
-          sed -i 's/paperRef=.*/paperRef='"$upstream"'/' gradle.properties
+          sed -i 's/paperRef=.*/paperRef='"${{ needs.check.outputs.upstream }}"'/' gradle.properties
           ./gradlew applyPatches --stacktrace
 
       - name: MC Dev Sources
@@ -184,8 +182,7 @@ jobs:
       - name: Rebuild Patches
         run: |
           cd Prismarine/
-          upstream=${{ env.upstream }}
-          sed -i 's/paperCommit = .*/paperCommit = '"$upstream"'/' gradle.properties
+          sed -i 's/paperCommit = .*/paperCommit = '"${{ needs.check.outputs.upstream }}"'/' gradle.properties
           ./gradlew applyPatches --stacktrace && ./gradlew rebuildPatches --stacktrace
 
       - name: Commit changes
@@ -251,8 +248,7 @@ jobs:
           git clone --recursive -b ${{ env.pufb }} https://github.com/${{ env.puff }}.git
           cd Pufferfish/
           pufferfish=$(git log -1 --pretty=oneline | cut -c 1-40) && echo "pufferfish=$pufferfish" > $GITHUB_ENV
-          upstream=${{ env.upstream }}
-          sed -i 's/paperRef=.*/paperRef='"$upstream"'/' gradle.properties
+          sed -i 's/paperRef=.*/paperRef='"${{ needs.check.outputs.upstream }}"'/' gradle.properties
           ./gradlew applyPatches --stacktrace
 
       - name: MC Dev Sources
@@ -290,8 +286,7 @@ jobs:
           git clone --recursive -b ${{ env.purb }} https://github.com/${{ env.purp }}.git
           cd Purpur/
           purpur=$(git log -1 --pretty=oneline | cut -c 1-40) && echo "purpur=$purpur" > $GITHUB_ENV
-          upstream=${{ env.upstream }}
-          sed -i 's/paperCommit = .*/paperCommit = '"$upstream"'/' gradle.properties
+          sed -i 's/paperCommit = .*/paperCommit = '"${{ needs.check.outputs.upstream }}"'/' gradle.properties
           cp -rf ../Pufferfish/patches/api/*-Pufferfish-API-Changes.patch patches/api/0001-Pufferfish-API-Changes.patch
           cp -rf ../Pufferfish/patches/server/*-Pufferfish-Server-Changes.patch patches/server/0001-Pufferfish-Server-Changes.patch
           ./gradlew applyPatches
@@ -327,8 +322,7 @@ jobs:
       - name: Rebuild Patches
         run: |
           cd Prismarine/
-          upstream=${{ env.upstream }}
-          sed -i 's/paperCommit = .*/paperCommit = '"$upstream"'/' gradle.properties
+          sed -i 's/paperCommit = .*/paperCommit = '"${{ needs.check.outputs.upstream }}"'/' gradle.properties
           ./gradlew applyPatches --stacktrace && ./gradlew rebuildPatches --stacktrace
 
       - name: Commit changes
