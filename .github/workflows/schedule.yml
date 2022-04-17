@@ -7,10 +7,10 @@ on:
     - cron: "*/20 * * * *"
 
 env:
-  paper: https://github.com/PaperMC/Paper
-  puff: https://github.com/AlphaKR93/Pufferfish
-  purp: https://github.com/PurpurMC/Purpur.git
-  pris: https://github.com/PrismarineTeam/Prismarine.git
+  paper: PaperMC/Paper
+  puff: pufferfish-gg/Pufferfish
+  purp: AlphaKR93/Purpur
+  pris: PrismarineTeam/Prismarine
 
   papb: master
   pufb: ver/1.18
@@ -37,12 +37,12 @@ jobs:
 
       - name: Clone Repository
         run: |
-          git clone --recursive -b ${{ env.prib }} ${{ env.pris }}
+          git clone --recursive -b ${{ env.prib }} ${{ env.pris }}.git
       
       - name: Check Paper Commit
         id: check-paper
         run: |
-          upstream=$(git ls-remote ${{ env.paper }} | grep ${{ env.papb }} | cut -f 1)
+          upstream=$(git ls-remote https://github.com/${{ env.paper }} | grep ${{ env.papb }} | cut -f 1)
           current=$(cat Prismarine/gradle.properties | grep paperCommit | sed 's/paperCommit = //')
           if [ "$current" != "$upstream" ]; then paper=true; fi
           echo "::set-output name=paper::$paper"
@@ -55,7 +55,7 @@ jobs:
       - name: Check Pufferfish Commit
         id: check-pufferfish
         run: |
-          upstream=$(git ls-remote ${{ env.puff }} | grep ${{ env.pufb }} | cut -f 1)
+          upstream=$(git ls-remote https://github.com/${{ env.puff }} | grep ${{ env.pufb }} | cut -f 1)
           current=$(cat upstream-data | grep "pufferfish" | sed 's/pufferfish: //')
           if [ "$current" != "$upstream" ]; then pufferfish=true; fi
           echo "::set-output name=pufferfish::$pufferfish"
@@ -66,7 +66,7 @@ jobs:
       - name: Check Purpur Commit
         id: check-purpur
         run: |
-          upstream=$(git ls-remote ${{ env.purp }} | grep ${{ env.purb }} | cut -f 1)
+          upstream=$(git ls-remote https://github.com/${{ env.purp }} | grep ${{ env.purb }} | cut -f 1)
           current=$(cat upstream-data | grep "purpur" | sed 's/purpur: //')
           if [ "$current" != "$upstream" ]; then purpur=true; fi
           echo "::set-output name=purpur::$purpur"
@@ -91,7 +91,7 @@ jobs:
         run: git config --global user.email "alphakr93@outlook.com" && git config --global user.name "AlphaKR93"
         
       - name: Clone Repository
-        run: git clone --recursive -b ${{ env.prib }} ${{ env.pris }}
+        run: git clone --recursive -b ${{ env.prib }} ${{ env.pris }}.git
 
       - name: Update Upstream
         run: |
@@ -109,7 +109,7 @@ jobs:
         run: |
           cd Prismarine
           git config --global user.email "actions@github.com" && git config --global user.name "Github Actions"
-          paper=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/PaperMC/Paper/compare/${{ needs.check.outputs.before }}...HEAD | jq -r '.commits[] | "PaperMC/Paper@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+          paper=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.paper }}/compare/${{ needs.check.outputs.before }}...HEAD | jq -r '.commits[] | "${{ env.paper }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
           log="Updated Upstream (Paper)\n\nUpstream has released updates that appear to apply and compile correctly\n\nPaper Changes:\n$paper"
           git add .
           echo -e "$log" | git commit -F -
@@ -141,7 +141,7 @@ jobs:
 
       - name: Initial Pufferfish Sources
         run: |
-          git clone --recursive -b ${{ env.pufb }} ${{ env.puff }}
+          git clone --recursive -b ${{ env.pufb }} https://github.com/${{ env.puff }}.git
           cd Pufferfish/
           pufferfish=$(git log -1 --pretty=oneline | cut -c 1-40) && echo "pufferfish=$pufferfish" > $GITHUB_ENV
           upstream=${{ env.upstream }}
@@ -175,7 +175,7 @@ jobs:
           
       - name: Build Patches
         run: |
-          git clone --recursive -b ${{ env.prib }} ${{ env.pris }}
+          git clone --recursive -b ${{ env.prib }} ${{ env.pris }}.git
           cd Pufferfish/
           ./gradlew rebuildPatches
           cp -rf patches/api/*-Pufferfish-API-Changes.patch ../Prismarine/patches/api/0001-Pufferfish-API-Changes.patch
@@ -191,18 +191,18 @@ jobs:
       - name: Commit changes
         run: |
           git config --global user.email "actions@github.com" && git config --global user.name "Github Actions"
+
+          if [ "${{ needs.check.outputs.paper }}" == "true" ]; then
+            upstream="Paper"
+            commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.paper }}/compare/${{ needs.check.outputs.before }}...HEAD | jq -r '.commits[] | "${{ env.paper }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+            log="$log\n\nPaper Changes:\n$commit"
+          fi
           
           if [ "${{ needs.check.outputs.pufferfish }}" == "true" ]; then
             echo "Pufferfish"
             if [ "$upstream" != "" ]; then upstream="$upstream & Pufferfish"; else upstream="Pufferfish"; fi
-            commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/pufferfish-gg/Pufferfish/compare/${{ needs.check.outputs.beforepufferfish }}...${{ env.pufferfish }} | jq -r '.commits[] | "\npufferfish-gg/Pufferfish@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+            commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.puff }}/compare/${{ needs.check.outputs.before }}...HEAD | jq -r '.commits[] | "${{ env.puff }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
             log="$log\n\nPufferfish Changes:\n$commit"
-          fi
-
-          if [ "${{ needs.check.outputs.paper }}" == "true" ]; then
-            upstream="Paper"
-            commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/PaperMC/Paper/compare/${{ needs.check.outputs.before }}...${{ env.upstream }} | jq -r '.commits[] | "\nPaperMC/Paper@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
-            log="$log\n\nPaper Changes:\n$commit"
           fi
 
           git add .
@@ -248,7 +248,7 @@ jobs:
 
       - name: Initial Pufferfish Sources
         run: |
-          git clone --recursive -b ${{ env.pufb }} ${{ env.puff }}
+          git clone --recursive -b ${{ env.pufb }} https://github.com/${{ env.puff }}.git
           cd Pufferfish/
           pufferfish=$(git log -1 --pretty=oneline | cut -c 1-40) && echo "pufferfish=$pufferfish" > $GITHUB_ENV
           upstream=${{ env.upstream }}
@@ -294,7 +294,7 @@ jobs:
 
       - name: Initial Purpur Sources
         run: |
-          git clone --recursive -b ${{ env.purb }} ${{ env.purp }}
+          git clone --recursive -b ${{ env.purb }} https://github.com/${{ env.purp }}.git
           cd Purpur/
           purpur=$(git log -1 --pretty=oneline | cut -c 1-40) && echo "purpur=$purpur" > $GITHUB_ENV
           upstream=${{ env.upstream }}
@@ -323,7 +323,7 @@ jobs:
 
       - name: Build Patches
         run: |
-          git clone --recursive -b ${{ env.prib }} ${{ env.pris }}
+          git clone --recursive -b ${{ env.prib }} ${{ env.pris }}.git
           cd Purpur/
           ./gradlew rebuildPatches
           cp -rf patches/api/*-Pufferfish-API-Changes.patch ../Prismarine/patches/api/0001-Pufferfish-API-Changes.patch
@@ -344,20 +344,20 @@ jobs:
           
           if [ "${{ needs.check.outputs.paper }}" == "true" ]; then
             upstream="Paper"
-            commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/PaperMC/Paper/compare/${{ needs.check.outputs.before }}...${{ env.upstream }} | jq -r '.commits[] | "\nPaperMC/Paper@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+            commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.paper }}/compare/${{ needs.check.outputs.before }}...HEAD | jq -r '.commits[] | "${{ env.paper }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
             log="$log\n\nPaper Changes:\n$commit"
           fi
           
           if [ "${{ needs.check.outputs.pufferfish }}" == "true" ]; then
             echo "Pufferfish"
             if [ "$upstream" != "" ]; then upstream="$upstream & Pufferfish"; else upstream="Pufferfish"; fi
-            commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/pufferfish-gg/Pufferfish/compare/${{ needs.check.outputs.beforepufferfish }}...${{ env.pufferfish }} | jq -r '.commits[] | "\npufferfish-gg/Pufferfish@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+            commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.puff }}/compare/${{ needs.check.outputs.before }}...HEAD | jq -r '.commits[] | "${{ env.puff }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
             log="$log\n\nPufferfish Changes:\n$commit"
           fi
 
           if [ "${{ needs.check.outputs.purpur }}" == "true" ]; then
             if [ "$upstream" != "" ]; then upstream="$upstream & Purpur"; else upstream="Purpur"; fi
-            commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/PurpurMC/Purpur/compare/${{ needs.check.outputs.beforepurpur }}...${{ env.purpur }} | jq -r '.commits[] | "\nPurpurMC/Purpur@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+            commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.purp }}/compare/${{ needs.check.outputs.before }}...HEAD | jq -r '.commits[] | "${{ env.purp }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
             log="$log\n\nPurpur Changes:\n$commit"
           fi
 
