@@ -35,7 +35,7 @@ jobs:
       beforepufferfish: ${{ steps.check-pufferfish.outputs.before }}
       beforepurpur: ${{ steps.check-purpur.outputs.before }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@main
 
       - name: Clone Repository
         run: |
@@ -82,9 +82,9 @@ jobs:
     needs: check
     if: needs.check.outputs.paper == 'true' && !(needs.check.outputs.pufferfish == 'true') && !(needs.check.outputs.purpur == 'true')
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@main
 
-      - uses: actions/setup-java@v2
+      - uses: actions/setup-java@main
         with:
           distribution: temurin
           java-version: 17.0.2
@@ -128,9 +128,9 @@ jobs:
     needs: check
     if: needs.check.outputs.pufferfish == 'true' && !(needs.check.outputs.purpur == 'true')
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@main
 
-      - uses: actions/setup-java@v2
+      - uses: actions/setup-java@main
         with:
           distribution: temurin
           java-version: 17.0.2
@@ -233,9 +233,9 @@ jobs:
     needs: check
     if: needs.check.outputs.purpur == 'true'
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@main
 
-      - uses: actions/setup-java@v2
+      - uses: actions/setup-java@main
         with:
           distribution: temurin
           java-version: 17.0.2
