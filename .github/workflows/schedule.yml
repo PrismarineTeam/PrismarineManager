@@ -286,7 +286,7 @@ jobs:
           fi
           
           if [ "$upstream" != "" ]; then upstream="$upstream & Pufferfish"; else upstream="Pufferfish"; fi
-          commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.puff }}/compare/${{ needs.check.outputs.before }}...HEAD | jq -r '.commits[] | "\n${{ env.puff }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+          commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.puff }}/compare/${{ needs.check.outputs.beforepufferfish }}...HEAD | jq -r '.commits[] | "\n${{ env.puff }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
           log="$log\n\nPufferfish Changes:\n$commit"
           
           if [ "${{ needs.check.outputs.gradle }}" == "true" ]; then
