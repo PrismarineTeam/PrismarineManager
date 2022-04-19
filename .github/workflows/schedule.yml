@@ -269,6 +269,12 @@ jobs:
           sed -i 's/paperCommit = .*/paperCommit = '"${{ needs.check.outputs.upstream }}"'/' gradle.properties
           ./gradlew applyPatches --stacktrace && ./gradlew rebuildPatches --stacktrace
 
+      - name: Update Gradle Wrapper
+        if: needs.check.outputs.gradle == 'true'
+        run: |
+          cd Prismarine
+          ./gradlew wrapper --gradle-version=${{ needs.check.outputs.wrapper }}
+
       - name: Commit changes
         run: |
           git config --global user.email "actions@github.com" && git config --global user.name "Github Actions"
@@ -410,6 +416,12 @@ jobs:
           cd Prismarine/
           sed -i 's/paperCommit = .*/paperCommit = '"${{ needs.check.outputs.upstream }}"'/' gradle.properties
           ./gradlew applyPatches --stacktrace && ./gradlew rebuildPatches --stacktrace
+
+      - name: Update Gradle Wrapper
+        if: needs.check.outputs.gradle == 'true'
+        run: |
+          cd Prismarine
+          ./gradlew wrapper --gradle-version=${{ needs.check.outputs.wrapper }}
 
       - name: Commit changes
         run: |
