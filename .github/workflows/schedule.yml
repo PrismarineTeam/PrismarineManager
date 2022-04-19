@@ -294,6 +294,9 @@ jobs:
             commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.gradle }}/compare/v${{ needs.check.outputs.beforegradle }}...v${{ needs.check.outputs.wrapper }} | jq -r '.commits[] | "\n${{ env.gradle }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
             log="$log\n\nGradle Changes:\n$commit"
           fi
+
+          git add .
+          git commit -m "Update Upstream ($upstream)"
           
           cd Prismarine/
           git add .
