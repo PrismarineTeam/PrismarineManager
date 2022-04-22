@@ -9,8 +9,12 @@ on:
     - cron: "*/20 * * * *"
 
 env:
-  gradle: gradle/gradle
+  wrapper: gradle/gradle
+  shadow: johnrengelman/shadow
   paper: PaperMC/Paper
+  paperweight: PaperMC/paperweight
+  Paperclip: PaperMC/Paperclip
+  tiny: FabricMC/tiny-remapper
   puff: pufferfish-gg/Pufferfish
   purp: AlphaKR93/Purpur
   pris: PrismarineTeam/Prismarine
@@ -27,17 +31,26 @@ jobs:
     runs-on: ubuntu-20.04
     outputs:
       upstream: ${{ steps.check-paper.outputs.upstream }}
-      wrapper: ${{ steps.check-gradle.outputs.upstream }}
+      wrapperrel: ${{ steps.check-wrapper.outputs.upstream }}
+      shadowrel: ${{ steps.check-shadow.outputs.upstream }}
+      paperclip: ${{ steps.check-paperclip.outputs.upstream }}
+      paperweight: ${{ steps.check-paperweight.outputs.upstream }}
 
       paper: ${{ steps.check-paper.outputs.paper }}
       pufferfish: ${{ steps.check-pufferfish.outputs.pufferfish }}
       purpur: ${{ steps.check-purpur.outputs.purpur }}
-      gradle: ${{ steps.check-gradle.outputs.gradle }}
+      wrapper: ${{ steps.check-wrapper.outputs.wrapper }}
+      shadow: ${{ steps.check-shadow.outputs.shadow }}
+      paperclip: ${{ steps.check-paperclip.outputs.paperclip }}
+      paperweight: ${{ steps.check-paperweight.outputs.paperweight }}
 
       before: ${{ steps.check-paper.outputs.before }}
       beforepufferfish: ${{ steps.check-pufferfish.outputs.before }}
       beforepurpur: ${{ steps.check-purpur.outputs.before }}
-      beforegradle: ${{ steps.check-gradle.outputs.before }}
+      beforewrapper: ${{ steps.check-wrapper.outputs.before }}
+      beforeshadow: ${{ steps.check-shadow.outputs.before }}
+      beforepaperclip: ${{ steps.check-paperclip.outputs.before }}
+      beforepaperweight: ${{ steps.check-paperweight.outputs.before }}
     steps:
       - name: Checkout action
         uses: actions/checkout@main
@@ -47,37 +60,71 @@ jobs:
           git clone --recursive -b ${{ env.prib }} https://github.com/${{ env.pris }}.git
 
       - name: Check Gradle Wrapper version
-        id: check-gradle
+        id: check-wrapper
         run: |
-          upstream=$(git ls-remote https://github.com/${{ env.gradle }} | grep tags | tail -n 1 | cut -f 2 | cut -c 12-)
-          current=$(cat Prismarine/gradle/wrapper/gradle-wrapper.properties | grep distributionUrl | sed 's/distributionUrl=//' | cut -d "-" -f 2)
-          if [ "$upstream" != "$current" ]; then gradle=true; fi
-          if [ "$upstream" == "$current" ]; then gradle=false; fi
-          echo "::set-output name=gradle::$gradle"
+          upstream=$(git ls-remote https://github.com/${{ env.wrapper }} | grep tags | tail -n 1 | cut -c 53-)
+          current=$(cat Prismarine/gradle/wrapper/gradle-wrapper.properties | grep distributionUrl | cut -d "-" -f 2)
+          if [ "$upstream" != "$current" ]; then wrapper=true; else wrapper=false; fi
+          echo "::set-output name=wrapper::$wrapper"
           echo "::set-output name=upstream::$upstream"
           echo "::set-output name=before::$current"
           echo "Current Gradle Wrapper version: $current / Latest Gradle Wrapper version: $upstream"
-          echo "Need upstream: $gradle"
+          echo "Need upstream: $wrapper"
+
+      - name: Check Gradle Shadow version
+        id: check-shadow
+        run: |
+          upstream=$(git ls-remote https://github.com/${{ env.shadow }} | grep tags | tail -n 1 | cut -c 52-)
+          current=$(cat Prismarine/build.gradle.kts | grep com.github.johnrengelman.shadow | cut -d "\"" -f 4)
+          if [ "$upstream" != "$current" ]; then shadow=true; else shadow=false; fi
+          echo "::set-output name=shadow::$shadow"
+          echo "::set-output name=upstream::$upstream"
+          echo "::set-output name=before::$current"
+          echo "Current Gradle Shadow version: $current / Latest Gradle Shadow version: $upstream"
+          echo "Need upstream: $shadow"
       
       - name: Check Paper commit
         id: check-paper
         run: |
           upstream=$(git ls-remote https://github.com/${{ env.paper }} | grep ${{ env.papb }} | cut -f 1)
           current=$(cat Prismarine/gradle.properties | grep paperCommit | sed 's/paperCommit = //')
-          if [ "$current" != "$upstream" ]; then paper=true; fi
-          if [ "$current" == "$upstream" ]; then paper=false; fi
+          if [ "$current" != "$upstream" ]; then paper=true; else paper=false; fi
           echo "::set-output name=paper::$paper"
           echo "::set-output name=before::$current"
           echo "::set-output name=upstream::$upstream"
           echo "Current Paper commit: $current / Latest Paper commit: $upstream"
           echo "Need upstream: $paper"
 
+      - name: Check paperweight version
+        id: check-paperweight
+        run: |
+          upstream=$(git ls-remote https://github.com/${{ env.paperweight }} | grep tags | grep -v {} | tail -n 1 | cut -c 53-)
+          current=$(cat Prismarine/build.gradle.kts | grep io.papermc.paperweight.patcher | cut -d "\"" -f 4)
+          if [ "$current" != "$upstream" ]; then paperweight=true; else paperweight=false; fi
+          echo "::set-output name=paperweight::$paperweight"
+          echo "::set-output name=before::$current"
+          echo "::set-output name=upstream::$upstream"
+          echo "Current paperweight version: $current / Latest paperweight version: $upstream"
+          echo "Need upstream: $paperweight"
+
+      - name: Check Paperclip version
+        id: check-paperclip
+        run: |
+          upstream=$(git ls-remote https://github.com/${{ env.paperclip }} | grep tags | grep -v {} | tail -n 1 | cut -c 53-)
+          current=$(cat cat Prismarine/build.gradle.kts | grep paperclip | cut -d "\"" -f 2 | cut -d ":" -f 3)
+          if [ "$current" != "$upstream" ]; then paperclip=true; else paperclip=false; fi
+          echo "::set-output name=paperclip::$paperclip"
+          echo "::set-output name=before::$current"
+          echo "::set-output name=upstream::$upstream"
+          echo "Current Paperclip version: $current / Latest Paperclip version: $upstream"
+          echo "Need upstream: $paperclip"
+
       - name: Check Pufferfish commit
         id: check-pufferfish
         run: |
           upstream=$(git ls-remote https://github.com/${{ env.puff }} | grep ${{ env.pufb }} | cut -f 1)
           current=$(cat upstream-data | grep "pufferfish" | sed 's/pufferfish: //')
-          if [ "$current" != "$upstream" ]; then pufferfish=true; fi
+          if [ "$current" != "$upstream" ]; then pufferfish=true; else pufferfish=false; fi
           echo "::set-output name=pufferfish::$pufferfish"
           echo "::set-output name=before::$current"
           echo "Current Pufferfish commit: $current / Latest Pufferfish commit: $upstream"
@@ -88,17 +135,16 @@ jobs:
         run: |
           upstream=$(git ls-remote https://github.com/${{ env.purp }} | grep ${{ env.purb }} | cut -f 1)
           current=$(cat upstream-data | grep "purpur" | sed 's/purpur: //')
-          if [ "$current" != "$upstream" ]; then purpur=true; fi
+          if [ "$current" != "$upstream" ]; then purpur=true; else purpur=false; fi
           echo "::set-output name=purpur::$purpur"
           echo "::set-output name=before::$current"
           echo "Current Purpur commit: $current / Latest Purpur commit: $upstream"
           echo "Need upstream: $purpur"
 
-  upstream-gradle:
-    name: Upstream Gradle
+  upstream-dependencies:
+    name: Upstream Dependencies & Gradle plugins
     runs-on: ubuntu-20.04
     needs: check
-    if: needs.check.outputs.gradle == false && !(needs.check.outputs.paper == 'true') && !(needs.check.outputs.pufferfish == 'true') && !(needs.check.outputs.purpur == 'true')
     steps:
       - name: Checkout action
         uses: actions/checkout@main
@@ -115,18 +161,60 @@ jobs:
       - name: Clone Repository
         run: git clone --recursive -b ${{ env.prib }} https://github.com/${{ env.pris }}.git
 
-      - name: Update Gradle
+      - name: Update Gradle Wrapper
+        if: needs.check.outputs.wrapper == true
         run: |
           cd Prismarine
-          ./gradlew wrapper --gradle-version=${{ needs.check.outputs.wrapper }}
+          ./gradlew wrapper --gradle-version=${{ needs.check.outputs.wrapperrel }}
+
+      - name: Update Gradle Shadow
+        if: needs.check.outputs.shadow == true
+        run: |
+          cd Prismarine
+          sed -i 's/id("com.github.johnrengelman.shadow") version ".*"/id("com.github.johnrengelman.shadow") version "${{ needs.check.outputs.shadowrel }}"/' build.gradle.kts
+
+      - name: Update Paperclip
+        if: needs.check.outputs.paperweight == true
+        run: |
+          cd Prismarine
+          sed -i 's/paperclip("io.papermc:paperclip:.*")/paperclip("io.papermc:paperclip:${{ needs.check.outputs.papercliprel }}")/' build.gradle.kts
+
+      - name: Update paperweight
+        if: needs.check.outputs.paperclip == true
+        run: |
+          cd Prismarine
+          sed -i 's/id("io.papermc.paperweight.patcher") version ".*"/id("io.papermc.paperweight.patcher") version "${{ needs.check.outputs.paperweightrel }}"/' build.gradle.kts
 
       - name: Commit Changes
         run: |
           cd Prismarine
           git config --global user.email "actions@github.com" && git config --global user.name "Github Actions"
 
-          commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.gradle }}/compare/v${{ needs.check.outputs.beforegradle }}...v${{ needs.check.outputs.wrapper }} | jq -r '.commits[] | "\n${{ env.gradle }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
-          log="[CI-Skip] Updated Upstream (Gradle)\n\nUpstream has released updates that appear to apply and compile correctly\n\nGradle Changes:\n$commit"
+          if [ "${{ needs.check.outputs.wrapper }}" == "true" ]; then
+            upstream="Gradle Wrapper"
+            commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.wrapper }}/compare/v${{ needs.check.outputs.beforewrapper }}...v${{ needs.check.outputs.wrapper }} | jq -r '.commits[] | "\n${{ env.wrapper }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+            log="$log\n\n$commit"
+          fi
+
+          if [ "${{ needs.check.outputs.shadow }}" == "true" ]; then
+            if [ "$upstream" != "" ]; then upstream="$upstream & Gradle Shadow"; else upstream="Gradle Shadow"; fi
+            commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.shadow }}/compare/v${{ needs.check.outputs.beforeshadow }}...v${{ needs.check.outputs.shadow }} | jq -r '.commits[] | "\n${{ env.shadow }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+            log="$log\n\n$commit"
+          fi
+
+          if [ "${{ needs.check.outputs.paperclip }}" == "true" ]; then
+            if [ "$upstream" != "" ]; then upstream="$upstream & Paperclip"; else upstream="Paperclip"; fi
+            commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.paperclip }}/compare/v${{ needs.check.outputs.beforepaperclip }}...v${{ needs.check.outputs.paperclip }} | jq -r '.commits[] | "\n${{ env.paperclip }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+            log="$log\n\n$commit"
+          fi
+
+          if [ "${{ needs.check.outputs.paperweight }}" == "true" ]; then
+            if [ "$upstream" != "" ]; then upstream="$upstream & Paperweight"; else upstream="Paperweight"; fi
+            commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.paperweight }}/compare/v${{ needs.check.outputs.beforepaperweight }}...v${{ needs.check.outputs.paperweight }} | jq -r '.commits[] | "\n${{ env.paperweight }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+            log="$log\n\n$commit"
+          fi
+
+          log="[CI-Skip] Update Dependencies ($upstream)\n\nUpstream has released updates that appear to apply and compile correctly$log"
 
           git add .
           echo -e "$log" | git commit -F -
@@ -141,7 +229,7 @@ jobs:
   upstream-paper:
     name: Upstream Paper
     runs-on: ubuntu-20.04
-    needs: check
+    needs: [check, upstream-dependencies]
     if: needs.check.outputs.paper == 'true' && !(needs.check.outputs.pufferfish == 'true') && !(needs.check.outputs.purpur == 'true')
     steps:
       - name: Checkout action
@@ -170,28 +258,14 @@ jobs:
           cd Prismarine
           ./gradlew rebuildPatches
 
-      - name: Update Gradle Wrapper
-        if: needs.check.outputs.gradle == 'true'
-        run: |
-          cd Prismarine
-          ./gradlew wrapper --gradle-version=${{ needs.check.outputs.wrapper }}
-
       - name: Commit Changes
         run: |
           cd Prismarine
           git config --global user.email "actions@github.com" && git config --global user.name "Github Actions"
 
-          upstream="Paper"
           commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.paper }}/compare/${{ needs.check.outputs.before }}...HEAD | jq -r '.commits[] | "\n${{ env.paper }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
-          log="\n\nPaper Changes:\n$commit"
-          
-          if [ "${{ needs.check.outputs.gradle }}" == "true" ]; then
-            upstream="$upstream & Gradle"
-            commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.gradle }}/compare/v${{ needs.check.outputs.beforegradle }}...v${{ needs.check.outputs.wrapper }} | jq -r '.commits[] | "\n${{ env.gradle }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
-            log="$log\n\nGradle Changes:\n$commit"
-          fi
 
-          log="Updated Upstream ($upstream)\n\nUpstream has released updates that appear to apply and compile correctly$log"
+          log="Updated Upstream (Paper)\n\nUpstream has released updates that appear to apply and compile correctly\n\nPaper Changes:\n$commit"
           git add .
           echo -e "$log" | git commit -F -
 
@@ -205,7 +279,7 @@ jobs:
   upstream-pufferfish:
     name: Upstream Pufferfish
     runs-on: ubuntu-20.04
-    needs: check
+    needs: [check, upstream-dependencies]
     if: needs.check.outputs.pufferfish == 'true' && !(needs.check.outputs.purpur == 'true')
     steps:
       - name: Checkout action
@@ -269,12 +343,6 @@ jobs:
           sed -i 's/paperCommit = .*/paperCommit = '"${{ needs.check.outputs.upstream }}"'/' gradle.properties
           ./gradlew applyPatches --stacktrace && ./gradlew rebuildPatches --stacktrace
 
-      - name: Update Gradle Wrapper
-        if: needs.check.outputs.gradle == 'true'
-        run: |
-          cd Prismarine
-          ./gradlew wrapper --gradle-version=${{ needs.check.outputs.wrapper }}
-
       - name: Commit changes
         run: |
           git config --global user.email "actions@github.com" && git config --global user.name "Github Actions"
@@ -288,12 +356,6 @@ jobs:
           if [ "$upstream" != "" ]; then upstream="$upstream & Pufferfish"; else upstream="Pufferfish"; fi
           commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.puff }}/compare/${{ needs.check.outputs.beforepufferfish }}...HEAD | jq -r '.commits[] | "\n${{ env.puff }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
           log="$log\n\nPufferfish Changes:\n$commit"
-          
-          if [ "${{ needs.check.outputs.gradle }}" == "true" ]; then
-            upstream="$upstream & Gradle"
-            commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.gradle }}/compare/v${{ needs.check.outputs.beforegradle }}...v${{ needs.check.outputs.wrapper }} | jq -r '.commits[] | "\n${{ env.gradle }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
-            log="$log\n\nGradle Changes:\n$commit"
-          fi
 
           git add .
           git commit -m "Update Upstream ($upstream)"
@@ -321,7 +383,7 @@ jobs:
   upstream-purpur:
     name: Upstream Purpur
     runs-on: ubuntu-20.04
-    needs: check
+    needs: [check, upstream-dependencies]
     if: needs.check.outputs.purpur == 'true'
     steps:
       - name: Checkout action
@@ -420,12 +482,6 @@ jobs:
           sed -i 's/paperCommit = .*/paperCommit = '"${{ needs.check.outputs.upstream }}"'/' gradle.properties
           ./gradlew applyPatches --stacktrace && ./gradlew rebuildPatches --stacktrace
 
-      - name: Update Gradle Wrapper
-        if: needs.check.outputs.gradle == 'true'
-        run: |
-          cd Prismarine
-          ./gradlew wrapper --gradle-version=${{ needs.check.outputs.wrapper }}
-
       - name: Commit changes
         run: |
           git config --global user.email "actions@github.com" && git config --global user.name "Github Actions"
@@ -445,12 +501,6 @@ jobs:
           if [ "$upstream" != "" ]; then upstream="$upstream & Purpur"; else upstream="Purpur"; fi
           commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.purp }}/compare/${{ needs.check.outputs.beforepurpur }}...${{ env.purpur }} | jq -r '.commits[] | "\n${{ env.purp }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
           log="$log\n\nPurpur Changes:\n$commit"
-          
-          if [ "${{ needs.check.outputs.gradle }}" == "true" ]; then
-            upstream="$upstream & Gradle"
-            commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.gradle }}/compare/v${{ needs.check.outputs.beforegradle }}...v${{ needs.check.outputs.wrapper }} | jq -r '.commits[] | "\n${{ env.gradle }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
-            log="$log\n\nGradle Changes:\n$commit"
-          fi
 
           git add .
           git commit -m "Update Upstream ($upstream)"
