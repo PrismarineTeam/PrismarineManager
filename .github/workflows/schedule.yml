@@ -33,8 +33,8 @@ jobs:
       upstream: ${{ steps.check-paper.outputs.upstream }}
       wrapperrel: ${{ steps.check-wrapper.outputs.upstream }}
       shadowrel: ${{ steps.check-shadow.outputs.upstream }}
-      paperclip: ${{ steps.check-paperclip.outputs.upstream }}
-      paperweight: ${{ steps.check-paperweight.outputs.upstream }}
+      papercliprel: ${{ steps.check-paperclip.outputs.upstream }}
+      paperweightrel: ${{ steps.check-paperweight.outputs.upstream }}
 
       paper: ${{ steps.check-paper.outputs.paper }}
       pufferfish: ${{ steps.check-pufferfish.outputs.pufferfish }}
@@ -192,25 +192,25 @@ jobs:
 
           if [ "${{ needs.check.outputs.wrapper }}" == "true" ]; then
             upstream="Gradle Wrapper"
-            commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.wrapper }}/compare/v${{ needs.check.outputs.beforewrapper }}...v${{ needs.check.outputs.wrapper }} | jq -r '.commits[] | "\n${{ env.wrapper }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+            commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.wrapper }}/compare/v${{ needs.check.outputs.beforewrapper }}...v${{ needs.check.outputs.wrapperrel }} | jq -r '.commits[] | "\n${{ env.wrapper }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
             log="$log\n\n$commit"
           fi
 
           if [ "${{ needs.check.outputs.shadow }}" == "true" ]; then
             if [ "$upstream" != "" ]; then upstream="$upstream & Gradle Shadow"; else upstream="Gradle Shadow"; fi
-            commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.shadow }}/compare/v${{ needs.check.outputs.beforeshadow }}...v${{ needs.check.outputs.shadow }} | jq -r '.commits[] | "\n${{ env.shadow }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+            commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.shadow }}/compare/v${{ needs.check.outputs.beforeshadow }}...v${{ needs.check.outputs.shadowrel }} | jq -r '.commits[] | "\n${{ env.shadow }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
             log="$log\n\n$commit"
           fi
 
           if [ "${{ needs.check.outputs.paperclip }}" == "true" ]; then
             if [ "$upstream" != "" ]; then upstream="$upstream & Paperclip"; else upstream="Paperclip"; fi
-            commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.paperclip }}/compare/v${{ needs.check.outputs.beforepaperclip }}...v${{ needs.check.outputs.paperclip }} | jq -r '.commits[] | "\n${{ env.paperclip }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+            commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.paperclip }}/compare/v${{ needs.check.outputs.beforepaperclip }}...v${{ needs.check.outputs.papercliprel }} | jq -r '.commits[] | "\n${{ env.paperclip }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
             log="$log\n\n$commit"
           fi
 
           if [ "${{ needs.check.outputs.paperweight }}" == "true" ]; then
             if [ "$upstream" != "" ]; then upstream="$upstream & Paperweight"; else upstream="Paperweight"; fi
-            commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.paperweight }}/compare/v${{ needs.check.outputs.beforepaperweight }}...v${{ needs.check.outputs.paperweight }} | jq -r '.commits[] | "\n${{ env.paperweight }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+            commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.paperweight }}/compare/v${{ needs.check.outputs.beforepaperweight }}...v${{ needs.check.outputs.paperweightrel }} | jq -r '.commits[] | "\n${{ env.paperweight }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
             log="$log\n\n$commit"
           fi
 
