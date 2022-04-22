@@ -13,7 +13,7 @@ env:
   shadow: johnrengelman/shadow
   paper: PaperMC/Paper
   paperweight: PaperMC/paperweight
-  Paperclip: PaperMC/Paperclip
+  paperclip: PaperMC/Paperclip
   tiny: FabricMC/tiny-remapper
   puff: pufferfish-gg/Pufferfish
   purp: AlphaKR93/Purpur
