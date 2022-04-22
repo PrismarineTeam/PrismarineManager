@@ -145,7 +145,7 @@ jobs:
     name: Upstream Dependencies & Gradle plugins
     runs-on: ubuntu-20.04
     needs: check
-    if: needs.check.outputs.wrapper != 'true' && !(needs.check.outputs.shadow == 'true') && !(needs.check.outputs.paper == 'true') && !(needs.check.outputs.paperclip == 'true') && !(needs.check.outputs.paperweight == 'true') && !(needs.check.outputs.pufferfish == 'true') && !(needs.check.outputs.purpur == 'true')
+    if: "!(needs.check.outputs.wrapper == 'true') && !(needs.check.outputs.shadow == 'true') && !(needs.check.outputs.paper == 'true') && !(needs.check.outputs.paperclip == 'true') && !(needs.check.outputs.paperweight == 'true') && !(needs.check.outputs.pufferfish == 'true') && !(needs.check.outputs.purpur == 'true')"
     steps:
       - name: Checkout action
         uses: actions/checkout@main
