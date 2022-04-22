@@ -145,7 +145,7 @@ jobs:
     name: Upstream Dependencies & Gradle plugins
     runs-on: ubuntu-20.04
     needs: check
-    if: "!(needs.check.outputs.wrapper == 'true') || !(needs.check.outputs.shadow == 'true') || !(needs.check.outputs.paper == 'true') || !(needs.check.outputs.paperclip == 'true') || !(needs.check.outputs.paperweight == 'true') || !(needs.check.outputs.pufferfish == 'true') || !(needs.check.outputs.purpur == 'true')"
+    if: needs.check.outputs.wrapper == 'false' || needs.check.outputs.shadow == 'false' || needs.check.outputs.paper == 'false' || needs.check.outputs.paperclip == 'false' || needs.check.outputs.paperweight == 'false' || needs.check.outputs.pufferfish == 'false' || needs.check.outputs.purpur == 'false'
     steps:
       - name: Checkout action
         uses: actions/checkout@main
@@ -215,10 +215,11 @@ jobs:
             log="$log\n\n$commit"
           fi
 
-          log="[CI-Skip] Update Dependencies ($upstream)\n\nUpstream has released updates that appear to apply and compile correctly$log"
-
-          git add .
-          echo -e "$log" | git commit -F -
+          if [ "$upstream" != "" ]; then
+            log="[CI-Skip] Update Dependencies ($upstream)\n\nUpstream has released updates that appear to apply and compile correctly$log"
+            git add .
+            echo -e "$log" | git commit -F -
+          fi
 
       - name: Push changes
         uses: ad-m/github-push-action@master
