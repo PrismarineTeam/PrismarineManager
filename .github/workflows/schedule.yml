@@ -148,18 +148,22 @@ jobs:
     if: needs.check.outputs.wrapper == 'true' || needs.check.outputs.shadow == 'true' || needs.check.outputs.paper == 'true' || needs.check.outputs.paperclip == 'true' || needs.check.outputs.paperweight == 'true' || needs.check.outputs.pufferfish == 'true' || needs.check.outputs.purpur == 'true'
     steps:
       - name: Checkout action
+        if: needs.check.outputs.wrapper == 'true' || needs.check.outputs.shadow == 'true' || needs.check.outputs.paperclip == 'true' || needs.check.outputs.paperweight == 'true'
         uses: actions/checkout@main
 
       - name: Setup java
+        if: needs.check.outputs.wrapper == true
         uses: actions/setup-java@main
         with:
           distribution: temurin
           java-version: 17.0.2
 
       - name: Configure Git
+        if: needs.check.outputs.wrapper == 'true' || needs.check.outputs.shadow == 'true' || needs.check.outputs.paperclip == 'true' || needs.check.outputs.paperweight == 'true'
         run: git config --global user.email "alphakr93@outlook.com" && git config --global user.name "AlphaKR93"
         
       - name: Clone Repository
+        if: needs.check.outputs.wrapper == 'true' || needs.check.outputs.shadow == 'true' || needs.check.outputs.paperclip == 'true' || needs.check.outputs.paperweight == 'true'
         run: git clone --recursive -b ${{ env.prib }} https://github.com/${{ env.pris }}.git
 
       - name: Update Gradle Wrapper
@@ -223,6 +227,7 @@ jobs:
           fi
 
       - name: Push changes
+        if: needs.check.outputs.wrapper == 'true' || needs.check.outputs.shadow == 'true' || needs.check.outputs.paperclip == 'true' || needs.check.outputs.paperweight == 'true'
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.PUSH_TOKEN }}
