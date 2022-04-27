@@ -16,7 +16,7 @@ env:
   paperclip: PaperMC/Paperclip
   tiny: FabricMC/tiny-remapper
   puff: pufferfish-gg/Pufferfish
-  purp: AlphaKR93/Purpur
+  purp: PurpurMC/Purpur
   pris: PrismarineTeam/Prismarine
 
   papb: master
