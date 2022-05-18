@@ -191,7 +191,7 @@ jobs:
           sed -i 's/id("io.papermc.paperweight.patcher") version ".*"/id("io.papermc.paperweight.patcher") version "${{ needs.check.outputs.paperweightrel }}"/' build.gradle.kts
 
       - name: Commit Changes
-        if: needs.check.outputs.wrapper == 'true' || needs.check.outputs.shadow == 'true' || needs.check.outputs.paperclip == 'true' || needs.check.outputs.paperweight == 'true'
+        if: needs.check.outputs.wrapper == true || needs.check.outputs.shadow == true || needs.check.outputs.paperclip == true || needs.check.outputs.paperweight == true
         run: |
           cd Prismarine
           git config --global user.email "actions@github.com" && git config --global user.name "Github Actions"
