@@ -59,17 +59,17 @@ jobs:
         run: |
           git clone --recursive -b ${{ env.prib }} https://github.com/${{ env.pris }}.git
 
-      - name: Check Gradle Wrapper version
-        id: check-wrapper
-        run: |
-          upstream=$(git ls-remote https://github.com/${{ env.wrapper }} | grep tags | tail -n 1 | cut -c 53-)
-          current=$(cat Prismarine/gradle/wrapper/gradle-wrapper.properties | grep distributionUrl | cut -d "-" -f 2)
-          if [ "$upstream" != "$current" ]; then wrapper=true; else wrapper=false; fi
-          echo "::set-output name=wrapper::$wrapper"
-          echo "::set-output name=upstream::$upstream"
-          echo "::set-output name=before::$current"
-          echo "Current Gradle Wrapper version: $current / Latest Gradle Wrapper version: $upstream"
-          echo "Need upstream: $wrapper"
+#       - name: Check Gradle Wrapper version
+#         id: check-wrapper
+#         run: |
+#           upstream=$(git ls-remote https://github.com/${{ env.wrapper }} | grep tags | tail -n 1 | cut -c 53-)
+#           current=$(cat Prismarine/gradle/wrapper/gradle-wrapper.properties | grep distributionUrl | cut -d "-" -f 2)
+#           if [ "$upstream" != "$current" ]; then wrapper=true; else wrapper=false; fi
+#           echo "::set-output name=wrapper::$wrapper"
+#           echo "::set-output name=upstream::$upstream"
+#           echo "::set-output name=before::$current"
+#           echo "Current Gradle Wrapper version: $current / Latest Gradle Wrapper version: $upstream"
+#           echo "Need upstream: $wrapper"
 
       - name: Check Gradle Shadow version
         id: check-shadow
@@ -166,11 +166,11 @@ jobs:
         if: needs.check.outputs.wrapper == 'true' || needs.check.outputs.shadow == 'true' || needs.check.outputs.paperclip == 'true' || needs.check.outputs.paperweight == 'true'
         run: git clone --recursive -b ${{ env.prib }} https://github.com/${{ env.pris }}.git
 
-      - name: Update Gradle Wrapper
-        if: needs.check.outputs.wrapper == true
-        run: |
-          cd Prismarine
-          ./gradlew wrapper --gradle-version=${{ needs.check.outputs.wrapperrel }}
+#       - name: Update Gradle Wrapper
+#         if: needs.check.outputs.wrapper == true
+#         run: |
+#           cd Prismarine
+#           ./gradlew wrapper --gradle-version=${{ needs.check.outputs.wrapperrel }}
 
       - name: Update Gradle Shadow
         if: needs.check.outputs.shadow == true
