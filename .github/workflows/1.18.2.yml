@@ -19,7 +19,7 @@ env:
   purp: PurpurMC/Purpur
   pris: PrismarineTeam/Prismarine
 
-  papb: master
+  papb: ver/1.18.2
   pufb: ver/1.18
   purb: ver/1.18.2
   prib: ver/1.18.2
