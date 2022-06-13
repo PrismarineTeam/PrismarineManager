@@ -71,7 +71,7 @@ jobs:
         id: check-wrapper
         run: |
           upstream=$(curl --silent https://api.github.com/repos/gradle/gradle/releases/latest | grep tag_name | cut -d "\"" -f 4 | cut -c 2-)
-          current=$(cat Prismarine/gradle/wrapper/gradle-wrapper.properties | grep distributionUrl | cut -d "-" -f 2)
+          current=$(cat ${{ env.pris-repo }}/gradle/wrapper/gradle-wrapper.properties | grep distributionUrl | cut -d "-" -f 2)
           if [ "$upstream" != "$current" ]; then wrapper=true; else wrapper=false; fi
           echo "::set-output name=wrapper::$wrapper"
           echo "::set-output name=upstream::$upstream"
@@ -83,7 +83,7 @@ jobs:
         id: check-shadow
         run: |
           upstream=$(git ls-remote https://github.com/${{ env.shadow }} | grep tags | tail -n 1 | cut -c 52-)
-          current=$(cat Prismarine/build.gradle.kts | grep com.github.johnrengelman.shadow | cut -d "\"" -f 4)
+          current=$(cat ${{ env.pris-repo }}/build.gradle.kts | grep com.github.johnrengelman.shadow | cut -d "\"" -f 4)
           if [ "$upstream" != "$current" ]; then shadow=true; else shadow=false; fi
           echo "::set-output name=shadow::$shadow"
           echo "::set-output name=upstream::$upstream"
@@ -95,7 +95,7 @@ jobs:
         id: check-paper
         run: |
           upstream=$(git ls-remote https://github.com/${{ env.paper }} | grep ${{ env.papb }} | cut -f 1)
-          current=$(cat Prismarine/gradle.properties | grep paperCommit | sed 's/paperCommit = //')
+          current=$(cat ${{ env.pris-repo }}/gradle.properties | grep paperCommit | sed 's/paperCommit = //')
           if [ "$current" != "$upstream" ]; then paper=true; else paper=false; fi
           echo "::set-output name=paper::$paper"
           echo "::set-output name=before::$current"
@@ -107,7 +107,7 @@ jobs:
         id: check-paperweight
         run: |
           upstream=$(git ls-remote https://github.com/${{ env.paperweight }} | grep tags | grep -v {} | tail -n 1 | cut -c 53-)
-          current=$(cat Prismarine/build.gradle.kts | grep io.papermc.paperweight.patcher | cut -d "\"" -f 4)
+          current=$(cat ${{ env.pris-repo }}/build.gradle.kts | grep io.papermc.paperweight.patcher | cut -d "\"" -f 4)
           if [ "$current" != "$upstream" ]; then paperweight=true; else paperweight=false; fi
           echo "::set-output name=paperweight::$paperweight"
           echo "::set-output name=before::$current"
@@ -119,7 +119,7 @@ jobs:
         id: check-paperclip
         run: |
           upstream=$(git ls-remote https://github.com/${{ env.paperclip }} | grep tags | grep -v {} | tail -n 1 | cut -c 53-)
-          current=$(cat cat Prismarine/build.gradle.kts | grep paperclip | cut -d "\"" -f 2 | cut -d ":" -f 3)
+          current=$(cat cat ${{ env.pris-repo }}/build.gradle.kts | grep paperclip | cut -d "\"" -f 2 | cut -d ":" -f 3)
           if [ "$current" != "$upstream" ]; then paperclip=true; else paperclip=false; fi
           echo "::set-output name=paperclip::$paperclip"
           echo "::set-output name=before::$current"
@@ -368,8 +368,8 @@ jobs:
         run: |
           cd Pufferfish/
           ./gradlew rebuildPatches
-          cp -rf patches/api/*-Pufferfish-API-Changes.patch ../Prismarine/patches/api/0001-Pufferfish-API-Changes.patch
-          cp -rf patches/server/*-Pufferfish-Server-Changes.patch ../Prismarine/patches/server/0001-Pufferfish-Server-Changes.patch
+          cp -rf patches/api/*-Pufferfish-API-Changes.patch ../${{ env.pris-repo }}/patches/api/0001-Pufferfish-API-Changes.patch
+          cp -rf patches/server/*-Pufferfish-Server-Changes.patch ../${{ env.pris-repo }}/patches/server/0001-Pufferfish-Server-Changes.patch
 
       - name: Rebuild Patches
         run: |
@@ -513,10 +513,10 @@ jobs:
         run: |
           cd Purpur/
           ./gradlew rebuildPatches
-          cp -rf patches/api/*-Pufferfish-API-Changes.patch ../Prismarine/patches/api/0001-Pufferfish-API-Changes.patch
-          cp -rf patches/server/*-Pufferfish-Server-Changes.patch ../Prismarine/patches/server/0001-Pufferfish-Server-Changes.patch
-          cp -rf patches/api/*-Purpur-API-Changes.patch ../Prismarine/patches/api/0002-Purpur-API-Changes.patch
-          cp -rf patches/server/*-Purpur-Server-Changes.patch ../Prismarine/patches/server/0002-Purpur-Server-Changes.patch
+          cp -rf patches/api/*-Pufferfish-API-Changes.patch ../${{ env.pris-repo }}/patches/api/0001-Pufferfish-API-Changes.patch
+          cp -rf patches/server/*-Pufferfish-Server-Changes.patch ../${{ env.pris-repo }}/patches/server/0001-Pufferfish-Server-Changes.patch
+          cp -rf patches/api/*-Purpur-API-Changes.patch ../${{ env.pris-repo }}/patches/api/0002-Purpur-API-Changes.patch
+          cp -rf patches/server/*-Purpur-Server-Changes.patch ../${{ env.pris-repo }}/patches/server/0002-Purpur-Server-Changes.patch
 
       - name: Rebuild Patches
         run: |
