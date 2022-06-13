@@ -18,8 +18,7 @@ env:
   puff: pufferfish-gg/Pufferfish
   purp: PurpurMC/Purpur
   pris: PrismarineTeam/Prismarine-Private # TODO
-  pris-org: PrismarineTeam
-  pris-repo: Prismarine-Private
+  token_owner: AlphaKR93
 
   ver: '1.19'
   papb: master
@@ -59,19 +58,14 @@ jobs:
         uses: actions/checkout@main
 
       - name: Clone Repository
-        # run: |
-        #   git clone --recursive -b ${{ env.prib }} https://github.com/${{ env.pris }}.git
-        uses: GuillaumeFalourd/clone-github-repo-action@main
-        with:
-          owner: ${{ env.pris-org }}
-          repository: ${{ env.pris-repo }}
-          access-token: ${{ secrets.PUSH_TOKEN }}
+        run: |
+          git clone --recursive -b ${{ env.prib }} https://${{ env.token_owner }}:${{ secrets.PUSH_TOKEN }}@github.com/${{ env.pris }}.git
 
       - name: Check Gradle Wrapper version
         id: check-wrapper
         run: |
           upstream=$(curl --silent https://api.github.com/repos/gradle/gradle/releases/latest | grep tag_name | cut -d "\"" -f 4 | cut -c 2-)
-          current=$(cat ${{ env.pris-repo }}/gradle/wrapper/gradle-wrapper.properties | grep distributionUrl | cut -d "-" -f 2)
+          current=$(cat Prismarine/gradle/wrapper/gradle-wrapper.properties | grep distributionUrl | cut -d "-" -f 2)
           if [ "$upstream" != "$current" ]; then wrapper=true; else wrapper=false; fi
           echo "::set-output name=wrapper::$wrapper"
           echo "::set-output name=upstream::$upstream"
@@ -83,7 +77,7 @@ jobs:
         id: check-shadow
         run: |
           upstream=$(git ls-remote https://github.com/${{ env.shadow }} | grep tags | tail -n 1 | cut -c 52-)
-          current=$(cat ${{ env.pris-repo }}/build.gradle.kts | grep com.github.johnrengelman.shadow | cut -d "\"" -f 4)
+          current=$(cat Prismarine/build.gradle.kts | grep com.github.johnrengelman.shadow | cut -d "\"" -f 4)
           if [ "$upstream" != "$current" ]; then shadow=true; else shadow=false; fi
           echo "::set-output name=shadow::$shadow"
           echo "::set-output name=upstream::$upstream"
@@ -95,7 +89,7 @@ jobs:
         id: check-paper
         run: |
           upstream=$(git ls-remote https://github.com/${{ env.paper }} | grep ${{ env.papb }} | cut -f 1)
-          current=$(cat ${{ env.pris-repo }}/gradle.properties | grep paperCommit | sed 's/paperCommit = //')
+          current=$(cat Prismarine/gradle.properties | grep paperCommit | sed 's/paperCommit = //')
           if [ "$current" != "$upstream" ]; then paper=true; else paper=false; fi
           echo "::set-output name=paper::$paper"
           echo "::set-output name=before::$current"
@@ -107,7 +101,7 @@ jobs:
         id: check-paperweight
         run: |
           upstream=$(git ls-remote https://github.com/${{ env.paperweight }} | grep tags | grep -v {} | tail -n 1 | cut -c 53-)
-          current=$(cat ${{ env.pris-repo }}/build.gradle.kts | grep io.papermc.paperweight.patcher | cut -d "\"" -f 4)
+          current=$(cat Prismarine/build.gradle.kts | grep io.papermc.paperweight.patcher | cut -d "\"" -f 4)
           if [ "$current" != "$upstream" ]; then paperweight=true; else paperweight=false; fi
           echo "::set-output name=paperweight::$paperweight"
           echo "::set-output name=before::$current"
@@ -119,7 +113,7 @@ jobs:
         id: check-paperclip
         run: |
           upstream=$(git ls-remote https://github.com/${{ env.paperclip }} | grep tags | grep -v {} | tail -n 1 | cut -c 53-)
-          current=$(cat cat ${{ env.pris-repo }}/build.gradle.kts | grep paperclip | cut -d "\"" -f 2 | cut -d ":" -f 3)
+          current=$(cat cat Prismarine/build.gradle.kts | grep paperclip | cut -d "\"" -f 2 | cut -d ":" -f 3)
           if [ "$current" != "$upstream" ]; then paperclip=true; else paperclip=false; fi
           echo "::set-output name=paperclip::$paperclip"
           echo "::set-output name=before::$current"
@@ -172,41 +166,36 @@ jobs:
         
       - name: Clone Repository
         if: needs.check.outputs.wrapper == 'true' || needs.check.outputs.shadow == 'true' || needs.check.outputs.paperclip == 'true' || needs.check.outputs.paperweight == 'true'
-        # run: git clone --recursive -b ${{ env.prib }} https://github.com/${{ env.pris }}.git
-        uses: GuillaumeFalourd/clone-github-repo-action@main
-        with:
-          owner: ${{ env.pris-org }}
-          repository: ${{ env.pris-repo }}
-          access-token: ${{ secrets.PUSH_TOKEN }}
+        run: git clone --recursive -b ${{ env.prib }} https://${{ env.token_owner }}:${{ secrets.PUSH_TOKEN }}@github.com/${{ env.pris }}.git
 
       - name: Update Gradle Wrapper
         if: needs.check.outputs.wrapper == 'true'
         run: |
-          cd ${{ env.pris-repo }}
+          cd Prismarine
           ./gradlew wrapper --gradle-version=${{ needs.check.outputs.wrapperrel }}
 
       - name: Update Gradle Shadow
         if: needs.check.outputs.shadow == 'true'
         run: |
-          cd ${{ env.pris-repo }}
+          cd Prismarine
           sed -i 's/id("com.github.johnrengelman.shadow") version ".*"/id("com.github.johnrengelman.shadow") version "${{ needs.check.outputs.shadowrel }}"/' build.gradle.kts
 
       - name: Update Paperclip
         if: needs.check.outputs.paperclip == 'true'
         run: |
-          cd ${{ env.pris-repo }}
+          cd Prismarine
           sed -i 's/paperclip("io.papermc:paperclip:.*")/paperclip("io.papermc:paperclip:${{ needs.check.outputs.papercliprel }}")/' build.gradle.kts
 
       - name: Update paperweight
         if: needs.check.outputs.paperweight == 'true'
         run: |
-          cd ${{ env.pris-repo }}
+          cd Prismarine
           sed -i 's/id("io.papermc.paperweight.patcher") version ".*"/id("io.papermc.paperweight.patcher") version "${{ needs.check.outputs.paperweightrel }}"/' build.gradle.kts
 
       - name: Commit Changes
         if: needs.check.outputs.wrapper == 'true' || needs.check.outputs.shadow == 'true' || needs.check.outputs.paperclip == 'true' || needs.check.outputs.paperweight == 'true'
         run: |
-          cd ${{ env.pris-repo }}
+          cd Prismarine
           git config --global user.email "actions@github.com" && git config --global user.name "Github Actions"
 
           if [ "${{ needs.check.outputs.wrapper }}" == "true" ]; then
@@ -266,27 +255,22 @@ jobs:
         run: git config --global user.email "alphakr93@outlook.com" && git config --global user.name "AlphaKR93"
         
       - name: Clone Repository
-        # run: git clone --recursive -b ${{ env.prib }} https://github.com/${{ env.pris }}.git
-        uses: GuillaumeFalourd/clone-github-repo-action@main
-        with:
-          owner: ${{ env.pris-org }}
-          repository: ${{ env.pris-repo }}
-          access-token: ${{ secrets.PUSH_TOKEN }}
+        run: git clone --recursive -b ${{ env.prib }} https://${{ env.token_owner }}:${{ secrets.PUSH_TOKEN }}@github.com/${{ env.pris }}.git
 
       - name: Update Upstream
         run: |
-          cd ${{ env.pris-repo }}
+          cd Prismarine
           sed -i 's/paperCommit = .*/paperCommit = '"${{ needs.check.outputs.upstream }}"'/' gradle.properties
           ./gradlew applyPatches --stacktrace
       
       - name: Rebuild Patches
         run: | 
-          cd ${{ env.pris-repo }}
+          cd Prismarine
           ./gradlew rebuildPatches
 
       - name: Commit Changes
         run: |
-          cd ${{ env.pris-repo }}
+          cd Prismarine
           git config --global user.email "actions@github.com" && git config --global user.name "Github Actions"
 
           commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.paper }}/compare/${{ needs.check.outputs.before }}...HEAD | jq -r '.commits[] | "\n${{ env.paper }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
@@ -354,26 +338,18 @@ jobs:
           mv -f ../.gradle/caches/paperweight/upstreams/paper/Paper-API/.git ./
           git add .
           echo -e "Pufferfish API Changes\n\nOriginal by Kevin Raneri <kevin.raneri@gmail.com>\n\nCopyright (C) 2022 Pufferfish Studios LLC\n\nThis program is free software: you can redistribute it and/or modify it\nunder the terms of the GNU General Public License as published by the\nFree Software Foundation, either version 3 of the License, or (at your\noption) any later version.\n\nThis program is distributed in the hope that it will be useful, but\nWITHOUT ANY WARRANTY; without even the implied warranty of\nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU\nGeneral Public License for more details.\n\nYou should have received a copy of the GNU General Public License along\nwith this program.  If not, see <http://www.gnu.org/licenses/>." | git commit -F -
-
-      - name: Clone Repository
-        # run: |
-        #   git clone --recursive -b ${{ env.prib }} https://github.com/${{ env.pris }}.git
-        uses: GuillaumeFalourd/clone-github-repo-action@main
-        with:
-          owner: ${{ env.pris-org }}
-          repository: ${{ env.pris-repo }}
-          access-token: ${{ secrets.PUSH_TOKEN }}
           
       - name: Build Patches
         run: |
+          git clone --recursive -b ${{ env.prib }} https://${{ env.token_owner }}:${{ secrets.PUSH_TOKEN }}@github.com/${{ env.pris }}.git
           cd Pufferfish/
           ./gradlew rebuildPatches
-          cp -rf patches/api/*-Pufferfish-API-Changes.patch ../${{ env.pris-repo }}/patches/api/0001-Pufferfish-API-Changes.patch
-          cp -rf patches/server/*-Pufferfish-Server-Changes.patch ../${{ env.pris-repo }}/patches/server/0001-Pufferfish-Server-Changes.patch
+          cp -rf patches/api/*-Pufferfish-API-Changes.patch ../Prismarine/patches/api/0001-Pufferfish-API-Changes.patch
+          cp -rf patches/server/*-Pufferfish-Server-Changes.patch ../Prismarine/patches/server/0001-Pufferfish-Server-Changes.patch
 
       - name: Rebuild Patches
         run: |
-          cd ${{ env.pris-repo }}/
+          cd Prismarine/
           sed -i 's/paperCommit = .*/paperCommit = '"${{ needs.check.outputs.upstream }}"'/' gradle.properties
           ./gradlew applyPatches --stacktrace && ./gradlew rebuildPatches --stacktrace
 
@@ -394,7 +370,7 @@ jobs:
           git add .
           git commit -m "Update Upstream ($upstream)"
           
-          cd ${{ env.pris-repo }}/
+          cd Prismarine/
           git add .
           log="Update Upstream ($upstream)\n\nUpstream has released updates that appear to apply and compile correctly$log"
           
@@ -500,27 +476,19 @@ jobs:
           git add .
           echo -e "Purpur API Changes\n\nOriginal by PurpurMC Team\n\nCopyright (C) 2022 PurpurMC LLC\n\nPermission is hereby granted, free of charge, to any person obtaining a\ncopy of this software and associated documentation files (the\n"Software"), to deal in the Software without restriction, including\nwithout limitation the rights to use, copy, modify, merge, publish,\ndistribute, sublicense, and/or sell copies of the Software, and to\npermit persons to whom the Software is furnished to do so, subject to\nthe following conditions:\n\nThe above copyright notice and this permission notice shall be included\nin all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS\nOR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF\nMERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.\nIN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY\nCLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,\nTORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE\nSOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE." | git commit -F -
 
-      - name: Clone Repository
-        # run: |
-        #   git clone --recursive -b ${{ env.prib }} https://github.com/${{ env.pris }}.git
-        uses: GuillaumeFalourd/clone-github-repo-action@main
-        with:
-          owner: ${{ env.pris-org }}
-          repository: ${{ env.pris-repo }}
-          access-token: ${{ secrets.PUSH_TOKEN }}
-
       - name: Build Patches
         run: |
+          git clone --recursive -b ${{ env.prib }} https://${{ env.token_owner }}:${{ secrets.PUSH_TOKEN }}@github.com/${{ env.pris }}.git
           cd Purpur/
           ./gradlew rebuildPatches
-          cp -rf patches/api/*-Pufferfish-API-Changes.patch ../${{ env.pris-repo }}/patches/api/0001-Pufferfish-API-Changes.patch
-          cp -rf patches/server/*-Pufferfish-Server-Changes.patch ../${{ env.pris-repo }}/patches/server/0001-Pufferfish-Server-Changes.patch
-          cp -rf patches/api/*-Purpur-API-Changes.patch ../${{ env.pris-repo }}/patches/api/0002-Purpur-API-Changes.patch
-          cp -rf patches/server/*-Purpur-Server-Changes.patch ../${{ env.pris-repo }}/patches/server/0002-Purpur-Server-Changes.patch
+          cp -rf patches/api/*-Pufferfish-API-Changes.patch ../Prismarine/patches/api/0001-Pufferfish-API-Changes.patch
+          cp -rf patches/server/*-Pufferfish-Server-Changes.patch ../Prismarine/patches/server/0001-Pufferfish-Server-Changes.patch
+          cp -rf patches/api/*-Purpur-API-Changes.patch ../Prismarine/patches/api/0002-Purpur-API-Changes.patch
+          cp -rf patches/server/*-Purpur-Server-Changes.patch ../Prismarine/patches/server/0002-Purpur-Server-Changes.patch
 
       - name: Rebuild Patches
         run: |
-          cd ${{ env.pris-repo }}/
+          cd Prismarine/
           sed -i 's/paperCommit = .*/paperCommit = '"${{ needs.check.outputs.upstream }}"'/' gradle.properties
           ./gradlew applyPatches --stacktrace && ./gradlew rebuildPatches --stacktrace
 
@@ -547,7 +515,7 @@ jobs:
           git add .
           git commit -m "Update Upstream ($upstream)"
           
-          cd ${{ env.pris-repo }}/
+          cd Prismarine/
           git add .
           log="Update Upstream ($upstream)\n\nUpstream has released updates that appear to apply and compile correctly$log"
           
