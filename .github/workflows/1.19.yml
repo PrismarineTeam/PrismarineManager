@@ -182,31 +182,31 @@ jobs:
       - name: Update Gradle Wrapper
         if: needs.check.outputs.wrapper == 'true'
         run: |
-          cd Prismarine
+          cd ${{ env.pris-repo }}
           ./gradlew wrapper --gradle-version=${{ needs.check.outputs.wrapperrel }}
 
       - name: Update Gradle Shadow
         if: needs.check.outputs.shadow == 'true'
         run: |
-          cd Prismarine
+          cd ${{ env.pris-repo }}
           sed -i 's/id("com.github.johnrengelman.shadow") version ".*"/id("com.github.johnrengelman.shadow") version "${{ needs.check.outputs.shadowrel }}"/' build.gradle.kts
 
       - name: Update Paperclip
         if: needs.check.outputs.paperclip == 'true'
         run: |
-          cd Prismarine
+          cd ${{ env.pris-repo }}
           sed -i 's/paperclip("io.papermc:paperclip:.*")/paperclip("io.papermc:paperclip:${{ needs.check.outputs.papercliprel }}")/' build.gradle.kts
 
       - name: Update paperweight
         if: needs.check.outputs.paperweight == 'true'
         run: |
-          cd Prismarine
+          cd ${{ env.pris-repo }}
           sed -i 's/id("io.papermc.paperweight.patcher") version ".*"/id("io.papermc.paperweight.patcher") version "${{ needs.check.outputs.paperweightrel }}"/' build.gradle.kts
 
       - name: Commit Changes
         if: needs.check.outputs.wrapper == 'true' || needs.check.outputs.shadow == 'true' || needs.check.outputs.paperclip == 'true' || needs.check.outputs.paperweight == 'true'
         run: |
-          cd Prismarine
+          cd ${{ env.pris-repo }}
           git config --global user.email "actions@github.com" && git config --global user.name "Github Actions"
 
           if [ "${{ needs.check.outputs.wrapper }}" == "true" ]; then
@@ -275,18 +275,18 @@ jobs:
 
       - name: Update Upstream
         run: |
-          cd Prismarine
+          cd ${{ env.pris-repo }}
           sed -i 's/paperCommit = .*/paperCommit = '"${{ needs.check.outputs.upstream }}"'/' gradle.properties
           ./gradlew applyPatches --stacktrace
       
       - name: Rebuild Patches
         run: | 
-          cd Prismarine
+          cd ${{ env.pris-repo }}
           ./gradlew rebuildPatches
 
       - name: Commit Changes
         run: |
-          cd Prismarine
+          cd ${{ env.pris-repo }}
           git config --global user.email "actions@github.com" && git config --global user.name "Github Actions"
 
           commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.paper }}/compare/${{ needs.check.outputs.before }}...HEAD | jq -r '.commits[] | "\n${{ env.paper }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
@@ -373,7 +373,7 @@ jobs:
 
       - name: Rebuild Patches
         run: |
-          cd Prismarine/
+          cd ${{ env.pris-repo }}/
           sed -i 's/paperCommit = .*/paperCommit = '"${{ needs.check.outputs.upstream }}"'/' gradle.properties
           ./gradlew applyPatches --stacktrace && ./gradlew rebuildPatches --stacktrace
 
@@ -394,7 +394,7 @@ jobs:
           git add .
           git commit -m "Update Upstream ($upstream)"
           
-          cd Prismarine/
+          cd ${{ env.pris-repo }}/
           git add .
           log="Update Upstream ($upstream)\n\nUpstream has released updates that appear to apply and compile correctly$log"
           
@@ -520,7 +520,7 @@ jobs:
 
       - name: Rebuild Patches
         run: |
-          cd Prismarine/
+          cd ${{ env.pris-repo }}/
           sed -i 's/paperCommit = .*/paperCommit = '"${{ needs.check.outputs.upstream }}"'/' gradle.properties
           ./gradlew applyPatches --stacktrace && ./gradlew rebuildPatches --stacktrace
 
@@ -547,7 +547,7 @@ jobs:
           git add .
           git commit -m "Update Upstream ($upstream)"
           
-          cd Prismarine/
+          cd ${{ env.pris-repo }}/
           git add .
           log="Update Upstream ($upstream)\n\nUpstream has released updates that appear to apply and compile correctly$log"
           
