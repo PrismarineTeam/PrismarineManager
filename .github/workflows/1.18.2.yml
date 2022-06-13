@@ -19,6 +19,7 @@ env:
   purp: PurpurMC/Purpur
   pris: PrismarineTeam/Prismarine
 
+  ver: '1.18.2'
   papb: ver/1.18.2
   pufb: ver/1.18
   purb: ver/1.18.2
@@ -59,17 +60,17 @@ jobs:
         run: |
           git clone --recursive -b ${{ env.prib }} https://github.com/${{ env.pris }}.git
 
-#       - name: Check Gradle Wrapper version
-#         id: check-wrapper
-#         run: |
-#           upstream=$(git ls-remote https://github.com/${{ env.wrapper }} | grep tags | tail -n 1 | cut -c 53-)
-#           current=$(cat Prismarine/gradle/wrapper/gradle-wrapper.properties | grep distributionUrl | cut -d "-" -f 2)
-#           if [ "$upstream" != "$current" ]; then wrapper=true; else wrapper=false; fi
-#           echo "::set-output name=wrapper::$wrapper"
-#           echo "::set-output name=upstream::$upstream"
-#           echo "::set-output name=before::$current"
-#           echo "Current Gradle Wrapper version: $current / Latest Gradle Wrapper version: $upstream"
-#           echo "Need upstream: $wrapper"
+      - name: Check Gradle Wrapper version
+        id: check-wrapper
+        run: |
+          upstream=$(curl --silent https://api.github.com/repos/gradle/gradle/releases/latest | grep tag_name | cut -d "\"" -f 4 | cut -c 2-)
+          current=$(cat Prismarine/gradle/wrapper/gradle-wrapper.properties | grep distributionUrl | cut -d "-" -f 2)
+          if [ "$upstream" != "$current" ]; then wrapper=true; else wrapper=false; fi
+          echo "::set-output name=wrapper::$wrapper"
+          echo "::set-output name=upstream::$upstream"
+          echo "::set-output name=before::$current"
+          echo "Current Gradle Wrapper version: $current / Latest Gradle Wrapper version: $upstream"
+          echo "Need upstream: $wrapper"
 
       - name: Check Gradle Shadow version
         id: check-shadow
@@ -123,7 +124,7 @@ jobs:
         id: check-pufferfish
         run: |
           upstream=$(git ls-remote https://github.com/${{ env.puff }} | grep ${{ env.pufb }} | cut -f 1)
-          current=$(cat upstream-data | grep "pufferfish" | sed 's/pufferfish: //')
+          current=$(cat upstream-data | grep "pufferfish-${{ env.ver }}" | sed 's/pufferfish-${{ env.ver }}: //')
           if [ "$current" != "$upstream" ]; then pufferfish=true; else pufferfish=false; fi
           echo "::set-output name=pufferfish::$pufferfish"
           echo "::set-output name=before::$current"
@@ -134,7 +135,7 @@ jobs:
         id: check-purpur
         run: |
           upstream=$(git ls-remote https://github.com/${{ env.purp }} | grep ${{ env.purb }} | cut -f 1)
-          current=$(cat upstream-data | grep "purpur" | sed 's/purpur: //')
+          current=$(cat upstream-data | grep "purpur-${{ env.ver }}" | sed 's/purpur-${{ env.ver }}: //')
           if [ "$current" != "$upstream" ]; then purpur=true; else purpur=false; fi
           echo "::set-output name=purpur::$purpur"
           echo "::set-output name=before::$current"
@@ -166,57 +167,57 @@ jobs:
         if: needs.check.outputs.wrapper == 'true' || needs.check.outputs.shadow == 'true' || needs.check.outputs.paperclip == 'true' || needs.check.outputs.paperweight == 'true'
         run: git clone --recursive -b ${{ env.prib }} https://github.com/${{ env.pris }}.git
 
-#       - name: Update Gradle Wrapper
-#         if: needs.check.outputs.wrapper == true
-#         run: |
-#           cd Prismarine
-#           ./gradlew wrapper --gradle-version=${{ needs.check.outputs.wrapperrel }}
+      - name: Update Gradle Wrapper
+        if: needs.check.outputs.wrapper == 'true'
+        run: |
+          cd Prismarine
+          ./gradlew wrapper --gradle-version=${{ needs.check.outputs.wrapperrel }}
 
       - name: Update Gradle Shadow
-        if: needs.check.outputs.shadow == true
+        if: needs.check.outputs.shadow == 'true'
         run: |
           cd Prismarine
           sed -i 's/id("com.github.johnrengelman.shadow") version ".*"/id("com.github.johnrengelman.shadow") version "${{ needs.check.outputs.shadowrel }}"/' build.gradle.kts
 
       - name: Update Paperclip
-        if: needs.check.outputs.paperweight == true
+        if: needs.check.outputs.paperclip == 'true'
         run: |
           cd Prismarine
           sed -i 's/paperclip("io.papermc:paperclip:.*")/paperclip("io.papermc:paperclip:${{ needs.check.outputs.papercliprel }}")/' build.gradle.kts
 
       - name: Update paperweight
-        if: needs.check.outputs.paperclip == true
+        if: needs.check.outputs.paperweight == 'true'
         run: |
           cd Prismarine
           sed -i 's/id("io.papermc.paperweight.patcher") version ".*"/id("io.papermc.paperweight.patcher") version "${{ needs.check.outputs.paperweightrel }}"/' build.gradle.kts
 
       - name: Commit Changes
-        if: needs.check.outputs.wrapper == true || needs.check.outputs.shadow == true || needs.check.outputs.paperclip == true || needs.check.outputs.paperweight == true
+        if: needs.check.outputs.wrapper == 'true' || needs.check.outputs.shadow == 'true' || needs.check.outputs.paperclip == 'true' || needs.check.outputs.paperweight == 'true'
         run: |
           cd Prismarine
           git config --global user.email "actions@github.com" && git config --global user.name "Github Actions"
 
           if [ "${{ needs.check.outputs.wrapper }}" == "true" ]; then
             upstream="Gradle Wrapper"
-            commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.wrapper }}/compare/v${{ needs.check.outputs.beforewrapper }}...v${{ needs.check.outputs.wrapperrel }} | jq -r '.commits[] | "\n${{ env.wrapper }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+            commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.wrapper }}/compare/v${{ needs.check.outputs.beforewrapper }}...v${{ needs.check.outputs.wrapperrel }} | jq -r '.commits[] | "\n${{ env.wrapper }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
             log="$log\n\n$commit"
           fi
 
           if [ "${{ needs.check.outputs.shadow }}" == "true" ]; then
             if [ "$upstream" != "" ]; then upstream="$upstream & Gradle Shadow"; else upstream="Gradle Shadow"; fi
-            commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.shadow }}/compare/v${{ needs.check.outputs.beforeshadow }}...v${{ needs.check.outputs.shadowrel }} | jq -r '.commits[] | "\n${{ env.shadow }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+            commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.shadow }}/compare/v${{ needs.check.outputs.beforeshadow }}...v${{ needs.check.outputs.shadowrel }} | jq -r '.commits[] | "\n${{ env.shadow }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
             log="$log\n\n$commit"
           fi
 
           if [ "${{ needs.check.outputs.paperclip }}" == "true" ]; then
             if [ "$upstream" != "" ]; then upstream="$upstream & Paperclip"; else upstream="Paperclip"; fi
-            commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.paperclip }}/compare/v${{ needs.check.outputs.beforepaperclip }}...v${{ needs.check.outputs.papercliprel }} | jq -r '.commits[] | "\n${{ env.paperclip }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+            commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.paperclip }}/compare/v${{ needs.check.outputs.beforepaperclip }}...v${{ needs.check.outputs.papercliprel }} | jq -r '.commits[] | "\n${{ env.paperclip }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
             log="$log\n\n$commit"
           fi
 
           if [ "${{ needs.check.outputs.paperweight }}" == "true" ]; then
             if [ "$upstream" != "" ]; then upstream="$upstream & Paperweight"; else upstream="Paperweight"; fi
-            commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.paperweight }}/compare/v${{ needs.check.outputs.beforepaperweight }}...v${{ needs.check.outputs.paperweightrel }} | jq -r '.commits[] | "\n${{ env.paperweight }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+            commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.paperweight }}/compare/v${{ needs.check.outputs.beforepaperweight }}...v${{ needs.check.outputs.paperweightrel }} | jq -r '.commits[] | "\n${{ env.paperweight }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
             log="$log\n\n$commit"
           fi
 
@@ -271,7 +272,7 @@ jobs:
           cd Prismarine
           git config --global user.email "actions@github.com" && git config --global user.name "Github Actions"
 
-          commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.paper }}/compare/${{ needs.check.outputs.before }}...HEAD | jq -r '.commits[] | "\n${{ env.paper }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+          commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.paper }}/compare/${{ needs.check.outputs.before }}...HEAD | jq -r '.commits[] | "\n${{ env.paper }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
 
           log="Updated Upstream (Paper)\n\nUpstream has released updates that appear to apply and compile correctly\n\nPaper Changes:\n$commit"
           git add .
@@ -314,7 +315,7 @@ jobs:
 
       - name: MC Dev Sources
         run: |
-          sed -i 's/pufferfish: .*/pufferfish: '"${{ env.pufferfish }}"'/' upstream-data
+          sed -i 's/pufferfish-${{ env.ver }}: .*/pufferfish-${{ env.ver }}: '"${{ env.pufferfish }}"'/' upstream-data
           cd Pufferfish/.gradle/caches/paperweight/upstreams/paper/Paper-Server
           cp -rf .gradle/caches/paperweight/mc-dev-sources/net/* src/main/java/net
           git add .
@@ -357,12 +358,12 @@ jobs:
 
           if [ "${{ needs.check.outputs.paper }}" == "true" ]; then
             upstream="Paper"
-            commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.paper }}/compare/${{ needs.check.outputs.before }}...HEAD | jq -r '.commits[] | "\n${{ env.paper }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+            commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.paper }}/compare/${{ needs.check.outputs.before }}...HEAD | jq -r '.commits[] | "\n${{ env.paper }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
             log="$log\n\nPaper Changes:\n$commit"
           fi
           
           if [ "$upstream" != "" ]; then upstream="$upstream & Pufferfish"; else upstream="Pufferfish"; fi
-          commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.puff }}/compare/${{ needs.check.outputs.beforepufferfish }}...HEAD | jq -r '.commits[] | "\n${{ env.puff }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+          commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.puff }}/compare/${{ needs.check.outputs.beforepufferfish }}...HEAD | jq -r '.commits[] | "\n${{ env.puff }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
           log="$log\n\nPufferfish Changes:\n$commit"
 
           git add .
@@ -418,7 +419,7 @@ jobs:
 
       - name: MC Dev Sources
         run: |
-          sed -i 's/pufferfish: .*/pufferfish: '"${{ env.pufferfish }}"'/' upstream-data
+          sed -i 's/pufferfish-${{ env.ver }}: .*/pufferfish-${{ env.ver }}: '"${{ env.pufferfish }}"'/' upstream-data
           cd Pufferfish/.gradle/caches/paperweight/upstreams/paper/Paper-Server
           cp -rf .gradle/caches/paperweight/mc-dev-sources/net/* src/main/java/net
           git add .
@@ -458,7 +459,7 @@ jobs:
 
       - name: Purpur Server Changes
         run: |
-          sed -i 's/purpur: .*/purpur: '"${{ env.purpur }}"'/' upstream-data
+          sed -i 's/purpur-${{ env.ver }}: .*/purpur-${{ env.ver }}: '"${{ env.purpur }}"'/' upstream-data
           cd Purpur/Purpur-Server/
           rm -rdf .git
           cp -rf .gradle/caches/paperweight/mc-dev-sources/net/* src/main/java/net
@@ -496,18 +497,18 @@ jobs:
           
           if [ "${{ needs.check.outputs.paper }}" == "true" ]; then
             upstream="Paper"
-            commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.paper }}/compare/${{ needs.check.outputs.before }}...HEAD | jq -r '.commits[] | "\n${{ env.paper }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+            commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.paper }}/compare/${{ needs.check.outputs.before }}...HEAD | jq -r '.commits[] | "\n${{ env.paper }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
             log="\n\nPaper Changes:\n$commit"
           fi
           
           if [ "${{ needs.check.outputs.pufferfish }}" == "true" ]; then
             if [ "$upstream" != "" ]; then upstream="$upstream & Pufferfish"; else upstream="Pufferfish"; fi
-            commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.puff }}/compare/${{ needs.check.outputs.beforepufferfish }}...${{ env.pufferfish }} | jq -r '.commits[] | "\n${{ env.puff }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+            commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.puff }}/compare/${{ needs.check.outputs.beforepufferfish }}...${{ env.pufferfish }} | jq -r '.commits[] | "\n${{ env.puff }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
             log="$log\n\nPufferfish Changes:\n$commit"
           fi
 
           if [ "$upstream" != "" ]; then upstream="$upstream & Purpur"; else upstream="Purpur"; fi
-          commit=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.purp }}/compare/${{ needs.check.outputs.beforepurpur }}...${{ env.purpur }} | jq -r '.commits[] | "\n${{ env.purp }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+          commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.purp }}/compare/${{ needs.check.outputs.beforepurpur }}...${{ env.purpur }} | jq -r '.commits[] | "\n${{ env.purp }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
           log="$log\n\nPurpur Changes:\n$commit"
 
           git add .
