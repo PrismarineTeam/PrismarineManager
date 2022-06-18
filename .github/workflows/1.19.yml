@@ -22,7 +22,7 @@ env:
 
   ver: '1.19'
   papb: master
-  pufb: dev/1.19
+  pufb: ver/1.19
   purb: ver/1.19
   prib: dev/1.19
 
