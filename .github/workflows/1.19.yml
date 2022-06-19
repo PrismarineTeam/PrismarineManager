@@ -257,7 +257,7 @@ jobs:
       - name: Clone Repository
         run: git clone --recursive -b ${{ env.prib }} https://${{ env.token_owner }}:${{ secrets.PUSH_TOKEN }}@github.com/${{ env.pris }}.git Prismarine
 
-      - name: Update Upstream
+      - name: Updated Upstream
         run: |
           cd Prismarine
           sed -i 's/paperCommit = .*/paperCommit = '"${{ needs.check.outputs.upstream }}"'/' gradle.properties
@@ -368,11 +368,11 @@ jobs:
           log="$log\n\nPufferfish Changes:\n$commit"
 
           git add .
-          git commit -m "Update Upstream ($upstream)"
+          git commit -m "Updated Upstream ($upstream)"
           
           cd Prismarine/
           git add .
-          log="Update Upstream ($upstream)\n\nUpstream has released updates that appear to apply and compile correctly$log"
+          log="Updated Upstream ($upstream)\n\nUpstream has released updates that appear to apply and compile correctly$log"
           
           echo -e $log | git commit -F -
 
@@ -513,11 +513,11 @@ jobs:
           log="$log\n\nPurpur Changes:\n$commit"
 
           git add .
-          git commit -m "Update Upstream ($upstream)"
+          git commit -m "Updated Upstream ($upstream)"
           
           cd Prismarine/
           git add .
-          log="Update Upstream ($upstream)\n\nUpstream has released updates that appear to apply and compile correctly$log"
+          log="Updated Upstream ($upstream)\n\nUpstream has released updates that appear to apply and compile correctly$log"
           
           echo -e $log | git commit -F -
 
