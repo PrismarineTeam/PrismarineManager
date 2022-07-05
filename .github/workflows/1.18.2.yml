@@ -1,12 +1,12 @@
 name: Scheduled Upstream (1.18.2)
 
 on:
-  push:
-    branches:
-      - main
+  # push:
+  #   branches:
+  #     - main
   workflow_dispatch:
-  schedule:
-    - cron: "*/20 * * * *"
+  # schedule:
+  #   - cron: "*/20 * * * *"
 
 env:
   wrapper: gradle/gradle
