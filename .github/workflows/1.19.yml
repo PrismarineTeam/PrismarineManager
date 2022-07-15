@@ -66,7 +66,7 @@ jobs:
         run: |
           upstream=$(curl --silent https://api.github.com/repos/gradle/gradle/releases/latest | grep tag_name | cut -d "\"" -f 4 | cut -c 2-)
           current=$(cat Prismarine/gradle/wrapper/gradle-wrapper.properties | grep distributionUrl | cut -d "-" -f 2)
-          if [[ $upstream == *.0 ]]; then echo $upstream > upstream && sed -i 's/.0//g' upstream && upstream=$(cat upstream); && rm upstream; fi
+          if [[ $upstream == *.0 ]]; then echo $upstream > upstream && sed -i 's/.0//g' upstream && upstream=$(cat upstream) && rm upstream; fi
           if [ "$upstream" != "$current" ]; then wrapper=true; else wrapper=false; fi
           echo "::set-output name=wrapper::$wrapper"
           echo "::set-output name=upstream::$upstream"
