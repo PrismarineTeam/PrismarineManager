@@ -354,7 +354,7 @@ jobs:
         uses: actions/upload-artifact@main
         with:
           name: Patches
-          path: build/libs
+          path: Prismarine/patches
 
       - name: Rebuild Patches
         run: |
