@@ -5,6 +5,8 @@ on:
     branches:
       - main
   workflow_dispatch:
+  schedule:
+    - cron: "*/20 * * * *"
 
 env:
   wrapper: gradle/gradle
@@ -15,14 +17,14 @@ env:
   tiny: FabricMC/tiny-remapper
   puff: pufferfish-gg/Pufferfish
   purp: PurpurMC/Purpur
-  pris: PrismarineTeam/Prismarine
+  pris: PrismarineTeam/Prismarine-Private # TODO
   token_owner: AlphaKR93
 
-  ver: '1.19'
+  ver: '1.19.1'
   papb: master
   pufb: ver/1.19
-  purb: ver/1.19
-  prib: dev/1.19
+  purb: ver/1.19.1
+  prib: dev/1.19.1
 
 jobs:
   check:
@@ -126,7 +128,7 @@ jobs:
         id: check-pufferfish
         run: |
           upstream=$(git ls-remote https://github.com/${{ env.puff }} | grep ${{ env.pufb }} | cut -f 1)
-          current=$(cat upstream-data | grep "pufferfish-${{ env.ver }}" | sed 's/pufferfish-${{ env.ver }}: //')
+          current=$(cat Prismarine/upstream-data | grep "pufferfish" | sed 's/pufferfish = //')
           if [ "$current" != "$upstream" ]; then pufferfish=true; else pufferfish=false; fi
           echo "::set-output name=pufferfish::$pufferfish"
           echo "::set-output name=before::$current"
@@ -137,7 +139,7 @@ jobs:
         id: check-purpur
         run: |
           upstream=$(git ls-remote https://github.com/${{ env.purp }} | grep ${{ env.purb }} | cut -f 1)
-          current=$(cat upstream-data | grep "purpur-${{ env.ver }}" | sed 's/purpur-${{ env.ver }}: //')
+          current=$(cat Prismarine/upstream-data | grep "purpur" | sed 's/purpur = //')
           if [ "$current" != "$upstream" ]; then purpur=true; else purpur=false; fi
           echo "::set-output name=purpur::$purpur"
           echo "::set-output name=before::$current"
@@ -317,7 +319,7 @@ jobs:
 
       - name: MC Dev Sources
         run: |
-          sed -i 's/pufferfish-${{ env.ver }}: .*/pufferfish-${{ env.ver }}: '"${{ env.pufferfish }}"'/' upstream-data
+          sed -i 's/pufferfish = .*/pufferfish = '"${{ env.pufferfish }}"'/' Prismarine/upstream-data
           cd Pufferfish/.gradle/caches/paperweight/upstreams/paper/Paper-Server
           cp -rf .gradle/caches/paperweight/mc-dev-sources/net/* src/main/java/net
           git add .
@@ -427,7 +429,7 @@ jobs:
 
       - name: MC Dev Sources
         run: |
-          sed -i 's/pufferfish-${{ env.ver }}: .*/pufferfish-${{ env.ver }}: '"${{ env.pufferfish }}"'/' upstream-data
+          sed -i 's/pufferfish = .*/pufferfish = '"${{ env.pufferfish }}"'/' upstream-data
           cd Pufferfish/.gradle/caches/paperweight/upstreams/paper/Paper-Server
           cp -rf .gradle/caches/paperweight/mc-dev-sources/net/* src/main/java/net
           git add .
@@ -467,7 +469,7 @@ jobs:
 
       - name: Purpur Server Changes
         run: |
-          sed -i 's/purpur-${{ env.ver }}: .*/purpur-${{ env.ver }}: '"${{ env.purpur }}"'/' upstream-data
+          sed -i 's/purpur = .*/purpur = '"${{ env.purpur }}"'/' upstream-data
           cd Purpur/Purpur-Server/
           rm -rdf .git
           cp -rf .gradle/caches/paperweight/mc-dev-sources/net/* src/main/java/net
