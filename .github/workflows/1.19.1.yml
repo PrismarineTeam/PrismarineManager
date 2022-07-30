@@ -1,4 +1,4 @@
-name: Scheduled Upstream (1.19)
+name: Scheduled Upstream (1.19.1)
 
 on:
   push:

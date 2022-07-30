@@ -1,9 +1,6 @@
 name: Scheduled Upstream (1.19)
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
 
 env:
