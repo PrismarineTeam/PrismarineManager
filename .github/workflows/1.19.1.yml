@@ -309,8 +309,9 @@ jobs:
           git config --global user.email "alphakr93@outlook.com" && git config --global user.name "AlphaKR93"
           upstream=${{ needs.check.outputs.upstream }} > $GITHUB_ENV
 
-      - name: Initial Pufferfish Sources
+      - name: Initial Sources
         run: |
+          git clone --recursive -b ${{ env.prib }} https://${{ env.token_owner }}:${{ secrets.PUSH_TOKEN }}@github.com/${{ env.pris }}.git Prismarine
           git clone --recursive -b ${{ env.pufb }} https://github.com/${{ env.puff }}.git
           cd Pufferfish/
           pufferfish=$(git log -1 --pretty=oneline | cut -c 1-40) && echo "pufferfish=$pufferfish" > $GITHUB_ENV
@@ -344,7 +345,6 @@ jobs:
           
       - name: Build Patches
         run: |
-          git clone --recursive -b ${{ env.prib }} https://${{ env.token_owner }}:${{ secrets.PUSH_TOKEN }}@github.com/${{ env.pris }}.git Prismarine
           cd Pufferfish/
           ./gradlew rebuildPatches
           cp -rf patches/api/*-Pufferfish-API-Changes.patch ../Prismarine/patches/api/0001-Pufferfish-API-Changes.patch
