@@ -376,21 +376,11 @@ jobs:
           commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.puff }}/compare/${{ needs.check.outputs.beforepufferfish }}...HEAD | jq -r '.commits[] | "\n${{ env.puff }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
           log="$log\n\nPufferfish Changes:\n$commit"
 
-          git add .
-          git commit -m "Updated Upstream ($upstream)"
-          
           cd Prismarine/
           git add .
           log="Updated Upstream ($upstream)\n\nUpstream has released updates that appear to apply and compile correctly$log"
           
           echo -e $log | git commit -F -
-
-      - name: Push new commit
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.PUSH_TOKEN }}
-          directory: ./
-          repository: PrismarineTeam/PrismarineManager
 
       - name: Push changes
         uses: ad-m/github-push-action@master
@@ -419,9 +409,10 @@ jobs:
           git config --global user.email "alphakr93@outlook.com" && git config --global user.name "AlphaKR93"
           upstream=${{ needs.check.outputs.upstream }} > $GITHUB_ENV
 
-      - name: Initial Pufferfish Sources
+      - name: Initial Sources
         run: |
           git clone --recursive -b ${{ env.pufb }} https://github.com/${{ env.puff }}.git
+          git clone --recursive -b ${{ env.prib }} https://${{ env.token_owner }}:${{ secrets.PUSH_TOKEN }}@github.com/${{ env.pris }}.git Prismarine
           cd Pufferfish/
           pufferfish=$(git log -1 --pretty=oneline | cut -c 1-40) && echo "pufferfish=$pufferfish" > $GITHUB_ENV
           sed -i 's/paperRef=.*/paperRef='"${{ needs.check.outputs.upstream }}"'/' gradle.properties
@@ -487,7 +478,6 @@ jobs:
 
       - name: Build Patches
         run: |
-          git clone --recursive -b ${{ env.prib }} https://${{ env.token_owner }}:${{ secrets.PUSH_TOKEN }}@github.com/${{ env.pris }}.git Prismarine
           cd Purpur/
           ./gradlew rebuildPatches
           cp -rf patches/api/*-Pufferfish-API-Changes.patch ../Prismarine/patches/api/0001-Pufferfish-API-Changes.patch
@@ -527,21 +517,11 @@ jobs:
           commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.purp }}/compare/${{ needs.check.outputs.beforepurpur }}...${{ env.purpur }} | jq -r '.commits[] | "\n${{ env.purp }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
           log="$log\n\nPurpur Changes:\n$commit"
 
-          git add .
-          git commit -m "Updated Upstream ($upstream)"
-          
           cd Prismarine/
           git add .
           log="Updated Upstream ($upstream)\n\nUpstream has released updates that appear to apply and compile correctly$log"
           
           echo -e $log | git commit -F -
-
-      - name: Push new commit
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.PUSH_TOKEN }}
-          directory: ./
-          repository: PrismarineTeam/PrismarineManager
 
       - name: Push changes
         uses: ad-m/github-push-action@master
