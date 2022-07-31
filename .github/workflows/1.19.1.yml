@@ -24,7 +24,7 @@ env:
   papb: master
   pufb: ver/1.19
   purb: ver/1.19.1
-  prib: dev/1.19.1
+  prib: ver/1.19.1
 
 jobs:
   check:
