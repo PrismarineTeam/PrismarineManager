@@ -228,7 +228,7 @@ jobs:
           if [ "$upstream" != "" ]; then
             log="[CI-Skip] Update Dependencies ($upstream)\n\nUpstream has released updates that appear to apply and compile correctly$log"
             git add .
-            echo -e "$log" | git commit -F -
+            printf "$log" | git commit -F -
           fi
 
       - name: Push changes
@@ -281,7 +281,7 @@ jobs:
 
           log="Updated Upstream (Paper)\n\nUpstream has released updates that appear to apply and compile correctly\n\nPaper Changes:\n$commit"
           git add .
-          echo -e "$log" | git commit -F -
+          printf "$log" | git commit -F -
 
       - name: Push changes
         uses: ad-m/github-push-action@master
@@ -382,7 +382,7 @@ jobs:
           git add .
           log="Updated Upstream ($upstream)\n\nUpstream has released updates that appear to apply and compile correctly$log"
           
-          echo -e $log | git commit -F -
+          printf $log | git commit -F -
 
       - name: Push changes
         uses: ad-m/github-push-action@master
@@ -524,7 +524,7 @@ jobs:
           git add .
           log="Updated Upstream ($upstream)\n\nUpstream has released updates that appear to apply and compile correctly$log"
           
-          echo -e $log | git commit -F -
+          printf $log | git commit -F -
 
       - name: Push changes
         uses: ad-m/github-push-action@master
