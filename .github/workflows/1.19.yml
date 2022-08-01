@@ -91,7 +91,7 @@ jobs:
       - name: Check Paper commit
         id: check-paper
         run: |
-          upstream=$(git ls-remote https://github.com/${{ env.paper }} | grep heads/${{ env.papb }} | cut -f 1)
+          upstream=86f87ba40030d719e5fb8840ab18c513588de772 # $(git ls-remote https://github.com/${{ env.paper }} | grep heads/${{ env.papb }} | cut -f 1) # Paper too :(
           current=$(cat Prismarine/gradle.properties | grep paperCommit | sed 's/paperCommit = //')
           if [ "$current" != "$upstream" ]; then paper=true; else paper=false; fi
           echo "::set-output name=paper::$paper"
@@ -240,56 +240,57 @@ jobs:
           repository: ${{ env.pris }}
           branch: ${{ env.prib }}
 
-  upstream-paper:
-    name: Upstream Paper
-    runs-on: ubuntu-20.04
-    needs: [check, upstream-dependencies]
-    if: needs.check.outputs.paper == 'true' && !(needs.check.outputs.pufferfish == 'true') && !(needs.check.outputs.purpur == 'true')
-    steps:
-      - name: Checkout action
-        uses: actions/checkout@main
-
-      - name: Setup java
-        uses: actions/setup-java@main
-        with:
-          distribution: temurin
-          java-version: 17.0.3
-
-      - name: Configure Git
-        run: git config --global user.email "alphakr93@outlook.com" && git config --global user.name "AlphaKR93"
-        
-      - name: Clone Repository
-        run: git clone --recursive -b ${{ env.prib }} https://${{ env.token_owner }}:${{ secrets.PUSH_TOKEN }}@github.com/${{ env.pris }}.git Prismarine
-
-      - name: Updated Upstream
-        run: |
-          cd Prismarine
-          sed -i 's/paperCommit = .*/paperCommit = '"${{ needs.check.outputs.upstream }}"'/' gradle.properties
-          ./gradlew applyPatches --stacktrace
-      
-      - name: Rebuild Patches
-        run: | 
-          cd Prismarine
-          ./gradlew rebuildPatches
-
-      - name: Commit Changes
-        run: |
-          cd Prismarine
-          git config --global user.email "actions@github.com" && git config --global user.name "Github Actions"
-
-          commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.paper }}/compare/${{ needs.check.outputs.before }}...HEAD | jq -r '.commits[] | "${{ env.paper }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
-
-          log="Updated Upstream (Paper)\n\nUpstream has released updates that appear to apply and compile correctly\n\nPaper Changes:\n$commit"
-          git add .
-          printf "$log" | git commit -F -
-
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.PUSH_TOKEN }}
-          directory: ./Prismarine
-          repository: ${{ env.pris }}
-          branch: ${{ env.prib }}
+  # Paper too :(
+  # upstream-paper:
+  #   name: Upstream Paper
+  #   runs-on: ubuntu-20.04
+  #   needs: [check, upstream-dependencies]
+  #   if: needs.check.outputs.paper == 'true' && !(needs.check.outputs.pufferfish == 'true') && !(needs.check.outputs.purpur == 'true')
+  #   steps:
+  #     - name: Checkout action
+  #       uses: actions/checkout@main
+  #
+  #     - name: Setup java
+  #       uses: actions/setup-java@main
+  #       with:
+  #         distribution: temurin
+  #         java-version: 17.0.3
+  #
+  #     - name: Configure Git
+  #       run: git config --global user.email "alphakr93@outlook.com" && git config --global user.name "AlphaKR93"
+  #
+  #     - name: Clone Repository
+  #       run: git clone --recursive -b ${{ env.prib }} https://${{ env.token_owner }}:${{ secrets.PUSH_TOKEN }}@github.com/${{ env.pris }}.git Prismarine
+  #
+  #     - name: Updated Upstream
+  #       run: |
+  #         cd Prismarine
+  #         sed -i 's/paperCommit = .*/paperCommit = '"${{ needs.check.outputs.upstream }}"'/' gradle.properties
+  #         ./gradlew applyPatches --stacktrace
+  #
+  #     - name: Rebuild Patches
+  #       run: | 
+  #         cd Prismarine
+  #         ./gradlew rebuildPatches
+  #
+  #     - name: Commit Changes
+  #       run: |
+  #         cd Prismarine
+  #         git config --global user.email "actions@github.com" && git config --global user.name "Github Actions"
+  #
+  #         commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.paper }}/compare/${{ needs.check.outputs.before }}...HEAD | jq -r '.commits[] | "${{ env.paper }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+  #
+  #         log="Updated Upstream (Paper)\n\nUpstream has released updates that appear to apply and compile correctly\n\nPaper Changes:\n$commit"
+  #         git add .
+  #         printf "$log" | git commit -F -
+  #
+  #     - name: Push changes
+  #       uses: ad-m/github-push-action@master
+  #       with:
+  #         github_token: ${{ secrets.PUSH_TOKEN }}
+  #         directory: ./Prismarine
+  #         repository: ${{ env.pris }}
+  #         branch: ${{ env.prib }}
 
   # Pufferfish does not create branches separately in minor updates >:(
   # upstream-pufferfish:
@@ -419,13 +420,13 @@ jobs:
           git clone --recursive -b ${{ env.prib }} https://${{ env.token_owner }}:${{ secrets.PUSH_TOKEN }}@github.com/${{ env.pris }}.git Prismarine
           cd Pufferfish/
           git reset --hard 37f936f0b89395c6b59b08f4695525096c9a888b # Pufferfish does not create branches separately in minor updates >:(
-          pufferfish=$(git log -1 --pretty=oneline | cut -c 1-40) && echo "pufferfish=$pufferfish" > $GITHUB_ENV
-          sed -i 's/paperRef=.*/paperRef='"${{ needs.check.outputs.upstream }}"'/' gradle.properties
+          # pufferfish=$(git log -1 --pretty=oneline | cut -c 1-40) && echo "pufferfish=$pufferfish" > $GITHUB_ENV # Pufferfish does not create branches separately in minor updates >:(
+          # sed -i 's/paperRef=.*/paperRef='"${{ needs.check.outputs.upstream }}"'/' gradle.properties # Paper too :(
           ./gradlew applyPatches --stacktrace
 
       - name: MC Dev Sources
         run: |
-          sed -i 's/pufferfish = .*/pufferfish = '"${{ env.pufferfish }}"'/' Prismarine/upstream-data
+          # sed -i 's/pufferfish = .*/pufferfish = '"${{ env.pufferfish }}"'/' Prismarine/upstream-data # Pufferfish does not create branches separately in minor updates >:(
           cd Pufferfish/.gradle/caches/paperweight/upstreams/paper/Paper-Server
           cp -rf .gradle/caches/paperweight/mc-dev-sources/net/* src/main/java/net
           git add .
@@ -458,7 +459,7 @@ jobs:
           git clone --recursive -b ${{ env.purb }} https://github.com/${{ env.purp }}.git
           cd Purpur/
           purpur=$(git log -1 --pretty=oneline | cut -c 1-40) && echo "purpur=$purpur" > $GITHUB_ENV
-          sed -i 's/paperCommit = .*/paperCommit = '"${{ needs.check.outputs.upstream }}"'/' gradle.properties
+          # sed -i 's/paperCommit = .*/paperCommit = '"${{ needs.check.outputs.upstream }}"'/' gradle.properties # Paper too :(
           cp -rf ../Pufferfish/patches/api/*-Pufferfish-API-Changes.patch patches/api/0001-Pufferfish-API-Changes.patch
           cp -rf ../Pufferfish/patches/server/*-Pufferfish-Server-Changes.patch patches/server/0001-Pufferfish-Server-Changes.patch
           ./gradlew applyPatches
@@ -499,18 +500,19 @@ jobs:
       - name: Rebuild Patches
         run: |
           cd Prismarine/
-          sed -i 's/paperCommit = .*/paperCommit = '"${{ needs.check.outputs.upstream }}"'/' gradle.properties
+          # sed -i 's/paperCommit = .*/paperCommit = '"${{ needs.check.outputs.upstream }}"'/' gradle.properties # Paper too :(
           ./gradlew applyPatches --stacktrace && ./gradlew rebuildPatches --stacktrace
 
       - name: Commit changes
         run: |
           git config --global user.email "actions@github.com" && git config --global user.name "Github Actions"
           
-          if [ "${{ needs.check.outputs.paper }}" == "true" ]; then
-            upstream="Paper"
-            commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.paper }}/compare/${{ needs.check.outputs.before }}...HEAD | jq -r '.commits[] | "${{ env.paper }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
-            log="\n\nPaper Changes:\n$commit"
-          fi
+          # Paper too :(
+          # if [ "${{ needs.check.outputs.paper }}" == "true" ]; then
+          #   upstream="Paper"
+          #   commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.paper }}/compare/${{ needs.check.outputs.before }}...HEAD | jq -r '.commits[] | "${{ env.paper }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+          #   log="\n\nPaper Changes:\n$commit"
+          # fi
           
           # Pufferfish does not create branches separately in minor updates >:(
           # if [ "${{ needs.check.outputs.pufferfish }}" == "true" ]; then
@@ -519,7 +521,8 @@ jobs:
           #   log="$log\n\nPufferfish Changes:\n$commit"
           # fi
 
-          if [ "$upstream" != "" ]; then upstream="$upstream & Purpur"; else upstream="Purpur"; fi
+          # if [ "$upstream" != "" ]; then upstream="$upstream & Purpur"; else upstream="Purpur"; fi
+          upstream="Purpur"
           commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.purp }}/compare/${{ needs.check.outputs.beforepurpur }}...${{ env.purpur }} | jq -r '.commits[] | "${{ env.purp }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
           log="$log\n\nPurpur Changes:\n$commit"
 
