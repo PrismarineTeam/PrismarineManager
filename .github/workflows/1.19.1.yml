@@ -348,7 +348,7 @@ jobs:
           cd Pufferfish/
           ./gradlew rebuildPatches
           cp -rf patches/api/*-Pufferfish-API-Changes.patch ../Prismarine/patches/api/0001-Pufferfish-API-Changes.patch
-          cp -rf patches/server/*-Pufferfish-Server-Changes.patch ../Prismarine/patches/server/0002-Pufferfish-Server-Changes.patch
+          cp -rf patches/server/*-Pufferfish-Server-Changes.patch ../Prismarine/patches/server/0001-Pufferfish-Server-Changes.patch
 
       - name: Upload patches
         uses: actions/upload-artifact@main
@@ -481,9 +481,9 @@ jobs:
           cd Purpur/
           ./gradlew rebuildPatches
           cp -rf patches/api/*-Pufferfish-API-Changes.patch ../Prismarine/patches/api/0001-Pufferfish-API-Changes.patch
-          cp -rf patches/server/*-Pufferfish-Server-Changes.patch ../Prismarine/patches/server/0002-Pufferfish-Server-Changes.patch
+          cp -rf patches/server/*-Pufferfish-Server-Changes.patch ../Prismarine/patches/server/0001-Pufferfish-Server-Changes.patch
           cp -rf patches/api/*-Purpur-API-Changes.patch ../Prismarine/patches/api/0002-Purpur-API-Changes.patch
-          cp -rf patches/server/*-Purpur-Server-Changes.patch ../Prismarine/patches/server/0003-Purpur-Server-Changes.patch
+          cp -rf patches/server/*-Purpur-Server-Changes.patch ../Prismarine/patches/server/0002-Purpur-Server-Changes.patch
 
       - name: Upload patches
         uses: actions/upload-artifact@main
