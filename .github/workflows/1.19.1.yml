@@ -204,25 +204,25 @@ jobs:
           if [ "${{ needs.check.outputs.wrapper }}" == "true" ]; then
             upstream="Gradle Wrapper"
             commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.wrapper }}/compare/v${{ needs.check.outputs.beforewrapper }}...v${{ needs.check.outputs.wrappertag }} | jq -r '.commits[] | "${{ env.wrapper }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
-            log="$log\n\n$commit"
+            log="$log\n\nGradle Wrapper Changes:\n$commit"
           fi
 
           if [ "${{ needs.check.outputs.shadow }}" == "true" ]; then
             if [ "$upstream" != "" ]; then upstream="$upstream & Gradle Shadow"; else upstream="Gradle Shadow"; fi
             commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.shadow }}/compare/v${{ needs.check.outputs.beforeshadow }}...v${{ needs.check.outputs.shadowrel }} | jq -r '.commits[] | "${{ env.shadow }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
-            log="$log\n\n$commit"
+            log="$log\n\nGradle Shadow Changes:\n$commit"
           fi
 
           if [ "${{ needs.check.outputs.paperclip }}" == "true" ]; then
             if [ "$upstream" != "" ]; then upstream="$upstream & Paperclip"; else upstream="Paperclip"; fi
             commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.paperclip }}/compare/v${{ needs.check.outputs.beforepaperclip }}...v${{ needs.check.outputs.papercliprel }} | jq -r '.commits[] | "${{ env.paperclip }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
-            log="$log\n\n$commit"
+            log="$log\n\Paperclip Changes:\n$commit"
           fi
 
           if [ "${{ needs.check.outputs.paperweight }}" == "true" ]; then
             if [ "$upstream" != "" ]; then upstream="$upstream & Paperweight"; else upstream="Paperweight"; fi
             commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.paperweight }}/compare/v${{ needs.check.outputs.beforepaperweight }}...v${{ needs.check.outputs.paperweightrel }} | jq -r '.commits[] | "${{ env.paperweight }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
-            log="$log\n\n$commit"
+            log="$log\n\nPaperweight Changes:\n$commit"
           fi
 
           if [ "$upstream" != "" ]; then
