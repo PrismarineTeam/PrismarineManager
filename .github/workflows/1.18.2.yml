@@ -1,12 +1,12 @@
 name: Scheduled Upstream (1.18.2)
 
 on:
-  # push:
-  #   branches:
-  #     - main
+  push:
+    branches:
+      - main
   workflow_dispatch:
-  # schedule:
-  #   - cron: "*/20 * * * *"
+  schedule:
+    - cron: "*/20 * * * *"
 
 env:
   wrapper: gradle/gradle
@@ -18,6 +18,7 @@ env:
   puff: pufferfish-gg/Pufferfish
   purp: PurpurMC/Purpur
   pris: PrismarineTeam/Prismarine
+  token_owner: AlphaKR93
 
   ver: '1.18.2'
   papb: ver/1.18.2
@@ -33,6 +34,7 @@ jobs:
     outputs:
       upstream: ${{ steps.check-paper.outputs.upstream }}
       wrapperrel: ${{ steps.check-wrapper.outputs.upstream }}
+      wrappertag: ${{ steps.check-wrapper.outputs.upstreamTag }}
       shadowrel: ${{ steps.check-shadow.outputs.upstream }}
       papercliprel: ${{ steps.check-paperclip.outputs.upstream }}
       paperweightrel: ${{ steps.check-paperweight.outputs.upstream }}
@@ -58,16 +60,18 @@ jobs:
 
       - name: Clone Repository
         run: |
-          git clone --recursive -b ${{ env.prib }} https://github.com/${{ env.pris }}.git
+          git clone --recursive -b ${{ env.prib }} https://${{ env.token_owner }}:${{ secrets.PUSH_TOKEN }}@github.com/${{ env.pris }}.git Prismarine
 
       - name: Check Gradle Wrapper version
         id: check-wrapper
         run: |
-          upstream=$(curl --silent https://api.github.com/repos/gradle/gradle/releases/latest | grep tag_name | cut -d "\"" -f 4 | cut -c 2-)
+          upstreamTag=$(curl --silent https://api.github.com/repos/gradle/gradle/releases/latest | grep tag_name | cut -d "\"" -f 4 | cut -c 2-)
           current=$(cat Prismarine/gradle/wrapper/gradle-wrapper.properties | grep distributionUrl | cut -d "-" -f 2)
+          if [[ $upstreamTag == *.0 ]]; then echo $upstreamTag > upstream && sed -i 's/.0//g' upstream && upstream=$(cat upstream) && rm upstream; fi
           if [ "$upstream" != "$current" ]; then wrapper=true; else wrapper=false; fi
           echo "::set-output name=wrapper::$wrapper"
           echo "::set-output name=upstream::$upstream"
+          echo "::set-output name=upstreamTag::$upstreamTag"
           echo "::set-output name=before::$current"
           echo "Current Gradle Wrapper version: $current / Latest Gradle Wrapper version: $upstream"
           echo "Need upstream: $wrapper"
@@ -124,7 +128,7 @@ jobs:
         id: check-pufferfish
         run: |
           upstream=$(git ls-remote https://github.com/${{ env.puff }} | grep ${{ env.pufb }} | cut -f 1)
-          current=$(cat upstream-data | grep "pufferfish-${{ env.ver }}" | sed 's/pufferfish-${{ env.ver }}: //')
+          current=$(cat Prismarine/upstream-data | grep "pufferfish" | sed 's/pufferfish = //')
           if [ "$current" != "$upstream" ]; then pufferfish=true; else pufferfish=false; fi
           echo "::set-output name=pufferfish::$pufferfish"
           echo "::set-output name=before::$current"
@@ -135,7 +139,7 @@ jobs:
         id: check-purpur
         run: |
           upstream=$(git ls-remote https://github.com/${{ env.purp }} | grep ${{ env.purb }} | cut -f 1)
-          current=$(cat upstream-data | grep "purpur-${{ env.ver }}" | sed 's/purpur-${{ env.ver }}: //')
+          current=$(cat Prismarine/upstream-data | grep "purpur" | sed 's/purpur = //')
           if [ "$current" != "$upstream" ]; then purpur=true; else purpur=false; fi
           echo "::set-output name=purpur::$purpur"
           echo "::set-output name=before::$current"
@@ -165,7 +169,7 @@ jobs:
         
       - name: Clone Repository
         if: needs.check.outputs.wrapper == 'true' || needs.check.outputs.shadow == 'true' || needs.check.outputs.paperclip == 'true' || needs.check.outputs.paperweight == 'true'
-        run: git clone --recursive -b ${{ env.prib }} https://github.com/${{ env.pris }}.git
+        run: git clone --recursive -b ${{ env.prib }} https://${{ env.token_owner }}:${{ secrets.PUSH_TOKEN }}@github.com/${{ env.pris }}.git Prismarine
 
       - name: Update Gradle Wrapper
         if: needs.check.outputs.wrapper == 'true'
@@ -199,32 +203,32 @@ jobs:
 
           if [ "${{ needs.check.outputs.wrapper }}" == "true" ]; then
             upstream="Gradle Wrapper"
-            commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.wrapper }}/compare/v${{ needs.check.outputs.beforewrapper }}...v${{ needs.check.outputs.wrapperrel }} | jq -r '.commits[] | "\n${{ env.wrapper }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+            commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.wrapper }}/compare/v${{ needs.check.outputs.beforewrapper }}...v${{ needs.check.outputs.wrappertag }} | jq -r '.commits[] | "${{ env.wrapper }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
             log="$log\n\n$commit"
           fi
 
           if [ "${{ needs.check.outputs.shadow }}" == "true" ]; then
             if [ "$upstream" != "" ]; then upstream="$upstream & Gradle Shadow"; else upstream="Gradle Shadow"; fi
-            commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.shadow }}/compare/v${{ needs.check.outputs.beforeshadow }}...v${{ needs.check.outputs.shadowrel }} | jq -r '.commits[] | "\n${{ env.shadow }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+            commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.shadow }}/compare/v${{ needs.check.outputs.beforeshadow }}...v${{ needs.check.outputs.shadowrel }} | jq -r '.commits[] | "${{ env.shadow }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
             log="$log\n\n$commit"
           fi
 
           if [ "${{ needs.check.outputs.paperclip }}" == "true" ]; then
             if [ "$upstream" != "" ]; then upstream="$upstream & Paperclip"; else upstream="Paperclip"; fi
-            commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.paperclip }}/compare/v${{ needs.check.outputs.beforepaperclip }}...v${{ needs.check.outputs.papercliprel }} | jq -r '.commits[] | "\n${{ env.paperclip }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+            commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.paperclip }}/compare/v${{ needs.check.outputs.beforepaperclip }}...v${{ needs.check.outputs.papercliprel }} | jq -r '.commits[] | "${{ env.paperclip }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
             log="$log\n\n$commit"
           fi
 
           if [ "${{ needs.check.outputs.paperweight }}" == "true" ]; then
             if [ "$upstream" != "" ]; then upstream="$upstream & Paperweight"; else upstream="Paperweight"; fi
-            commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.paperweight }}/compare/v${{ needs.check.outputs.beforepaperweight }}...v${{ needs.check.outputs.paperweightrel }} | jq -r '.commits[] | "\n${{ env.paperweight }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+            commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.paperweight }}/compare/v${{ needs.check.outputs.beforepaperweight }}...v${{ needs.check.outputs.paperweightrel }} | jq -r '.commits[] | "${{ env.paperweight }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
             log="$log\n\n$commit"
           fi
 
           if [ "$upstream" != "" ]; then
             log="[CI-Skip] Update Dependencies ($upstream)\n\nUpstream has released updates that appear to apply and compile correctly$log"
             git add .
-            echo -e "$log" | git commit -F -
+            printf "$log" | git commit -F -
           fi
 
       - name: Push changes
@@ -233,7 +237,8 @@ jobs:
         with:
           github_token: ${{ secrets.PUSH_TOKEN }}
           directory: ./Prismarine
-          repository: PrismarineTeam/Prismarine
+          repository: ${{ env.pris }}
+          branch: ${{ env.prib }}
 
   upstream-paper:
     name: Upstream Paper
@@ -254,9 +259,9 @@ jobs:
         run: git config --global user.email "alphakr93@outlook.com" && git config --global user.name "AlphaKR93"
         
       - name: Clone Repository
-        run: git clone --recursive -b ${{ env.prib }} https://github.com/${{ env.pris }}.git
+        run: git clone --recursive -b ${{ env.prib }} https://${{ env.token_owner }}:${{ secrets.PUSH_TOKEN }}@github.com/${{ env.pris }}.git Prismarine
 
-      - name: Update Upstream
+      - name: Updated Upstream
         run: |
           cd Prismarine
           sed -i 's/paperCommit = .*/paperCommit = '"${{ needs.check.outputs.upstream }}"'/' gradle.properties
@@ -272,18 +277,19 @@ jobs:
           cd Prismarine
           git config --global user.email "actions@github.com" && git config --global user.name "Github Actions"
 
-          commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.paper }}/compare/${{ needs.check.outputs.before }}...HEAD | jq -r '.commits[] | "\n${{ env.paper }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+          commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.paper }}/compare/${{ needs.check.outputs.before }}...HEAD | jq -r '.commits[] | "${{ env.paper }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
 
           log="Updated Upstream (Paper)\n\nUpstream has released updates that appear to apply and compile correctly\n\nPaper Changes:\n$commit"
           git add .
-          echo -e "$log" | git commit -F -
+          printf "$log" | git commit -F -
 
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.PUSH_TOKEN }}
           directory: ./Prismarine
-          repository: PrismarineTeam/Prismarine
+          repository: ${{ env.pris }}
+          branch: ${{ env.prib }}
 
   upstream-pufferfish:
     name: Upstream Pufferfish
@@ -305,8 +311,9 @@ jobs:
           git config --global user.email "alphakr93@outlook.com" && git config --global user.name "AlphaKR93"
           upstream=${{ needs.check.outputs.upstream }} > $GITHUB_ENV
 
-      - name: Initial Pufferfish Sources
+      - name: Initial Sources
         run: |
+          git clone --recursive -b ${{ env.prib }} https://${{ env.token_owner }}:${{ secrets.PUSH_TOKEN }}@github.com/${{ env.pris }}.git Prismarine
           git clone --recursive -b ${{ env.pufb }} https://github.com/${{ env.puff }}.git
           cd Pufferfish/
           pufferfish=$(git log -1 --pretty=oneline | cut -c 1-40) && echo "pufferfish=$pufferfish" > $GITHUB_ENV
@@ -315,7 +322,7 @@ jobs:
 
       - name: MC Dev Sources
         run: |
-          sed -i 's/pufferfish-${{ env.ver }}: .*/pufferfish-${{ env.ver }}: '"${{ env.pufferfish }}"'/' upstream-data
+          sed -i 's/pufferfish = .*/pufferfish = '"${{ env.pufferfish }}"'/' Prismarine/upstream-data
           cd Pufferfish/.gradle/caches/paperweight/upstreams/paper/Paper-Server
           cp -rf .gradle/caches/paperweight/mc-dev-sources/net/* src/main/java/net
           git add .
@@ -328,7 +335,7 @@ jobs:
           cp -rf .gradle/caches/paperweight/mc-dev-sources/net/* src/main/java/net
           mv -f ../.gradle/caches/paperweight/upstreams/paper/Paper-Server/.git ./
           git add .
-          echo -e "Pufferfish Server Changes\n\nOriginal by Kevin Raneri <kevin.raneri@gmail.com>\n\nCopyright (C) 2022 Pufferfish Studios LLC\n\nThis program is free software: you can redistribute it and/or modify it\nunder the terms of the GNU General Public License as published by the\nFree Software Foundation, either version 3 of the License, or (at your\noption) any later version.\n\nThis program is distributed in the hope that it will be useful, but\nWITHOUT ANY WARRANTY; without even the implied warranty of\nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU\nGeneral Public License for more details.\n\nYou should have received a copy of the GNU General Public License along\nwith this program.  If not, see <http://www.gnu.org/licenses/>." | git commit -F -
+          printf "Pufferfish Server Changes\n\nOriginal by Kevin Raneri <kevin.raneri@gmail.com>\n\nCopyright (C) 2022 Pufferfish Studios LLC\n\nThis program is free software: you can redistribute it and/or modify\nit under the terms of the GNU General Public License as published by\nthe Free Software Foundation, either version 3 of the License, or\n(at your option) any later version.\n\nThis program is distributed in the hope that it will be useful,\nbut WITHOUT ANY WARRANTY; without even the implied warranty of\nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\nGNU General Public License for more details.\n\nYou should have received a copy of the GNU General Public License\nalong with this program.  If not, see <http://www.gnu.org/licenses/>." | git commit -F -
 
       - name: Pufferfish API Changes
         run: |
@@ -336,15 +343,20 @@ jobs:
           rm -rdf .git
           mv -f ../.gradle/caches/paperweight/upstreams/paper/Paper-API/.git ./
           git add .
-          echo -e "Pufferfish API Changes\n\nOriginal by Kevin Raneri <kevin.raneri@gmail.com>\n\nCopyright (C) 2022 Pufferfish Studios LLC\n\nThis program is free software: you can redistribute it and/or modify it\nunder the terms of the GNU General Public License as published by the\nFree Software Foundation, either version 3 of the License, or (at your\noption) any later version.\n\nThis program is distributed in the hope that it will be useful, but\nWITHOUT ANY WARRANTY; without even the implied warranty of\nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU\nGeneral Public License for more details.\n\nYou should have received a copy of the GNU General Public License along\nwith this program.  If not, see <http://www.gnu.org/licenses/>." | git commit -F -
+          printf "Pufferfish API Changes\n\nOriginal by Kevin Raneri <kevin.raneri@gmail.com>\n\nCopyright (C) 2022 Pufferfish Studios LLC\n\nThis program is free software: you can redistribute it and/or modify\nit under the terms of the GNU General Public License as published by\nthe Free Software Foundation, either version 3 of the License, or\n(at your option) any later version.\n\nThis program is distributed in the hope that it will be useful,\nbut WITHOUT ANY WARRANTY; without even the implied warranty of\nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\nGNU General Public License for more details.\n\nYou should have received a copy of the GNU General Public License\nalong with this program.  If not, see <http://www.gnu.org/licenses/>." | git commit -F -
           
       - name: Build Patches
         run: |
-          git clone --recursive -b ${{ env.prib }} https://github.com/${{ env.pris }}.git
           cd Pufferfish/
           ./gradlew rebuildPatches
           cp -rf patches/api/*-Pufferfish-API-Changes.patch ../Prismarine/patches/api/0001-Pufferfish-API-Changes.patch
           cp -rf patches/server/*-Pufferfish-Server-Changes.patch ../Prismarine/patches/server/0001-Pufferfish-Server-Changes.patch
+
+      - name: Upload patches
+        uses: actions/upload-artifact@main
+        with:
+          name: Patches
+          path: Prismarine/patches
 
       - name: Rebuild Patches
         run: |
@@ -358,36 +370,27 @@ jobs:
 
           if [ "${{ needs.check.outputs.paper }}" == "true" ]; then
             upstream="Paper"
-            commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.paper }}/compare/${{ needs.check.outputs.before }}...HEAD | jq -r '.commits[] | "\n${{ env.paper }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+            commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.paper }}/compare/${{ needs.check.outputs.before }}...HEAD | jq -r '.commits[] | "${{ env.paper }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
             log="$log\n\nPaper Changes:\n$commit"
           fi
           
           if [ "$upstream" != "" ]; then upstream="$upstream & Pufferfish"; else upstream="Pufferfish"; fi
-          commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.puff }}/compare/${{ needs.check.outputs.beforepufferfish }}...HEAD | jq -r '.commits[] | "\n${{ env.puff }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+          commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.puff }}/compare/${{ needs.check.outputs.beforepufferfish }}...HEAD | jq -r '.commits[] | "${{ env.puff }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
           log="$log\n\nPufferfish Changes:\n$commit"
 
-          git add .
-          git commit -m "Update Upstream ($upstream)"
-          
           cd Prismarine/
           git add .
-          log="Update Upstream ($upstream)\n\nUpstream has released updates that appear to apply and compile correctly$log"
+          log="Updated Upstream ($upstream)\n\nUpstream has released updates that appear to apply and compile correctly$log"
           
-          echo -e $log | git commit -F -
-
-      - name: Push new commit
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.PUSH_TOKEN }}
-          directory: ./
-          repository: PrismarineTeam/PrismarineManager
+          printf $log | git commit -F -
 
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.PUSH_TOKEN }}
           directory: ./Prismarine
-          repository: PrismarineTeam/Prismarine
+          repository: ${{ env.pris }}
+          branch: ${{ env.prib }}
 
   upstream-purpur:
     name: Upstream Purpur
@@ -409,9 +412,10 @@ jobs:
           git config --global user.email "alphakr93@outlook.com" && git config --global user.name "AlphaKR93"
           upstream=${{ needs.check.outputs.upstream }} > $GITHUB_ENV
 
-      - name: Initial Pufferfish Sources
+      - name: Initial Sources
         run: |
           git clone --recursive -b ${{ env.pufb }} https://github.com/${{ env.puff }}.git
+          git clone --recursive -b ${{ env.prib }} https://${{ env.token_owner }}:${{ secrets.PUSH_TOKEN }}@github.com/${{ env.pris }}.git Prismarine
           cd Pufferfish/
           pufferfish=$(git log -1 --pretty=oneline | cut -c 1-40) && echo "pufferfish=$pufferfish" > $GITHUB_ENV
           sed -i 's/paperRef=.*/paperRef='"${{ needs.check.outputs.upstream }}"'/' gradle.properties
@@ -419,7 +423,7 @@ jobs:
 
       - name: MC Dev Sources
         run: |
-          sed -i 's/pufferfish-${{ env.ver }}: .*/pufferfish-${{ env.ver }}: '"${{ env.pufferfish }}"'/' upstream-data
+          sed -i 's/pufferfish = .*/pufferfish = '"${{ env.pufferfish }}"'/' Prismarine/upstream-data
           cd Pufferfish/.gradle/caches/paperweight/upstreams/paper/Paper-Server
           cp -rf .gradle/caches/paperweight/mc-dev-sources/net/* src/main/java/net
           git add .
@@ -432,7 +436,7 @@ jobs:
           cp -rf .gradle/caches/paperweight/mc-dev-sources/net/* src/main/java/net
           mv -f ../.gradle/caches/paperweight/upstreams/paper/Paper-Server/.git ./
           git add .
-          echo -e "Pufferfish Server Changes\n\nOriginal by Kevin Raneri <kevin.raneri@gmail.com>\n\nCopyright (C) 2022 Pufferfish Studios LLC\n\nThis program is free software: you can redistribute it and/or modify it\nunder the terms of the GNU General Public License as published by the\nFree Software Foundation, either version 3 of the License, or (at your\noption) any later version.\n\nThis program is distributed in the hope that it will be useful, but\nWITHOUT ANY WARRANTY; without even the implied warranty of\nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU\nGeneral Public License for more details.\n\nYou should have received a copy of the GNU General Public License along\nwith this program.  If not, see <http://www.gnu.org/licenses/>." | git commit -F -
+          printf "Pufferfish Server Changes\n\nOriginal by Kevin Raneri <kevin.raneri@gmail.com>\n\nCopyright (C) 2022 Pufferfish Studios LLC\n\nThis program is free software: you can redistribute it and/or modify\nit under the terms of the GNU General Public License as published by\nthe Free Software Foundation, either version 3 of the License, or\n(at your option) any later version.\n\nThis program is distributed in the hope that it will be useful,\nbut WITHOUT ANY WARRANTY; without even the implied warranty of\nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\nGNU General Public License for more details.\n\nYou should have received a copy of the GNU General Public License\nalong with this program.  If not, see <http://www.gnu.org/licenses/>." | git commit -F -
 
       - name: Pufferfish API Changes
         run: |
@@ -440,7 +444,7 @@ jobs:
           rm -rdf .git
           mv -f ../.gradle/caches/paperweight/upstreams/paper/Paper-API/.git ./
           git add .
-          echo -e "Pufferfish API Changes\n\nOriginal by Kevin Raneri <kevin.raneri@gmail.com>\n\nCopyright (C) 2022 Pufferfish Studios LLC\n\nThis program is free software: you can redistribute it and/or modify it\nunder the terms of the GNU General Public License as published by the\nFree Software Foundation, either version 3 of the License, or (at your\noption) any later version.\n\nThis program is distributed in the hope that it will be useful, but\nWITHOUT ANY WARRANTY; without even the implied warranty of\nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU\nGeneral Public License for more details.\n\nYou should have received a copy of the GNU General Public License along\nwith this program.  If not, see <http://www.gnu.org/licenses/>." | git commit -F -
+          printf "Pufferfish API Changes\n\nOriginal by Kevin Raneri <kevin.raneri@gmail.com>\n\nCopyright (C) 2022 Pufferfish Studios LLC\n\nThis program is free software: you can redistribute it and/or modify\nit under the terms of the GNU General Public License as published by\nthe Free Software Foundation, either version 3 of the License, or\n(at your option) any later version.\n\nThis program is distributed in the hope that it will be useful,\nbut WITHOUT ANY WARRANTY; without even the implied warranty of\nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\nGNU General Public License for more details.\n\nYou should have received a copy of the GNU General Public License\nalong with this program.  If not, see <http://www.gnu.org/licenses/>." | git commit -F -
           
       - name: Build Pufferfish Patches
         run: |
@@ -459,13 +463,13 @@ jobs:
 
       - name: Purpur Server Changes
         run: |
-          sed -i 's/purpur-${{ env.ver }}: .*/purpur-${{ env.ver }}: '"${{ env.purpur }}"'/' upstream-data
+          sed -i 's/purpur = .*/purpur = '"${{ env.purpur }}"'/' Prismarine/upstream-data
           cd Purpur/Purpur-Server/
           rm -rdf .git
           cp -rf .gradle/caches/paperweight/mc-dev-sources/net/* src/main/java/net
           mv -f ../../Pufferfish/pufferfish-server/.git ./
           git add .
-          echo -e "Purpur Server Changes\n\nOriginal by PurpurMC Team\n\nCopyright (C) 2022 PurpurMC LLC\n\nPermission is hereby granted, free of charge, to any person obtaining a\ncopy of this software and associated documentation files (the\n"Software"), to deal in the Software without restriction, including\nwithout limitation the rights to use, copy, modify, merge, publish,\ndistribute, sublicense, and/or sell copies of the Software, and to\npermit persons to whom the Software is furnished to do so, subject to\nthe following conditions:\n\nThe above copyright notice and this permission notice shall be included\nin all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS\nOR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF\nMERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.\nIN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY\nCLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,\nTORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE\nSOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE." | git commit -F -
+          printf "Purpur Server Changes\n\nOriginal by PurpurMC Team\n\nCopyright (C) 2022 PurpurMC LLC\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the "Software"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE." | git commit -F -
 
       - name: Purpur API Changes
         run: |
@@ -473,17 +477,22 @@ jobs:
           rm -rdf .git
           mv -f ../../Pufferfish/pufferfish-api/.git ./
           git add .
-          echo -e "Purpur API Changes\n\nOriginal by PurpurMC Team\n\nCopyright (C) 2022 PurpurMC LLC\n\nPermission is hereby granted, free of charge, to any person obtaining a\ncopy of this software and associated documentation files (the\n"Software"), to deal in the Software without restriction, including\nwithout limitation the rights to use, copy, modify, merge, publish,\ndistribute, sublicense, and/or sell copies of the Software, and to\npermit persons to whom the Software is furnished to do so, subject to\nthe following conditions:\n\nThe above copyright notice and this permission notice shall be included\nin all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS\nOR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF\nMERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.\nIN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY\nCLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,\nTORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE\nSOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE." | git commit -F -
+          printf "Purpur API Changes\n\nOriginal by PurpurMC Team\n\nCopyright (C) 2022 PurpurMC LLC\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the "Software"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE." | git commit -F -
 
       - name: Build Patches
         run: |
-          git clone --recursive -b ${{ env.prib }} https://github.com/${{ env.pris }}.git
           cd Purpur/
           ./gradlew rebuildPatches
           cp -rf patches/api/*-Pufferfish-API-Changes.patch ../Prismarine/patches/api/0001-Pufferfish-API-Changes.patch
           cp -rf patches/server/*-Pufferfish-Server-Changes.patch ../Prismarine/patches/server/0001-Pufferfish-Server-Changes.patch
           cp -rf patches/api/*-Purpur-API-Changes.patch ../Prismarine/patches/api/0002-Purpur-API-Changes.patch
           cp -rf patches/server/*-Purpur-Server-Changes.patch ../Prismarine/patches/server/0002-Purpur-Server-Changes.patch
+
+      - name: Upload patches
+        uses: actions/upload-artifact@main
+        with:
+          name: Patches
+          path: Prismarine/patches
 
       - name: Rebuild Patches
         run: |
@@ -497,39 +506,30 @@ jobs:
           
           if [ "${{ needs.check.outputs.paper }}" == "true" ]; then
             upstream="Paper"
-            commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.paper }}/compare/${{ needs.check.outputs.before }}...HEAD | jq -r '.commits[] | "\n${{ env.paper }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+            commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.paper }}/compare/${{ needs.check.outputs.before }}...HEAD | jq -r '.commits[] | "${{ env.paper }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
             log="\n\nPaper Changes:\n$commit"
           fi
           
           if [ "${{ needs.check.outputs.pufferfish }}" == "true" ]; then
             if [ "$upstream" != "" ]; then upstream="$upstream & Pufferfish"; else upstream="Pufferfish"; fi
-            commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.puff }}/compare/${{ needs.check.outputs.beforepufferfish }}...${{ env.pufferfish }} | jq -r '.commits[] | "\n${{ env.puff }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+            commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.puff }}/compare/${{ needs.check.outputs.beforepufferfish }}...${{ env.pufferfish }} | jq -r '.commits[] | "${{ env.puff }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
             log="$log\n\nPufferfish Changes:\n$commit"
           fi
 
           if [ "$upstream" != "" ]; then upstream="$upstream & Purpur"; else upstream="Purpur"; fi
-          commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.purp }}/compare/${{ needs.check.outputs.beforepurpur }}...${{ env.purpur }} | jq -r '.commits[] | "\n${{ env.purp }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+          commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.purp }}/compare/${{ needs.check.outputs.beforepurpur }}...${{ env.purpur }} | jq -r '.commits[] | "${{ env.purp }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
           log="$log\n\nPurpur Changes:\n$commit"
 
-          git add .
-          git commit -m "Update Upstream ($upstream)"
-          
           cd Prismarine/
           git add .
-          log="Update Upstream ($upstream)\n\nUpstream has released updates that appear to apply and compile correctly$log"
+          log="Updated Upstream ($upstream)\n\nUpstream has released updates that appear to apply and compile correctly$log"
           
-          echo -e $log | git commit -F -
-
-      - name: Push new commit
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.PUSH_TOKEN }}
-          directory: ./
-          repository: PrismarineTeam/PrismarineManager
+          printf $log | git commit -F -
 
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.PUSH_TOKEN }}
           directory: ./Prismarine
-          repository: PrismarineTeam/Prismarine
+          repository: ${{ env.pris }}
+          branch: ${{ env.prib }}
