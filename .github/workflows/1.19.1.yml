@@ -423,7 +423,7 @@ jobs:
 
       - name: MC Dev Sources
         run: |
-          sed -i 's/pufferfish = .*/pufferfish = '"${{ env.pufferfish }}"'/' upstream-data
+          sed -i 's/pufferfish = .*/pufferfish = '"${{ env.pufferfish }}"'/' Prismarine/upstream-data
           cd Pufferfish/.gradle/caches/paperweight/upstreams/paper/Paper-Server
           cp -rf .gradle/caches/paperweight/mc-dev-sources/net/* src/main/java/net
           git add .
@@ -463,7 +463,7 @@ jobs:
 
       - name: Purpur Server Changes
         run: |
-          sed -i 's/purpur = .*/purpur = '"${{ env.purpur }}"'/' upstream-data
+          sed -i 's/purpur = .*/purpur = '"${{ env.purpur }}"'/' Prismarine/upstream-data
           cd Purpur/Purpur-Server/
           rm -rdf .git
           cp -rf .gradle/caches/paperweight/mc-dev-sources/net/* src/main/java/net
