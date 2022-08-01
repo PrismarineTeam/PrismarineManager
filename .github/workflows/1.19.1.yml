@@ -238,6 +238,7 @@ jobs:
           github_token: ${{ secrets.PUSH_TOKEN }}
           directory: ./Prismarine
           repository: ${{ env.pris }}
+          branch: ${{ env.prib }}
 
   upstream-paper:
     name: Upstream Paper
@@ -288,6 +289,7 @@ jobs:
           github_token: ${{ secrets.PUSH_TOKEN }}
           directory: ./Prismarine
           repository: ${{ env.pris }}
+          branch: ${{ env.prib }}
 
   upstream-pufferfish:
     name: Upstream Pufferfish
@@ -388,6 +390,7 @@ jobs:
           github_token: ${{ secrets.PUSH_TOKEN }}
           directory: ./Prismarine
           repository: ${{ env.pris }}
+          branch: ${{ env.prib }}
 
   upstream-purpur:
     name: Upstream Purpur
@@ -529,3 +532,4 @@ jobs:
           github_token: ${{ secrets.PUSH_TOKEN }}
           directory: ./Prismarine
           repository: ${{ env.pris }}
+          branch: ${{ env.prib }}
