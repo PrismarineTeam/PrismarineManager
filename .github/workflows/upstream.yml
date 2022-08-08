@@ -1,4 +1,4 @@
-name: Scheduled Upstream (1.18.2)
+name: Scheduled Upstream (1.19.2)
 
 on:
   push:
@@ -9,6 +9,8 @@ on:
     - cron: "*/20 * * * *"
 
 env:
+  jdk: adoptium/temurin17-binaries
+  jdkname: 'Adoptium 17'
   wrapper: gradle/gradle
   shadow: johnrengelman/shadow
   paper: PaperMC/Paper
@@ -20,11 +22,11 @@ env:
   pris: PrismarineTeam/Prismarine
   token_owner: AlphaKR93
 
-  ver: '1.18.2'
-  papb: ver/1.18.2
-  pufb: ver/1.18
-  purb: ver/1.18.2
-  prib: ver/1.18.2
+  ver: '1.19.2'
+  papb: master
+  pufb: ver/1.19
+  purb: ver/1.19.2
+  prib: ver/1.19.2
 
 jobs:
   check:
@@ -33,6 +35,7 @@ jobs:
     runs-on: ubuntu-20.04
     outputs:
       upstream: ${{ steps.check-paper.outputs.upstream }}
+      jdkrel: ${{ steps.check-jdk.outputs.upstream }}
       wrapperrel: ${{ steps.check-wrapper.outputs.upstream }}
       wrappertag: ${{ steps.check-wrapper.outputs.upstreamTag }}
       shadowrel: ${{ steps.check-shadow.outputs.upstream }}
@@ -42,6 +45,7 @@ jobs:
       paper: ${{ steps.check-paper.outputs.paper }}
       pufferfish: ${{ steps.check-pufferfish.outputs.pufferfish }}
       purpur: ${{ steps.check-purpur.outputs.purpur }}
+      jdk: ${{ steps.check-jdk.outputs.jdk }}
       wrapper: ${{ steps.check-wrapper.outputs.wrapper }}
       shadow: ${{ steps.check-shadow.outputs.shadow }}
       paperclip: ${{ steps.check-paperclip.outputs.paperclip }}
@@ -50,6 +54,7 @@ jobs:
       before: ${{ steps.check-paper.outputs.before }}
       beforepufferfish: ${{ steps.check-pufferfish.outputs.before }}
       beforepurpur: ${{ steps.check-purpur.outputs.before }}
+      beforejdk: ${{ steps.check-jdk.outputs.before }}
       beforewrapper: ${{ steps.check-wrapper.outputs.before }}
       beforeshadow: ${{ steps.check-shadow.outputs.before }}
       beforepaperclip: ${{ steps.check-paperclip.outputs.before }}
@@ -61,6 +66,18 @@ jobs:
       - name: Clone Repository
         run: |
           git clone --recursive -b ${{ env.prib }} https://${{ env.token_owner }}:${{ secrets.PUSH_TOKEN }}@github.com/${{ env.pris }}.git Prismarine
+
+      - name: Check JDK version
+        id: check-jdk
+        run: |
+          upstreamTag=$(curl --silent https://api.github.com/repos/adoptium/temurin17-binaries/releases/latest | grep tag_name | cut -d "\"" -f 4 | cut -d "+" -f 1 | cut -c 5-)
+          current=$(cat Prismarine/.github/workflows/build.yml | grep jdk: | cut -d "[" -f 2 | cut -d "]" -f 1)
+          if [ "$upstream" != "$current" ]; then jdk=true; else jdk=false; fi
+          echo "::set-output name=jdk::$jdk"
+          echo "::set-output name=upstream::$upstream"
+          echo "::set-output name=before::$current"
+          echo "Current JDK version: $current / Latest JDK version: $upstream"
+          echo "Need upstream: $jdk"
 
       - name: Check Gradle Wrapper version
         id: check-wrapper
@@ -150,10 +167,10 @@ jobs:
     name: Upstream Dependencies & Gradle plugins
     runs-on: ubuntu-20.04
     needs: check
-    if: needs.check.outputs.wrapper == 'true' || needs.check.outputs.shadow == 'true' || needs.check.outputs.paper == 'true' || needs.check.outputs.paperclip == 'true' || needs.check.outputs.paperweight == 'true' || needs.check.outputs.pufferfish == 'true' || needs.check.outputs.purpur == 'true'
+    if: needs.check.outputs.jdk == 'true' || needs.check.outputs.wrapper == 'true' || needs.check.outputs.shadow == 'true' || needs.check.outputs.paper == 'true' || needs.check.outputs.paperclip == 'true' || needs.check.outputs.paperweight == 'true' || needs.check.outputs.pufferfish == 'true' || needs.check.outputs.purpur == 'true'
     steps:
       - name: Checkout action
-        if: needs.check.outputs.wrapper == 'true' || needs.check.outputs.shadow == 'true' || needs.check.outputs.paperclip == 'true' || needs.check.outputs.paperweight == 'true'
+        if: needs.check.outputs.jdk == 'true' || needs.check.outputs.wrapper == 'true' || needs.check.outputs.shadow == 'true' || needs.check.outputs.paperclip == 'true' || needs.check.outputs.paperweight == 'true'
         uses: actions/checkout@main
 
       - name: Setup java
@@ -162,41 +179,38 @@ jobs:
         with:
           distribution: temurin
           java-version: 17.0.3
-
-      - name: Configure Git
-        if: needs.check.outputs.wrapper == 'true' || needs.check.outputs.shadow == 'true' || needs.check.outputs.paperclip == 'true' || needs.check.outputs.paperweight == 'true'
-        run: git config --global user.email "alphakr93@outlook.com" && git config --global user.name "AlphaKR93"
         
       - name: Clone Repository
-        if: needs.check.outputs.wrapper == 'true' || needs.check.outputs.shadow == 'true' || needs.check.outputs.paperclip == 'true' || needs.check.outputs.paperweight == 'true'
+        if: needs.check.outputs.jdk == 'true' || needs.check.outputs.wrapper == 'true' || needs.check.outputs.shadow == 'true' || needs.check.outputs.paperclip == 'true' || needs.check.outputs.paperweight == 'true'
         run: git clone --recursive -b ${{ env.prib }} https://${{ env.token_owner }}:${{ secrets.PUSH_TOKEN }}@github.com/${{ env.pris }}.git Prismarine
+
+      - name: Update JDK
+        if: needs.check.outputs.jdk == 'true'
+        run: |
+          sed -i 's/jdk: \[.*\]/jdk: \[${{ needs.check.outputs.jdkrel }}\]/' Prismarine/.github/workflows/build.yml
 
       - name: Update Gradle Wrapper
         if: needs.check.outputs.wrapper == 'true'
         run: |
-          cd Prismarine
-          ./gradlew wrapper --gradle-version=${{ needs.check.outputs.wrapperrel }}
+          cd Prismarine && ./gradlew wrapper --gradle-version=${{ needs.check.outputs.wrapperrel }}
 
       - name: Update Gradle Shadow
         if: needs.check.outputs.shadow == 'true'
         run: |
-          cd Prismarine
-          sed -i 's/id("com.github.johnrengelman.shadow") version ".*"/id("com.github.johnrengelman.shadow") version "${{ needs.check.outputs.shadowrel }}"/' build.gradle.kts
+          sed -i 's/id("com.github.johnrengelman.shadow") version ".*"/id("com.github.johnrengelman.shadow") version "${{ needs.check.outputs.shadowrel }}"/' Prismarine/build.gradle.kts
 
       - name: Update Paperclip
         if: needs.check.outputs.paperclip == 'true'
         run: |
-          cd Prismarine
-          sed -i 's/paperclip("io.papermc:paperclip:.*")/paperclip("io.papermc:paperclip:${{ needs.check.outputs.papercliprel }}")/' build.gradle.kts
+          sed -i 's/paperclip("io.papermc:paperclip:.*")/paperclip("io.papermc:paperclip:${{ needs.check.outputs.papercliprel }}")/' Prismarine/build.gradle.kts
 
       - name: Update paperweight
         if: needs.check.outputs.paperweight == 'true'
         run: |
-          cd Prismarine
-          sed -i 's/id("io.papermc.paperweight.patcher") version ".*"/id("io.papermc.paperweight.patcher") version "${{ needs.check.outputs.paperweightrel }}"/' build.gradle.kts
+          sed -i 's/id("io.papermc.paperweight.patcher") version ".*"/id("io.papermc.paperweight.patcher") version "${{ needs.check.outputs.paperweightrel }}"/' Prismarine/build.gradle.kts
 
       - name: Commit Changes
-        if: needs.check.outputs.wrapper == 'true' || needs.check.outputs.shadow == 'true' || needs.check.outputs.paperclip == 'true' || needs.check.outputs.paperweight == 'true'
+        if: needs.check.outputs.jdk == 'true' || needs.check.outputs.wrapper == 'true' || needs.check.outputs.shadow == 'true' || needs.check.outputs.paperclip == 'true' || needs.check.outputs.paperweight == 'true'
         run: |
           cd Prismarine
           git config --global user.email "actions@github.com" && git config --global user.name "Github Actions"
@@ -223,6 +237,12 @@ jobs:
             if [ "$upstream" != "" ]; then upstream="$upstream & Paperweight"; else upstream="Paperweight"; fi
             commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.paperweight }}/compare/v${{ needs.check.outputs.beforepaperweight }}...v${{ needs.check.outputs.paperweightrel }} | jq -r '.commits[] | "${{ env.paperweight }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
             log="$log\n\nPaperweight Changes:\n$commit"
+          fi
+
+          if [ "${{ needs.check.outputs.jdk }}" == "true" ]; then
+            if [ "$upstream" != "" ]; then upstream="$upstream & JDK"; else upstream="JDK"; fi
+            commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.jdk }}/compare/v${{ needs.check.outputs.beforejdk }}...v${{ needs.check.outputs.jdkrel }} | jq -r '.commits[] | "${{ env.jdk }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+            log="$log\n\n${{ env.jdkname }} Changes:\n$commit"
           fi
 
           if [ "$upstream" != "" ]; then
