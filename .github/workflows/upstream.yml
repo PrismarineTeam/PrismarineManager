@@ -188,6 +188,7 @@ jobs:
         if: needs.check.outputs.jdk == 'true'
         run: |
           sed -i 's/jdk: \[.*\]/jdk: \[${{ needs.check.outputs.jdkrel }}\]/' Prismarine/.github/workflows/build.yml
+          sed -i 's/java-version: .*/java-version: ${{ needs.check.outputs.jdkrel }}/' .github/workflows/upstream.yml
 
       - name: Update Gradle Wrapper
         if: needs.check.outputs.wrapper == 'true'
@@ -212,7 +213,6 @@ jobs:
       - name: Commit Changes
         if: needs.check.outputs.jdk == 'true' || needs.check.outputs.wrapper == 'true' || needs.check.outputs.shadow == 'true' || needs.check.outputs.paperclip == 'true' || needs.check.outputs.paperweight == 'true'
         run: |
-          cd Prismarine
           git config --global user.email "actions@github.com" && git config --global user.name "Github Actions"
 
           if [ "${{ needs.check.outputs.wrapper }}" == "true" ]; then
@@ -240,22 +240,34 @@ jobs:
             log="$log\n\nPaperweight Changes:\n$commit"
           fi
 
-          if [ "${{ needs.check.outputs.jdk }}" == "true" ]; then if [ "$upstream" != "" ]; then upstream="$upstream & JDK"; else upstream="JDK"; fi; fi
+          if [ "${{ needs.check.outputs.jdk }}" == "true" ]; then
+            if [ "$upstream" != "" ]; then upstream="$upstream & JDK"; else upstream="JDK"; fi
+            git add . && printf "[CI-Skip] Update Dependencies (JDK)" | git commit -F -
+          fi
 
           if [ "$upstream" != "" ]; then
+            cd Prismarine
             log="[CI-Skip] Update Dependencies ($upstream)\n\nUpstream has released updates that appear to apply and compile correctly$log"
             git add .
             printf "$log" | git commit -F -
           fi
 
       - name: Push changes
-        if: needs.check.outputs.wrapper == 'true' || needs.check.outputs.shadow == 'true' || needs.check.outputs.paperclip == 'true' || needs.check.outputs.paperweight == 'true'
+        if: needs.check.outputs.jdk == 'true' || needs.check.outputs.wrapper == 'true' || needs.check.outputs.shadow == 'true' || needs.check.outputs.paperclip == 'true' || needs.check.outputs.paperweight == 'true'
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.PUSH_TOKEN }}
           directory: ./Prismarine
           repository: ${{ env.pris }}
           branch: ${{ env.prib }}
+
+      - name: Push changes (PrismarineManager)
+        if: needs.check.outputs.jdk == 'true'
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.PUSH_TOKEN }}
+          directory: ./
+          repository: PrismarineManager
 
   upstream-paper:
     name: Upstream Paper
