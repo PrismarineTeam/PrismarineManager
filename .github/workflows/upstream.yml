@@ -178,7 +178,7 @@ jobs:
         uses: actions/setup-java@main
         with:
           distribution: temurin
-          java-version: 17.0.3
+          java-version: 17.0.4
         
       - name: Clone Repository
         if: needs.check.outputs.jdk == 'true' || needs.check.outputs.wrapper == 'true' || needs.check.outputs.shadow == 'true' || needs.check.outputs.paperclip == 'true' || needs.check.outputs.paperweight == 'true'
@@ -282,7 +282,7 @@ jobs:
         uses: actions/setup-java@main
         with:
           distribution: temurin
-          java-version: 17.0.3
+          java-version: 17.0.4
 
       - name: Configure Git
         run: git config --global user.email "alphakr93@outlook.com" && git config --global user.name "AlphaKR93"
@@ -290,7 +290,7 @@ jobs:
       - name: Clone Repository
         run: git clone --recursive -b ${{ env.prib }} https://${{ env.token_owner }}:${{ secrets.PUSH_TOKEN }}@github.com/${{ env.pris }}.git Prismarine
 
-      - name: Updated Upstream
+      - name: Update Upstream
         run: |
           cd Prismarine
           sed -i 's/paperCommit = .*/paperCommit = '"${{ needs.check.outputs.upstream }}"'/' gradle.properties
@@ -333,7 +333,7 @@ jobs:
         uses: actions/setup-java@main
         with:
           distribution: temurin
-          java-version: 17.0.3
+          java-version: 17.0.4
 
       - name: Configure Git
         run: |
@@ -434,7 +434,7 @@ jobs:
         uses: actions/setup-java@main
         with:
           distribution: temurin
-          java-version: 17.0.3
+          java-version: 17.0.4
 
       - name: Configure Git
         run: |
