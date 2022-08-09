@@ -239,11 +239,7 @@ jobs:
             log="$log\n\nPaperweight Changes:\n$commit"
           fi
 
-          if [ "${{ needs.check.outputs.jdk }}" == "true" ]; then
-            if [ "$upstream" != "" ]; then upstream="$upstream & JDK"; else upstream="JDK"; fi
-            commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.jdk }}/compare/v${{ needs.check.outputs.beforejdk }}...v${{ needs.check.outputs.jdkrel }} | jq -r '.commits[] | "${{ env.jdk }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
-            log="$log\n\n${{ env.jdkname }} Changes:\n$commit"
-          fi
+          if [ "${{ needs.check.outputs.jdk }}" == "true" ]; then if [ "$upstream" != "" ]; then upstream="$upstream & JDK"; else upstream="JDK"; fi; fi
 
           if [ "$upstream" != "" ]; then
             log="[CI-Skip] Update Dependencies ($upstream)\n\nUpstream has released updates that appear to apply and compile correctly$log"
