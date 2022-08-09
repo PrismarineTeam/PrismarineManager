@@ -217,7 +217,8 @@ jobs:
 
           if [ "${{ needs.check.outputs.wrapper }}" == "true" ]; then
             upstream="Gradle Wrapper"
-            commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.wrapper }}/compare/v${{ needs.check.outputs.beforewrapper }}...v${{ needs.check.outputs.wrappertag }} | jq -r '.commits[] | "${{ env.wrapper }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
+            if [ "$`echo . | cut -d "." -f 2`" == "$`echo ${{ needs.check.outputs.beforewrapper }} | cut -d "." -f 3`" ]; then before="${{ needs.check.outputs.beforewrapper }}.0"; else before=${{ needs.check.outputs.beforewrapper }}; fi
+            commit=$(curl --silent -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ env.wrapper }}/compare/v$before...v${{ needs.check.outputs.wrappertag }} | jq -r '.commits[] | "${{ env.wrapper }}@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
             log="$log\n\nGradle Wrapper Changes:\n$commit"
           fi
 
