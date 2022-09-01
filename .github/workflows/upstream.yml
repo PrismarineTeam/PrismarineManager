@@ -411,7 +411,7 @@ jobs:
           git add .
           log="Updated Upstream ($upstream)\n\nUpstream has released updates that appear to apply and compile correctly$log"
           
-          printf $log | git commit -F -
+          printf "$log" | git commit -F -
 
       - name: Push changes
         uses: ad-m/github-push-action@master
@@ -553,7 +553,7 @@ jobs:
           git add .
           log="Updated Upstream ($upstream)\n\nUpstream has released updates that appear to apply and compile correctly$log"
           
-          printf $log | git commit -F -
+          printf "$log" | git commit -F -
 
       - name: Push changes
         uses: ad-m/github-push-action@master
