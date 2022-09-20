@@ -360,7 +360,7 @@ jobs:
       - name: Pufferfish Server Changes
         run: |
           cd Pufferfish/pufferfish-server/
-          rm -rdf .git
+          rm -rf .git
           cp -rf .gradle/caches/paperweight/mc-dev-sources/net/* src/main/java/net
           mv -f ../.gradle/caches/paperweight/upstreams/paper/Paper-Server/.git ./
           git add .
@@ -369,7 +369,7 @@ jobs:
       - name: Pufferfish API Changes
         run: |
           cd Pufferfish/pufferfish-api
-          rm -rdf .git
+          rm -rf .git
           mv -f ../.gradle/caches/paperweight/upstreams/paper/Paper-API/.git ./
           git add .
           printf "Pufferfish API Changes\n\nOriginal by Kevin Raneri <kevin.raneri@gmail.com>\n\nCopyright (C) 2022 Pufferfish Studios LLC\n\nThis program is free software: you can redistribute it and/or modify\nit under the terms of the GNU General Public License as published by\nthe Free Software Foundation, either version 3 of the License, or\n(at your option) any later version.\n\nThis program is distributed in the hope that it will be useful,\nbut WITHOUT ANY WARRANTY; without even the implied warranty of\nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\nGNU General Public License for more details.\n\nYou should have received a copy of the GNU General Public License\nalong with this program.  If not, see <http://www.gnu.org/licenses/>." | git commit -F -
@@ -461,7 +461,7 @@ jobs:
       - name: Pufferfish Server Changes
         run: |
           cd Pufferfish/pufferfish-server/
-          rm -rdf .git
+          rm -rf .git
           cp -rf .gradle/caches/paperweight/mc-dev-sources/net/* src/main/java/net
           mv -f ../.gradle/caches/paperweight/upstreams/paper/Paper-Server/.git ./
           git add .
@@ -470,7 +470,7 @@ jobs:
       - name: Pufferfish API Changes
         run: |
           cd Pufferfish/pufferfish-api
-          rm -rdf .git
+          rm -rf .git
           mv -f ../.gradle/caches/paperweight/upstreams/paper/Paper-API/.git ./
           git add .
           printf "Pufferfish API Changes\n\nOriginal by Kevin Raneri <kevin.raneri@gmail.com>\n\nCopyright (C) 2022 Pufferfish Studios LLC\n\nThis program is free software: you can redistribute it and/or modify\nit under the terms of the GNU General Public License as published by\nthe Free Software Foundation, either version 3 of the License, or\n(at your option) any later version.\n\nThis program is distributed in the hope that it will be useful,\nbut WITHOUT ANY WARRANTY; without even the implied warranty of\nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\nGNU General Public License for more details.\n\nYou should have received a copy of the GNU General Public License\nalong with this program.  If not, see <http://www.gnu.org/licenses/>." | git commit -F -
@@ -494,7 +494,7 @@ jobs:
         run: |
           sed -i 's/purpur = .*/purpur = '"${{ env.purpur }}"'/' Prismarine/upstream-data
           cd Purpur/Purpur-Server/
-          rm -rdf .git
+          rm -rf .git
           cp -rf .gradle/caches/paperweight/mc-dev-sources/net/* src/main/java/net
           mv -f ../../Pufferfish/pufferfish-server/.git ./
           git add .
@@ -503,7 +503,7 @@ jobs:
       - name: Purpur API Changes
         run: |
           cd Purpur/Purpur-API/
-          rm -rdf .git
+          rm -rf .git
           mv -f ../../Pufferfish/pufferfish-api/.git ./
           git add .
           printf "Purpur API Changes\n\nOriginal by PurpurMC Team\n\nCopyright (C) 2022 PurpurMC LLC\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the "Software"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE." | git commit -F -
