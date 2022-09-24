@@ -9,8 +9,8 @@ on:
     - cron: "*/20 * * * *"
 
 env:
-  jdk: adoptium/temurin17-binaries
-  jdkname: 'Adoptium 17'
+  jdk: adoptium/temurin18-binaries
+  jdkname: 'Adoptium 18'
   wrapper: gradle/gradle
   shadow: johnrengelman/shadow
   paper: PaperMC/Paper
@@ -178,7 +178,7 @@ jobs:
         uses: actions/setup-java@main
         with:
           distribution: temurin
-          java-version: 17.0.4
+          java-version: 18.0.2
         
       - name: Clone Repository
         if: needs.check.outputs.jdk == 'true' || needs.check.outputs.wrapper == 'true' || needs.check.outputs.shadow == 'true' || needs.check.outputs.paperclip == 'true' || needs.check.outputs.paperweight == 'true'
@@ -282,7 +282,7 @@ jobs:
         uses: actions/setup-java@main
         with:
           distribution: temurin
-          java-version: 17.0.4
+          java-version: 18.0.2
 
       - name: Configure Git
         run: git config --global user.email "alphakr93@outlook.com" && git config --global user.name "AlphaKR93"
@@ -333,7 +333,7 @@ jobs:
         uses: actions/setup-java@main
         with:
           distribution: temurin
-          java-version: 17.0.4
+          java-version: 18.0.2
 
       - name: Configure Git
         run: |
@@ -434,7 +434,7 @@ jobs:
         uses: actions/setup-java@main
         with:
           distribution: temurin
-          java-version: 17.0.4
+          java-version: 18.0.2
 
       - name: Configure Git
         run: |
