@@ -193,7 +193,9 @@ jobs:
       - name: Update Gradle Wrapper
         if: needs.check.outputs.wrapper == 'true'
         run: |
-          cd Prismarine && ./gradlew wrapper --gradle-version=${{ needs.check.outputs.wrapperrel }}
+          cd Prismarine
+          chmod +x gradlew
+          ./gradlew wrapper --gradle-version=${{ needs.check.outputs.wrapperrel }}
 
       - name: Update Gradle Shadow
         if: needs.check.outputs.shadow == 'true'
@@ -294,11 +296,13 @@ jobs:
         run: |
           cd Prismarine
           sed -i 's/paperCommit = .*/paperCommit = '"${{ needs.check.outputs.upstream }}"'/' gradle.properties
+          chmod +x gradlew
           ./gradlew applyPatches --stacktrace
       
       - name: Rebuild Patches
         run: | 
           cd Prismarine
+          chmod +x gradlew
           ./gradlew rebuildPatches
 
       - name: Commit Changes
@@ -347,6 +351,7 @@ jobs:
           cd Pufferfish/
           pufferfish=$(git log -1 --pretty=oneline | cut -c 1-40) && echo "pufferfish=$pufferfish" > $GITHUB_ENV
           sed -i 's/paperRef=.*/paperRef='"${{ needs.check.outputs.upstream }}"'/' gradle.properties
+          chmod +x gradlew
           ./gradlew applyPatches --stacktrace
 
       - name: MC Dev Sources
@@ -377,6 +382,7 @@ jobs:
       - name: Build Patches
         run: |
           cd Pufferfish/
+          chmod +x gradlew
           ./gradlew rebuildPatches
           cp -rf patches/api/*-Pufferfish-API-Changes.patch ../Prismarine/patches/api/0001-Pufferfish-API-Changes.patch
           cp -rf patches/server/*-Pufferfish-Server-Changes.patch ../Prismarine/patches/server/0001-Pufferfish-Server-Changes.patch
@@ -391,6 +397,7 @@ jobs:
         run: |
           cd Prismarine/
           sed -i 's/paperCommit = .*/paperCommit = '"${{ needs.check.outputs.upstream }}"'/' gradle.properties
+          chmod +x gradlew
           ./gradlew applyPatches --stacktrace && ./gradlew rebuildPatches --stacktrace
 
       - name: Commit changes
@@ -448,6 +455,7 @@ jobs:
           cd Pufferfish/
           pufferfish=$(git log -1 --pretty=oneline | cut -c 1-40) && echo "pufferfish=$pufferfish" > $GITHUB_ENV
           sed -i 's/paperRef=.*/paperRef='"${{ needs.check.outputs.upstream }}"'/' gradle.properties
+          chmod +x gradlew
           ./gradlew applyPatches --stacktrace
 
       - name: MC Dev Sources
@@ -478,6 +486,7 @@ jobs:
       - name: Build Pufferfish Patches
         run: |
           cd Pufferfish/
+          chmod +x gradlew
           ./gradlew rebuildPatches
 
       - name: Initial Purpur Sources
@@ -488,6 +497,7 @@ jobs:
           sed -i 's/paperCommit = .*/paperCommit = '"${{ needs.check.outputs.upstream }}"'/' gradle.properties
           cp -rf ../Pufferfish/patches/api/*-Pufferfish-API-Changes.patch patches/api/0001-Pufferfish-API-Changes.patch
           cp -rf ../Pufferfish/patches/server/*-Pufferfish-Server-Changes.patch patches/server/0001-Pufferfish-Server-Changes.patch
+          chmod +x gradlew
           ./gradlew applyPatches
 
       - name: Purpur Server Changes
@@ -511,6 +521,7 @@ jobs:
       - name: Build Patches
         run: |
           cd Purpur/
+          chmod +x gradlew
           ./gradlew rebuildPatches
           cp -rf patches/api/*-Pufferfish-API-Changes.patch ../Prismarine/patches/api/0001-Pufferfish-API-Changes.patch
           cp -rf patches/server/*-Pufferfish-Server-Changes.patch ../Prismarine/patches/server/0001-Pufferfish-Server-Changes.patch
@@ -527,6 +538,7 @@ jobs:
         run: |
           cd Prismarine/
           sed -i 's/paperCommit = .*/paperCommit = '"${{ needs.check.outputs.upstream }}"'/' gradle.properties
+          chmod +x gradlew
           ./gradlew applyPatches --stacktrace && ./gradlew rebuildPatches --stacktrace
 
       - name: Commit changes
