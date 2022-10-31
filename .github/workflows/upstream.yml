@@ -67,31 +67,31 @@ jobs:
         run: |
           git clone --recursive -b ${{ env.prib }} https://${{ env.token_owner }}:${{ secrets.PUSH_TOKEN }}@github.com/${{ env.pris }}.git Prismarine
 
-#       - name: Check JDK version
-#         id: check-jdk
-#         run: |
-#           upstream=$(curl --silent https://api.github.com/repos/adoptium/temurin17-binaries/releases/latest | grep tag_name | cut -d "\"" -f 4 | cut -d "+" -f 1 | cut -c 5-)
-#           current=$(cat Prismarine/.github/workflows/build.yml | grep jdk: | cut -d "[" -f 2 | cut -d "]" -f 1)
-#           if [ "$upstream" != "$current" ]; then jdk=true; else jdk=false; fi
-#           echo "::set-output name=jdk::$jdk"
-#           echo "::set-output name=upstream::$upstream"
-#           echo "::set-output name=before::$current"
-#           echo "Current JDK version: $current / Latest JDK version: $upstream"
-#           echo "Need upstream: $jdk"
+      - name: Check JDK version
+        id: check-jdk
+        run: |
+          upstream=$(curl --silent https://api.github.com/repos/adoptium/temurin19-binaries/releases/latest | grep tag_name | cut -d "\"" -f 4 | cut -d "+" -f 1 | cut -c 5-)
+          current=$(cat Prismarine/.github/workflows/build.yml | grep jdk: | cut -d "[" -f 2 | cut -d "]" -f 1)
+          if [ "$upstream" != "$current" ]; then jdk=true; else jdk=false; fi
+          echo "::set-output name=jdk::$jdk"
+          echo "::set-output name=upstream::$upstream"
+          echo "::set-output name=before::$current"
+          echo "Current JDK version: $current / Latest JDK version: $upstream"
+          echo "Need upstream: $jdk"
 
-#       - name: Check Gradle Wrapper version
-#         id: check-wrapper
-#         run: |
-#           upstreamTag=$(curl --silent https://api.github.com/repos/gradle/gradle/releases/latest | grep tag_name | cut -d "\"" -f 4 | cut -c 2-)
-#           current=$(cat Prismarine/gradle/wrapper/gradle-wrapper.properties | grep distributionUrl | cut -d "-" -f 2)
-#           if [[ $upstreamTag == *.0 ]]; then echo $upstreamTag > upstream && sed -i 's/.0//g' upstream && upstream=$(cat upstream) && rm upstream; else upstream=$upstreamTag; fi
-#           if [ "$upstream" != "$current" ]; then wrapper=true; else wrapper=false; fi
-#           echo "::set-output name=wrapper::$wrapper"
-#           echo "::set-output name=upstream::$upstream"
-#           echo "::set-output name=upstreamTag::$upstreamTag"
-#           echo "::set-output name=before::$current"
-#           echo "Current Gradle Wrapper version: $current / Latest Gradle Wrapper version: $upstream"
-#           echo "Need upstream: $wrapper"
+      - name: Check Gradle Wrapper version
+        id: check-wrapper
+        run: |
+          upstreamTag=$(curl --silent https://api.github.com/repos/gradle/gradle/releases | grep tag_name | grep v7 | head -n 1 | cut -d "\"" -f 4 | cut -c 2-)
+          current=$(cat Prismarine/gradle/wrapper/gradle-wrapper.properties | grep distributionUrl | cut -d "-" -f 2)
+          if [[ $upstreamTag == *.0 ]]; then echo $upstreamTag > upstream && sed -i 's/.0//g' upstream && upstream=$(cat upstream) && rm upstream; else upstream=$upstreamTag; fi
+          if [ "$upstream" != "$current" ]; then wrapper=true; else wrapper=false; fi
+          echo "::set-output name=wrapper::$wrapper"
+          echo "::set-output name=upstream::$upstream"
+          echo "::set-output name=upstreamTag::$upstreamTag"
+          echo "::set-output name=before::$current"
+          echo "Current Gradle Wrapper version: $current / Latest Gradle Wrapper version: $upstream"
+          echo "Need upstream: $wrapper"
 
       - name: Check Gradle Shadow version
         id: check-shadow
