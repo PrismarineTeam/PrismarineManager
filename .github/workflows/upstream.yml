@@ -83,6 +83,7 @@ jobs:
         id: check-wrapper
         run: |
           upstreamTag=$(curl --silent https://api.github.com/repos/gradle/gradle/releases | grep tag_name | grep v7 | head -n 1 | cut -d "\"" -f 4 | cut -c 2-)
+          upstreamTag=${upstreamTag/RC/rc-}
           current=$(cat Prismarine/gradle/wrapper/gradle-wrapper.properties | grep distributionUrl | cut -d "-" -f 2)
           if [[ $upstreamTag == *.0 ]]; then echo $upstreamTag > upstream && sed -i 's/.0//g' upstream && upstream=$(cat upstream) && rm upstream; else upstream=$upstreamTag; fi
           if [ "$upstream" != "$current" ]; then wrapper=true; else wrapper=false; fi
