@@ -13,10 +13,9 @@ env:
   branch: master
 
 jobs:
-  upstream-dependencies:
+  upstream:
     name: Upstream Dependencies & Gradle plugins
     runs-on: ubuntu-20.04
-    needs: check
     steps:
       - name: Checkout action
         uses: actions/checkout@main
