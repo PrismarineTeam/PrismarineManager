@@ -1,0 +1,38 @@
+name: Scheduled Upstream (FlameCord)
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+  schedule:
+    - cron: "*/20 * * * *"
+
+env:
+  repo: https://github.com/AlphaKR93/FlameCord
+  branch: master
+
+jobs:
+  upstream-dependencies:
+    name: Upstream Dependencies & Gradle plugins
+    runs-on: ubuntu-20.04
+    needs: check
+    steps:
+      - name: Checkout action
+        uses: actions/checkout@main
+        
+      - name: Clone Repository
+        run: git clone --recursive -b ${{ env.branch }} ${{ env.repo }} PrismarineCord
+
+      - name: Pull Upstream Repository
+        run: |
+          cd PrismarineCord/
+          git pull https://github.com/2lstudios-mc/FlameCord.git master
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.PUSH_TOKEN }}
+          directory: ./PrismarineCord
+          repository: ${{ env.repo }}
+          branch: ${{ env.branch }}
