@@ -9,19 +9,19 @@ on:
     - cron: "*/20 * * * *"
 
 env:
-  repo: https://github.com/AlphaKR93/FlameCord
+  repo: AlphaKR93/FlameCord
   branch: master
 
 jobs:
   upstream:
-    name: Upstream Dependencies & Gradle plugins
+    name: Upstream
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout action
         uses: actions/checkout@main
         
       - name: Clone Repository
-        run: git clone --recursive -b ${{ env.branch }} ${{ env.repo }} PrismarineCord
+        run: git clone --recursive -b ${{ env.branch }} https://github.com/${{ env.repo }} PrismarineCord
 
       - name: Pull Upstream Repository
         run: |
